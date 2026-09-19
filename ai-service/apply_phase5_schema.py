@@ -10,8 +10,9 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from supabase import create_client
 
-SUPABASE_URL = "https://wduvxobmtjpcvjsyvcen.supabase.co"
-SUPABASE_SERVICE_KEY = "sb_secret_SnQFbLr7C4hbuzDzRvM8Eg__cR18KqD"
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
+SUPABASE_SERVICE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
+
 
 # These SQL statements are broken into safe chunks
 STATEMENTS = [
