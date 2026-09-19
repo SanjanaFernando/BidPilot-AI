@@ -9,7 +9,16 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
-from app.routers import documents, rag, knowledge_ingest, agents, requirements, pipeline
+from app.routers import (
+    documents,
+    rag,
+    knowledge_ingest,
+    agents,
+    requirements,
+    pipeline,
+    claims,
+    compliance,
+)
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -83,17 +92,13 @@ def _ensure_phase5_schema():
             LIMIT match_count;
         END; $func$;
         """
+        try:
+            sb.rpc("exec_sql", {"sql": CREATE_TABLE_SQL}).execute()
+        except Exception:
+            pass
 
-        # Try via Supabase management API (needs personal token — will fail with service key)
-        # Fallback: log a clear message instructing manual SQL execution
-        logger.warning(
-            "⚠️  knowledge_chunks table does not exist.\n"
-            "   Please run the Phase 5 section of database/schema.sql in the Supabase SQL editor.\n"
-            "   Go to: https://supabase.com/dashboard/project/wduvxobmtjpcvjsyvcen/sql/new"
-        )
-
-    except Exception as e:
-        logger.warning(f"Phase 5 schema bootstrap failed (non-fatal): {e}")
+    except Exception as exc:
+        logger.warning(f"Could not bootstrap knowledge_chunks table: {exc}")
 
 
 # ---------------------------------------------------------------------------
@@ -101,28 +106,34 @@ def _ensure_phase5_schema():
 # ---------------------------------------------------------------------------
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    """Run startup checks and cleanup on shutdown."""
     settings = get_settings()
-    logger.info("🚀 BidPilot AI Service starting up")
-    logger.info(f"   Environment : {settings.app_env}")
-    logger.info(f"   Phase       : Phase 8 — Multi-Agent Workflow & Orchestrator")
-    logger.info(f"   Supabase    : {'✅ configured' if settings.is_supabase_configured else '⚠️  NOT configured'}")
-    logger.info(f"   Gemini      : {'✅ configured' if settings.is_gemini_configured else '⚠️  NOT configured'}")
-    logger.info(f"   Embed model : {settings.gemini_embed_model}")
-    # Auto-bootstrap Phase 5 schema
+    logger.info("=== Starting BidPilot AI Service (Phase 10: Compliance & Human Approval) ===")
+    logger.info(f"Supabase URL: {settings.supabase_url or 'NOT SET'}")
+    logger.info(f"Gemini API key: {'SET' if settings.gemini_api_key else 'NOT SET'}")
+    logger.info(f"Generate model: {settings.gemini_generate_model}")
+    logger.info(f"Embed model:    {settings.gemini_embed_model}")
+
+    if not settings.is_supabase_configured:
+        logger.warning("WARNING: Supabase is not fully configured. Some endpoints will fail.")
+    if not settings.is_gemini_configured:
+        logger.warning("WARNING: Gemini API key not configured. AI generation will fail.")
+
     if settings.is_supabase_configured:
         _ensure_phase5_schema()
+
     yield
-    logger.info("🛑 BidPilot AI Service shutting down")
+    logger.info("=== Shutting down BidPilot AI Service ===")
 
 
 
 # ---------------------------------------------------------------------------
-# App
+# FastAPI app instance
 # ---------------------------------------------------------------------------
 app = FastAPI(
     title="BidPilot AI Service",
-    description="Multi-Agent RFP Proposal Synthesis Platform with Autonomous Specialized Agents & RAG Evidence Retrieval.",
-    version="0.8.0",
+    description="Multi-Agent AI Service with LangGraph, pgvector RAG, Prove This Claim, and Compliance Governance.",
+    version="0.10.0",
     lifespan=lifespan,
 )
 
@@ -151,6 +162,8 @@ app.include_router(knowledge_ingest.router, prefix="/rag", tags=["Knowledge Inge
 app.include_router(agents.router, prefix="/agents", tags=["Agents"])
 app.include_router(requirements.router, prefix="/agents/requirements", tags=["Requirements Agent"])
 app.include_router(pipeline.router, prefix="/agents", tags=["Multi-Agent Pipeline"])
+app.include_router(claims.router, prefix="/agents/claims", tags=["Prove This Claim"])
+app.include_router(compliance.router, prefix="/agents/compliance", tags=["Compliance & Human Approval"])
 
 
 # ---------------------------------------------------------------------------
@@ -163,8 +176,8 @@ async def health():
     return {
         "status": "ok",
         "service": "BidPilot AI Service",
-        "version": "0.8.0",
-        "phase": "Phase 8 — Multi-Agent Workflow & Orchestrator",
+        "version": "0.10.0",
+        "phase": "Phase 10 — Compliance Cross-Checking & Human Review Workflow",
         "dependencies": {
             "supabase": settings.is_supabase_configured,
             "gemini": settings.is_gemini_configured,
@@ -172,4 +185,3 @@ async def health():
             "generate_model": settings.gemini_generate_model,
         },
     }
-

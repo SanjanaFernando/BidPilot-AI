@@ -473,3 +473,152 @@ class PipelineStageRunRequest(BaseSchema):
     stage: Literal["technical", "business", "proposal", "compliance", "review"]
 
 
+# ==============================================================================
+# Phase 9: Evidence-First Claim Verification & Citations
+# ==============================================================================
+class ClaimVerifyRequest(BaseSchema):
+    organization_id: str
+    claim_text: str = Field(..., min_length=3, max_length=2000)
+    proposal_section_id: Optional[str] = None
+    tender_id: Optional[str] = None
+    source_type_filter: Optional[str] = None
+    match_threshold: float = Field(default=0.25, ge=0.0, le=1.0)
+    match_count: int = Field(default=5, ge=1, le=10)
+
+
+class ClaimVerifyEvidenceItem(BaseSchema):
+    chunk_id: Optional[str] = None
+    source_type: str
+    source_id: Optional[str] = None
+    source_name: str
+    content_snippet: str
+    similarity_score: float
+    source_page: Optional[int] = None
+    source_section: Optional[str] = None
+
+
+class ClaimVerifyResponse(BaseSchema):
+    claim_text: str
+    verification_status: Literal["verified", "partially_supported", "unsupported"]
+    confidence_score: float = Field(..., ge=0.0, le=100.0)
+    is_supported: bool
+    assessment_rationale: str
+    supporting_evidence: List[ClaimVerifyEvidenceItem] = Field(default_factory=list)
+    suggested_citation_anchor: str
+    suggested_rewrite: Optional[str] = None
+
+
+class InsertCitationRequest(BaseSchema):
+    organization_id: str
+    proposal_section_id: str
+    claim_text: str
+    chunk_id: Optional[str] = None
+    verification_status: Literal["verified", "partially_supported", "unsupported"] = "verified"
+    similarity_score: float = 0.0
+    source_type: str = "project"
+    source_id: Optional[str] = None
+    source_name: str
+    source_page: Optional[int] = None
+    source_section: Optional[str] = None
+    citation_number: Optional[int] = None
+    citation_anchor: Optional[str] = None
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class CitationItemResponse(BaseSchema):
+    id: str
+    organization_id: str
+    proposal_section_id: str
+    citation_number: int
+    citation_anchor: str
+    claim_text: str
+    verification_status: str
+    similarity_score: float
+    source_type: Optional[str] = None
+    source_id: Optional[str] = None
+    source_name: Optional[str] = None
+    source_page: Optional[int] = None
+    source_section: Optional[str] = None
+    created_at: Optional[str] = None
+
+
+# ==============================================================================
+# Phase 10: Compliance Cross-Checking & Human Approval Schemas
+# ==============================================================================
+
+class ComplianceMatrixRow(BaseSchema):
+    requirement_id: str
+    req_code: str
+    requirement_category: str
+    requirement_title: str
+    requirement_description: str
+    is_mandatory: bool
+    compliance_status: Literal["compliant", "partially_compliant", "non_compliant"]
+    evidence_found: bool
+    contradiction_detected: bool
+    contradiction_details: Optional[str] = None
+    certification_verified: bool
+    certification_name: Optional[str] = None
+    confidence_score: float
+    audit_notes: str
+    section_id: Optional[str] = None
+    section_title: Optional[str] = None
+    section_order: Optional[int] = None
+    section_review_status: Optional[str] = "ready_for_review"
+
+
+class ComplianceAuditSummaryResponse(BaseSchema):
+    proposal_id: str
+    tender_id: str
+    overall_compliance_score: float
+    total_requirements: int
+    mandatory_total: int
+    mandatory_met: int
+    compliant_count: int
+    partially_compliant_count: int
+    non_compliant_count: int
+    contradiction_count: int
+    certifications_verified_count: int
+    rows: List[ComplianceMatrixRow] = Field(default_factory=list)
+
+
+class SectionReviewRequest(BaseSchema):
+    review_status: Literal["ready_for_review", "approved", "needs_revision"]
+    reviewed_by: Optional[str] = "Proposal Lead"
+    reviewer_comments: Optional[str] = None
+
+
+class SectionReviewResponse(BaseSchema):
+    section_id: str
+    review_status: str
+    reviewed_by: Optional[str]
+    reviewed_at: Optional[str]
+    reviewer_comments: Optional[str]
+    message: str
+
+
+class ProposalSignOffRequest(BaseSchema):
+    approved_by: str = Field(..., description="Full name or ID of the authorized signer")
+    approver_role: str = Field(..., description="Role of the signer e.g. Bid Director, VP")
+    review_notes: Optional[str] = None
+    submission_checklist: Dict[str, bool] = Field(default_factory=dict)
+
+
+class ProposalGovernanceStatusResponse(BaseSchema):
+    proposal_id: str
+    tender_id: str
+    governance_status: Literal["draft", "in_review", "changes_requested", "approved", "ready_to_submit"]
+    reviewed_by: Optional[str] = None
+    approved_by: Optional[str] = None
+    approved_at: Optional[str] = None
+    review_notes: Optional[str] = None
+    submission_checklist: Dict[str, bool] = Field(default_factory=dict)
+    total_sections: int = 0
+    approved_sections_count: int = 0
+    compliance_score: float = 0.0
+    win_probability: float = 0.0
+    can_submit: bool = False
+
+
+
+
