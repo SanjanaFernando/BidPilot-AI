@@ -1,0 +1,386 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Public+Sans:wght@400;500;600;700&family=Noto+Sans+Sinhala:wght@400;500;600&display=swap");
+
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ─── Map shadcn tokens → Government palette ─────────────────────────────── */
+/* #F7F9FB bg  #7A1C2C maroon  #DDA625 gold  #1E252D text  #64748B muted    */
+
+:root {
+  /* Core */
+  --background: oklch(0.975 0.004 234); /* #F7F9FB */
+  --foreground: oklch(0.162 0.02 234); /* #1E252D */
+
+  /* Card / surface */
+  --card: oklch(1 0 0); /* #FFFFFF */
+  --card-foreground: oklch(0.162 0.02 234); /* #1E252D */
+
+  /* Popover */
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.162 0.02 234);
+
+  /* Primary = maroon #7A1C2C → oklch(0.356 0.12 11) */
+  --primary: oklch(0.356 0.12 11);
+  --primary-foreground: oklch(1 0 0);
+
+  /* Secondary = gold #DDA625 → oklch(0.745 0.15 75) */
+  --secondary: oklch(0.745 0.15 75);
+  --secondary-foreground: oklch(0.162 0.02 234); /* dark text on gold — WCAG */
+
+  /* Muted = surface-alt #F1F4F8 */
+  --muted: oklch(0.955 0.006 234);
+  --muted-foreground: oklch(0.47 0.02 234); /* #64748B */
+
+  /* Accent = gold light #FDF3DA */
+  --accent: oklch(0.975 0.04 80);
+  --accent-foreground: oklch(0.162 0.02 234);
+
+  /* Destructive = danger #B91C1C */
+  --destructive: oklch(0.444 0.155 22);
+
+  /* Border / input / ring */
+  --border: oklch(0.9 0.01 234); /* #E2E8F0 */
+  --input: oklch(0.88 0.012 234); /* #CBD5E1 */
+  --ring: oklch(0.356 0.12 11); /* maroon focus ring */
+
+  /* Radius */
+  --radius: 0.5rem;
+
+  /* Charts (gov palette tones) */
+  --chart-1: oklch(0.356 0.12 11);
+  --chart-2: oklch(0.745 0.15 75);
+  --chart-3: oklch(0.47 0.02 234);
+  --chart-4: oklch(0.444 0.155 22);
+  --chart-5: oklch(0.55 0.1 234);
+}
+
+/* No dark mode — gov platform is always light */
+.dark {
+  color-scheme: light;
+}
+
+/* ─── Tailwind v4 theme mapping ──────────────────────────────────────────── */
+@theme inline {
+  --font-sans: "Inter", "Public Sans", "Noto Sans Sinhala", system-ui, sans-serif;
+  --font-heading: var(--font-sans);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+}
+
+/* ─── Custom gov tokens (still used by gov-sidebar / layout classes) ─────── */
+@theme {
+  --sidebar-w: 260px;
+
+  /* Semantic aliases for pages that reference raw hex via CSS vars */
+  --gov-maroon: oklch(0.356 0.12 11);
+  --gov-maroon-dark: oklch(0.29 0.12 11);
+  --gov-gold: oklch(0.745 0.15 75);
+  --gov-gold-hover: oklch(0.67 0.14 75);
+  --gov-surface: oklch(1 0 0);
+  --gov-border: oklch(0.9 0.01 234);
+  --gov-text-main: oklch(0.162 0.02 234);
+  --gov-text-muted: oklch(0.47 0.02 234);
+  --gov-success: oklch(0.44 0.14 142);
+  --gov-success-bg: oklch(0.94 0.05 142);
+  --gov-warning: oklch(0.54 0.12 60);
+  --gov-warning-bg: oklch(0.97 0.04 80);
+  --gov-danger: oklch(0.444 0.155 22);
+  --gov-danger-bg: oklch(0.95 0.04 22);
+  --gov-info: oklch(0.44 0.14 250);
+  --gov-info-bg: oklch(0.94 0.04 250);
+}
+
+/* ─── Base ───────────────────────────────────────────────────────────────── */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    @apply font-sans;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+  }
+
+  ::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-muted;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-border rounded-sm;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-input;
+  }
+}
+
+/* ─── Layout ─────────────────────────────────────────────────────────────── */
+@layer utilities {
+  .gov-sidebar {
+    width: var(--sidebar-w);
+    background-color: var(--gov-maroon);
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    z-index: 40;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .gov-main {
+    margin-left: var(--sidebar-w);
+    min-height: 100vh;
+  }
+
+  /* ─── Nav Items ──────────────────────────────────────────────────────── */
+  .gov-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 14px;
+    border-radius: 6px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.75);
+    text-decoration: none;
+    transition:
+      background 0.15s,
+      color 0.15s,
+      border-color 0.15s;
+    border-left: 3px solid transparent;
+    margin: 1px 8px;
+  }
+  .gov-nav-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    border-left-color: rgba(221, 166, 37, 0.5);
+  }
+  .gov-nav-item.active {
+    background: rgba(221, 166, 37, 0.14);
+    color: #fff;
+    border-left-color: var(--gov-gold);
+    font-weight: 600;
+  }
+
+  .section-heading {
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(255, 255, 255, 0.35);
+    padding: 0 14px;
+    margin-bottom: 3px;
+    margin-top: 18px;
+  }
+
+  /* ─── Page structure ─────────────────────────────────────────────────── */
+  .page-header {
+    background: var(--gov-surface);
+    border-bottom: 1px solid var(--gov-border);
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .gov-topbar {
+    background: var(--gov-surface);
+    border-bottom: 1px solid var(--gov-border);
+    padding: 0 28px;
+    height: 54px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    position: sticky;
+    top: 0;
+    z-index: 30;
+  }
+
+  /* ─── Table ──────────────────────────────────────────────────────────── */
+  .gov-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+  .gov-table thead th {
+    padding: 9px 16px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--gov-text-muted);
+    background: oklch(0.975 0.004 234);
+    border-bottom: 1px solid var(--gov-border);
+    white-space: nowrap;
+  }
+  .gov-table tbody td {
+    padding: 11px 16px;
+    color: oklch(0.28 0.02 234);
+    border-bottom: 1px solid oklch(0.955 0.006 234);
+    vertical-align: middle;
+  }
+  .gov-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+  .gov-table tbody tr:hover td {
+    background: oklch(0.97 0.004 234);
+  }
+  .gov-table tfoot td {
+    padding: 10px 16px;
+  }
+
+  /* ─── KPI card ───────────────────────────────────────────────────────── */
+  .kpi-card {
+    background: var(--gov-surface);
+    border: 1px solid var(--gov-border);
+    border-radius: 8px;
+    padding: 20px 22px;
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow 0.18s;
+  }
+  .kpi-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
+  }
+  .kpi-card::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--gov-maroon);
+  }
+  .kpi-card.accent-gold::before {
+    background: var(--gov-gold);
+  }
+  .kpi-card.accent-success::before {
+    background: var(--gov-success);
+  }
+  .kpi-card.accent-info::before {
+    background: var(--gov-info);
+  }
+
+  /* ─── Status badges ──────────────────────────────────────────────────── */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 2px 9px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .badge-success {
+    background: var(--gov-success-bg);
+    color: var(--gov-success);
+  }
+  .badge-warning {
+    background: var(--gov-warning-bg);
+    color: var(--gov-warning);
+  }
+  .badge-danger {
+    background: var(--gov-danger-bg);
+    color: var(--gov-danger);
+  }
+  .badge-info {
+    background: var(--gov-info-bg);
+    color: var(--gov-info);
+  }
+  .badge-neutral {
+    background: oklch(0.955 0.006 234);
+    color: oklch(0.38 0.02 234);
+  }
+  .badge-gold {
+    background: oklch(0.975 0.04 80);
+    color: oklch(0.5 0.12 75);
+  }
+
+  /* ─── Progress ───────────────────────────────────────────────────────── */
+  .prog-track {
+    height: 5px;
+    background: var(--gov-border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .prog-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: var(--gov-maroon);
+    transition: width 0.3s;
+  }
+  .prog-fill.gold {
+    background: var(--gov-gold);
+  }
+  .prog-fill.success {
+    background: var(--gov-success);
+  }
+  .prog-fill.danger {
+    background: var(--gov-danger);
+  }
+
+  /* ─── Tabular nums ───────────────────────────────────────────────────── */
+  .tabnum {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+
+  @media print {
+    .gov-sidebar {
+      display: none;
+    }
+    .gov-main {
+      margin-left: 0;
+    }
+  }
+}

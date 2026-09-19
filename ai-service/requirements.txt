@@ -1,0 +1,22 @@
+fastapi==0.115.6
+uvicorn[standard]==0.32.1
+python-multipart==0.0.12
+pydantic==2.10.3
+pydantic-settings==2.7.0
+
+# Database
+sqlalchemy==2.0.36
+asyncpg==0.30.0
+supabase==2.10.0
+httpx>=0.26,<0.28
+
+# PDF Processing
+pdfplumber==0.11.4
+pypdf==5.1.0
+
+# AI — Google Gemini
+google-generativeai==0.8.3
+
+# Utilities
+python-dotenv==1.0.1
+tenacity==9.0.0
