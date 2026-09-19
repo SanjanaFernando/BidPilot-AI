@@ -365,3 +365,111 @@ class RequirementUpdatePayload(BaseSchema):
     assigned_to: Optional[str] = None
     evidence_metadata: Optional[List[Dict[str, Any]]] = None
 
+
+# ==============================================================================
+# Phase 8 — Multi-Agent Workflow Schemas
+# ==============================================================================
+
+class TechnicalStrategyOutput(BaseSchema):
+    architecture_overview: str
+    recommended_tech_stack: List[Dict[str, str]]  # e.g. [{"name": "PostgreSQL", "role": "Relational DB", "rationale": "..."}]
+    infrastructure_design: str
+    security_controls: List[str]
+    integration_patterns: List[str]
+    implementation_phases: List[Dict[str, Any]]
+    evidence_citations: List[EvidenceItemSchema] = Field(default_factory=list)
+
+
+class BusinessStrategyOutput(BaseSchema):
+    executive_overview: str
+    matched_case_studies: List[Dict[str, Any]]
+    allocated_team: List[Dict[str, Any]]
+    delivery_methodology: str
+    sla_support_model: str
+    win_themes: List[str]
+    evidence_citations: List[EvidenceItemSchema] = Field(default_factory=list)
+
+
+class GeneratedSectionSchema(BaseSchema):
+    section_type: str
+    title: str
+    order_index: int
+    content_markdown: str
+    verified_claims_count: int = 0
+    unverified_claims_count: int = 0
+    citations: List[Dict[str, Any]] = Field(default_factory=list)
+
+
+class ProposalGenerationOutput(BaseSchema):
+    title: str
+    summary: str
+    sections: List[GeneratedSectionSchema]
+    total_sections: int
+
+
+class ComplianceRequirementMapping(BaseSchema):
+    req_code: str
+    status: str
+    is_mandatory: bool
+    addressed_in_section: Optional[str] = None
+    evidence_source: Optional[str] = None
+    compliance_notes: Optional[str] = None
+
+
+class ComplianceAuditOutput(BaseSchema):
+    compliance_score: float = Field(..., ge=0.0, le=100.0)
+    mandatory_met_count: int
+    mandatory_total_count: int
+    total_requirements: int
+    requirements_mappings: List[ComplianceRequirementMapping]
+    flagged_gaps: List[str]
+    certification_verifications: List[Dict[str, Any]]
+    summary: str
+
+
+class ReviewQualityOutput(BaseSchema):
+    win_probability: float = Field(..., ge=0.0, le=100.0)
+    quality_score: float = Field(..., ge=0.0, le=100.0)
+    strengths: List[str]
+    unsupported_claims: List[Dict[str, Any]]
+    contradictions_detected: List[str]
+    recommendations: List[str]
+    executive_assessment: str
+
+
+class PipelineStageInfo(BaseSchema):
+    stage_name: str
+    agent_name: str
+    status: Literal["pending", "running", "completed", "failed", "skipped"]
+    latency_ms: int = 0
+    summary: Optional[str] = None
+
+
+class PipelineRunRequest(BaseSchema):
+    organization_id: str
+    tender_id: str
+    document_id: Optional[str] = None
+    target_proposal_title: Optional[str] = None
+    stages: Optional[List[str]] = None  # None = run all stages
+
+
+class PipelineRunResponse(BaseSchema):
+    run_id: str
+    tender_id: str
+    proposal_id: Optional[str]
+    status: Literal["completed", "partial", "failed"]
+    total_latency_ms: int
+    stages_executed: List[PipelineStageInfo]
+    proposal_summary: Optional[Dict[str, Any]] = None
+    compliance: Optional[ComplianceAuditOutput] = None
+    review: Optional[ReviewQualityOutput] = None
+    message: str
+
+
+class PipelineStageRunRequest(BaseSchema):
+    organization_id: str
+    tender_id: str
+    proposal_id: Optional[str] = None
+    stage: Literal["technical", "business", "proposal", "compliance", "review"]
+
+

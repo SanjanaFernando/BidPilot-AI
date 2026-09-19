@@ -72,6 +72,7 @@ import {
 } from "@/lib/requirements-service";
 import RequirementEvidenceDrawer from "@/components/tenders/RequirementEvidenceDrawer";
 import RequirementVerifyModal from "@/components/tenders/RequirementVerifyModal";
+import MultiAgentWorkflowModal from "@/components/tenders/MultiAgentWorkflowModal";
 
 
 // ---------------------------------------------------------------------------
@@ -775,6 +776,7 @@ export default function TenderDetailPage({
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedReqForEvidence, setSelectedReqForEvidence] = useState<RequirementMatrixItem | null>(null);
   const [showVerifyModal, setShowVerifyModal] = useState<boolean>(false);
+  const [showPipelineModal, setShowPipelineModal] = useState<boolean>(false);
   const [updatingReqId, setUpdatingReqId] = useState<string | null>(null);
 
   // Load tender
@@ -958,6 +960,19 @@ export default function TenderDetailPage({
         />
       )}
 
+      {/* Phase 8 Multi-Agent Proposal Pipeline Modal */}
+      {showPipelineModal && tender && (
+        <MultiAgentWorkflowModal
+          tenderId={id}
+          tenderTitle={tender.name}
+          organizationId={DEFAULT_ORG_ID_STR}
+          onClose={() => setShowPipelineModal(false)}
+          onComplete={() => {
+            loadMatrix();
+          }}
+        />
+      )}
+
       {/* Phase 7 Traceable Object & Evidence Drawer ("Prove This Claim") */}
       {selectedReqForEvidence && (
         <RequirementEvidenceDrawer
@@ -1069,6 +1084,15 @@ export default function TenderDetailPage({
               >
                 <Sparkles size={14} />
                 Run Requirement Verification Agent
+              </Button>
+
+              <Button
+                id="run-multi-agent-pipeline-btn"
+                onClick={() => setShowPipelineModal(true)}
+                className="h-9 gap-2 border-none bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 px-4 text-xs font-bold text-white shadow-md shadow-indigo-500/20 hover:opacity-95"
+              >
+                <Zap size={14} />
+                Run Multi-Agent Proposal Pipeline
               </Button>
 
               <Button
@@ -1202,6 +1226,35 @@ export default function TenderDetailPage({
                 </CardContent>
               </Card>
             )}
+
+            {/* Multi-Agent Orchestration Card */}
+            <Card className="border-indigo-200 bg-gradient-to-r from-indigo-950/90 via-slate-900 to-purple-950/90 text-white shadow-md">
+              <CardContent className="flex flex-col items-start justify-between gap-4 p-5 md:flex-row md:items-center">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-500/20 text-indigo-300">
+                      <Zap size={14} />
+                    </span>
+                    <span className="text-sm font-bold text-white">
+                      Phase 8 — Autonomous Multi-Agent Proposal Generation
+                    </span>
+                    <span className="rounded-full bg-indigo-500/30 px-2 py-0.5 text-[10px] font-semibold text-indigo-200 border border-indigo-500/40">
+                      7 Specialized Agents
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-300 max-w-2xl leading-relaxed">
+                    Execute the end-to-end pipeline: Technical Agent (architecture &amp; cloud), Business Agent (case studies &amp; SLAs), Proposal Agent (10 markdown sections), Compliance Agent, and Review Agent (win probability scoring).
+                  </p>
+                </div>
+                <Button
+                  onClick={() => setShowPipelineModal(true)}
+                  className="h-9 shrink-0 gap-1.5 bg-gradient-to-r from-indigo-500 to-purple-600 px-4 text-xs font-bold text-white hover:from-indigo-400 hover:to-purple-500 shadow-lg shadow-indigo-500/30 border border-indigo-400/30"
+                >
+                  <Zap size={14} />
+                  Launch Multi-Agent Pipeline
+                </Button>
+              </CardContent>
+            </Card>
 
             {/* Proposal Status */}
             <Card className="border-[#E2E8F0] bg-white">

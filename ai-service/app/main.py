@@ -9,7 +9,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
-from app.routers import documents, rag, knowledge_ingest, agents, requirements
+from app.routers import documents, rag, knowledge_ingest, agents, requirements, pipeline
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -104,7 +104,7 @@ async def lifespan(app: FastAPI):
     settings = get_settings()
     logger.info("🚀 BidPilot AI Service starting up")
     logger.info(f"   Environment : {settings.app_env}")
-    logger.info(f"   Phase       : Phase 6 — RFP Analysis Agent")
+    logger.info(f"   Phase       : Phase 8 — Multi-Agent Workflow & Orchestrator")
     logger.info(f"   Supabase    : {'✅ configured' if settings.is_supabase_configured else '⚠️  NOT configured'}")
     logger.info(f"   Gemini      : {'✅ configured' if settings.is_gemini_configured else '⚠️  NOT configured'}")
     logger.info(f"   Embed model : {settings.gemini_embed_model}")
@@ -121,8 +121,8 @@ async def lifespan(app: FastAPI):
 # ---------------------------------------------------------------------------
 app = FastAPI(
     title="BidPilot AI Service",
-    description="RFP upload, document processing, embeddings, RAG search, knowledge base ingestion, and RFP Analysis Agent for BidPilot.",
-    version="0.6.0",
+    description="Multi-Agent RFP Proposal Synthesis Platform with Autonomous Specialized Agents & RAG Evidence Retrieval.",
+    version="0.8.0",
     lifespan=lifespan,
 )
 
@@ -150,6 +150,7 @@ app.include_router(rag.router, prefix="/rag", tags=["RAG"])
 app.include_router(knowledge_ingest.router, prefix="/rag", tags=["Knowledge Ingest"])
 app.include_router(agents.router, prefix="/agents", tags=["Agents"])
 app.include_router(requirements.router, prefix="/agents/requirements", tags=["Requirements Agent"])
+app.include_router(pipeline.router, prefix="/agents", tags=["Multi-Agent Pipeline"])
 
 
 # ---------------------------------------------------------------------------
@@ -162,8 +163,8 @@ async def health():
     return {
         "status": "ok",
         "service": "BidPilot AI Service",
-        "version": "0.7.0",
-        "phase": "Phase 7 — Requirement Agent & Traceable Matrix",
+        "version": "0.8.0",
+        "phase": "Phase 8 — Multi-Agent Workflow & Orchestrator",
         "dependencies": {
             "supabase": settings.is_supabase_configured,
             "gemini": settings.is_gemini_configured,
