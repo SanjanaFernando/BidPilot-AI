@@ -223,6 +223,7 @@ class RequirementBase(BaseSchema):
     match_score: float = 0.0
     assigned_to: Optional[UUID] = None
     notes: Optional[str] = None
+    evidence_metadata: List[Dict[str, Any]] = Field(default_factory=list)
 
 
 class RequirementResponse(RequirementBase):
@@ -319,3 +320,48 @@ class RFPAnalysisOutputSchema(BaseSchema):
     technologies: List[str]
     certifications_required: List[str]
     requirements: List[ExtractedRequirementSchema]
+
+
+# ==============================================================================
+# Phase 7 — Requirement Agent Schemas
+# ==============================================================================
+class EvidenceItemSchema(BaseSchema):
+    source_type: str = Field(..., description="project | employee | technology | certification | document")
+    source_name: str = Field(..., description="Name / title of the evidence asset")
+    source_id: Optional[str] = None
+    content_snippet: str = Field(..., description="Relevant text excerpt proving coverage")
+    similarity_score: float = Field(0.0, ge=0.0, le=1.0)
+    source_page: Optional[int] = None
+    source_section: Optional[str] = None
+
+
+class RequirementEvaluationSchema(BaseSchema):
+    req_code: str
+    status: Literal["covered", "partially_covered", "missing", "evidence_required"]
+    match_score: float = Field(..., ge=0.0, le=100.0, description="Match score percentage")
+    assessment_rationale: str = Field(..., description="Reasoning of capability coverage against company knowledge")
+    gap_analysis: Optional[str] = Field(None, description="Identified gaps or missing elements")
+    recommended_action: Optional[str] = Field(None, description="Recommended bid response strategy or evidence to acquire")
+    evidence: List[EvidenceItemSchema] = Field(default_factory=list)
+
+
+class BatchEvaluateRequirementsRequest(BaseSchema):
+    organization_id: str
+    tender_id: str
+    requirement_ids: Optional[List[str]] = None
+    mode: Literal["all", "unverified_only", "force_recheck"] = "all"
+
+
+class SingleEvaluateRequirementRequest(BaseSchema):
+    organization_id: str
+    tender_id: str
+    requirement_id: str
+
+
+class RequirementUpdatePayload(BaseSchema):
+    status: Optional[Literal["unverified", "covered", "partially_covered", "missing", "evidence_required"]] = None
+    match_score: Optional[float] = None
+    notes: Optional[str] = None
+    assigned_to: Optional[str] = None
+    evidence_metadata: Optional[List[Dict[str, Any]]] = None
+

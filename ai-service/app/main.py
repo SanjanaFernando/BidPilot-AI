@@ -9,7 +9,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
-from app.routers import documents, rag, knowledge_ingest, agents
+from app.routers import documents, rag, knowledge_ingest, agents, requirements
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -149,6 +149,7 @@ app.include_router(documents.router, prefix="/documents", tags=["Documents"])
 app.include_router(rag.router, prefix="/rag", tags=["RAG"])
 app.include_router(knowledge_ingest.router, prefix="/rag", tags=["Knowledge Ingest"])
 app.include_router(agents.router, prefix="/agents", tags=["Agents"])
+app.include_router(requirements.router, prefix="/agents/requirements", tags=["Requirements Agent"])
 
 
 # ---------------------------------------------------------------------------
@@ -161,8 +162,8 @@ async def health():
     return {
         "status": "ok",
         "service": "BidPilot AI Service",
-        "version": "0.6.0",
-        "phase": "Phase 6 — RFP Analysis Agent",
+        "version": "0.7.0",
+        "phase": "Phase 7 — Requirement Agent & Traceable Matrix",
         "dependencies": {
             "supabase": settings.is_supabase_configured,
             "gemini": settings.is_gemini_configured,
@@ -170,3 +171,4 @@ async def health():
             "generate_model": settings.gemini_generate_model,
         },
     }
+

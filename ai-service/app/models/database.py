@@ -235,6 +235,7 @@ class Requirement(Base):
     match_score = Column(Numeric(5, 2), default=0.0)
     assigned_to = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
     notes = Column(Text, nullable=True)
+    evidence_metadata = Column(JSONB, default=list)
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
