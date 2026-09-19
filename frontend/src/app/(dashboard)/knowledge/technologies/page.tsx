@@ -113,7 +113,12 @@ export default function TechnologiesPage() {
 
   async function handleDelete(id: string) {
     if (confirm("Are you sure you want to remove this technology from capability records?")) {
-      await TechnologiesService.delete(id);
+      setTechnologies((prev) => prev.filter((t) => t.id !== id));
+      try {
+        await TechnologiesService.delete(id);
+      } catch (err) {
+        console.error("Failed to delete technology:", err);
+      }
       await loadTechnologies();
     }
   }

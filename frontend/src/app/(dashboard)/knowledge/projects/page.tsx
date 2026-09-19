@@ -158,7 +158,12 @@ export default function ProjectsPage() {
 
   async function handleDelete(id: string) {
     if (confirm("Are you sure you want to remove this project from the knowledge repository?")) {
-      await ProjectsService.delete(id);
+      setProjects((prev) => prev.filter((p) => p.id !== id));
+      try {
+        await ProjectsService.delete(id);
+      } catch (err) {
+        console.error("Failed to delete project:", err);
+      }
       await loadProjects();
     }
   }

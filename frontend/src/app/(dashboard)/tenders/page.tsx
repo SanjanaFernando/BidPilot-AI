@@ -37,7 +37,13 @@ export default function TendersPage() {
 
   async function handleDelete(id: string) {
     if (confirm("Are you sure you want to remove this tender record?")) {
-      await TendersService.delete(id);
+      // Optimistically remove from state immediately
+      setTenders((prev) => prev.filter((t) => t.id.toLowerCase() !== id.toLowerCase()));
+      try {
+        await TendersService.delete(id);
+      } catch (err) {
+        console.error("Failed to delete tender:", err);
+      }
       await loadTenders();
     }
   }

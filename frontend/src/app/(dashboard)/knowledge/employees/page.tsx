@@ -161,7 +161,12 @@ export default function EmployeesPage() {
 
   async function handleDelete(id: string) {
     if (confirm("Are you sure you want to remove this employee from staff records?")) {
-      await EmployeesService.delete(id);
+      setEmployees((prev) => prev.filter((e) => e.id !== id));
+      try {
+        await EmployeesService.delete(id);
+      } catch (err) {
+        console.error("Failed to delete employee:", err);
+      }
       await loadEmployees();
     }
   }

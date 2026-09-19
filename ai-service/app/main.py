@@ -9,7 +9,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
-from app.routers import documents, rag, knowledge_ingest
+from app.routers import documents, rag, knowledge_ingest, agents
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -104,6 +104,7 @@ async def lifespan(app: FastAPI):
     settings = get_settings()
     logger.info("🚀 BidPilot AI Service starting up")
     logger.info(f"   Environment : {settings.app_env}")
+    logger.info(f"   Phase       : Phase 6 — RFP Analysis Agent")
     logger.info(f"   Supabase    : {'✅ configured' if settings.is_supabase_configured else '⚠️  NOT configured'}")
     logger.info(f"   Gemini      : {'✅ configured' if settings.is_gemini_configured else '⚠️  NOT configured'}")
     logger.info(f"   Embed model : {settings.gemini_embed_model}")
@@ -120,8 +121,8 @@ async def lifespan(app: FastAPI):
 # ---------------------------------------------------------------------------
 app = FastAPI(
     title="BidPilot AI Service",
-    description="RFP upload, document processing, embeddings, RAG search, and knowledge base ingestion for BidPilot.",
-    version="0.5.0",
+    description="RFP upload, document processing, embeddings, RAG search, knowledge base ingestion, and RFP Analysis Agent for BidPilot.",
+    version="0.6.0",
     lifespan=lifespan,
 )
 
@@ -147,6 +148,7 @@ app.add_middleware(
 app.include_router(documents.router, prefix="/documents", tags=["Documents"])
 app.include_router(rag.router, prefix="/rag", tags=["RAG"])
 app.include_router(knowledge_ingest.router, prefix="/rag", tags=["Knowledge Ingest"])
+app.include_router(agents.router, prefix="/agents", tags=["Agents"])
 
 
 # ---------------------------------------------------------------------------
@@ -159,8 +161,8 @@ async def health():
     return {
         "status": "ok",
         "service": "BidPilot AI Service",
-        "version": "0.5.0",
-        "phase": "Phase 5 — RAG",
+        "version": "0.6.0",
+        "phase": "Phase 6 — RFP Analysis Agent",
         "dependencies": {
             "supabase": settings.is_supabase_configured,
             "gemini": settings.is_gemini_configured,

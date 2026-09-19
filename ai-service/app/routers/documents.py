@@ -124,6 +124,7 @@ async def upload_rfp(
         embeddings = [None] * len(chunks)
 
     # ── 5. Register parent document in knowledge_documents ──────────────────
+    full_text = "\n\n".join(p.raw_text for p in pages)
     try:
         supabase.table("knowledge_documents").insert({
             "id": document_id,
@@ -133,6 +134,7 @@ async def upload_rfp(
             "file_path": storage_path,
             "file_size_bytes": len(file_bytes),
             "mime_type": "application/pdf",
+            "extracted_text": full_text,
             "is_processed": False,
             "chunk_count": chunk_count,
             "metadata": {

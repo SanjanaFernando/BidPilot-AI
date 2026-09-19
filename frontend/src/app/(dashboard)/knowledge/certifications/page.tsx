@@ -149,7 +149,12 @@ export default function CertificationsPage() {
 
   async function handleDelete(id: string) {
     if (confirm("Are you sure you want to remove this certification from compliance records?")) {
-      await CertificationsService.delete(id);
+      setCertifications((prev) => prev.filter((c) => c.id !== id));
+      try {
+        await CertificationsService.delete(id);
+      } catch (err) {
+        console.error("Failed to delete certification:", err);
+      }
       await loadCertifications();
     }
   }

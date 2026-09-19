@@ -100,29 +100,37 @@ function setLocalData<T>(key: string, data: T[]): void {
   }
 }
 
+const DEFAULT_ORG_ID = "a0000000-0000-0000-0001-000000000001";
+
 // ─── Projects Service ───────────────────────────────────────────────────────
 export const ProjectsService = {
   async getAll(): Promise<ProjectItem[]> {
     if (isSupabaseConfigured && supabase) {
-      const { data, error } = await supabase
-        .from("projects")
-        .select("*")
-        .order("created_at", { ascending: false });
-      if (!error && data && data.length > 0) {
-        return data.map((d) => ({
-          id: d.id,
-          name: d.name,
-          client: d.client,
-          industry: d.industry,
-          description: d.description,
-          technologies: d.technologies || [],
-          challenges: d.challenges,
-          solution: d.solution,
-          outcomes: d.outcomes,
-          duration: d.start_date && d.end_date ? `${d.start_date} to ${d.end_date}` : "12 months",
-          value: d.budget_range || "LKR 120M",
-          teamSize: d.team_size || 12,
-        }));
+      try {
+        const { data, error } = await supabase
+          .from("projects")
+          .select("*")
+          .order("created_at", { ascending: false });
+        if (!error && data) {
+          if (data.length > 0) {
+            return data.map((d) => ({
+              id: d.id,
+              name: d.name,
+              client: d.client,
+              industry: d.industry,
+              description: d.description,
+              technologies: d.technologies || [],
+              challenges: d.challenges,
+              solution: d.solution,
+              outcomes: d.outcomes,
+              duration: d.start_date && d.end_date ? `${d.start_date} to ${d.end_date}` : "12 months",
+              value: d.budget_range || "LKR 120M",
+              teamSize: d.team_size || 12,
+            }));
+          }
+        }
+      } catch (err) {
+        console.error("Failed fetching projects from Supabase:", err);
       }
     }
     return getLocalData<ProjectItem>(
@@ -139,22 +147,29 @@ export const ProjectsService = {
 
     if (isSupabaseConfigured && supabase) {
       try {
-        await supabase.from("projects").insert([
-          {
-            name: newProject.name,
-            client: newProject.client,
-            industry: newProject.industry,
-            description: newProject.description,
-            technologies: newProject.technologies,
-            challenges: newProject.challenges,
-            solution: newProject.solution,
-            outcomes: newProject.outcomes,
-            budget_range: newProject.value,
-            team_size: newProject.teamSize,
-          },
-        ]);
+        const { data } = await supabase
+          .from("projects")
+          .insert([
+            {
+              organization_id: DEFAULT_ORG_ID,
+              name: newProject.name,
+              client: newProject.client,
+              industry: newProject.industry,
+              description: newProject.description,
+              technologies: newProject.technologies,
+              challenges: newProject.challenges,
+              solution: newProject.solution,
+              outcomes: newProject.outcomes,
+              budget_range: newProject.value,
+              team_size: newProject.teamSize,
+            },
+          ])
+          .select();
+        if (data && data.length > 0) {
+          newProject.id = data[0].id;
+        }
       } catch (e) {
-        console.error("Supabase insert error:", e);
+        console.error("Supabase insert project error:", e);
       }
     }
 
@@ -170,9 +185,21 @@ export const ProjectsService = {
   async update(id: string, updates: Partial<ProjectItem>): Promise<ProjectItem> {
     if (isSupabaseConfigured && supabase) {
       try {
-        await supabase.from("projects").update(updates).eq("id", id);
+        const payload: Record<string, unknown> = {};
+        if (updates.name) payload.name = updates.name;
+        if (updates.client) payload.client = updates.client;
+        if (updates.industry) payload.industry = updates.industry;
+        if (updates.description) payload.description = updates.description;
+        if (updates.technologies) payload.technologies = updates.technologies;
+        if (updates.challenges) payload.challenges = updates.challenges;
+        if (updates.solution) payload.solution = updates.solution;
+        if (updates.outcomes) payload.outcomes = updates.outcomes;
+        if (updates.value) payload.budget_range = updates.value;
+        if (updates.teamSize) payload.team_size = updates.teamSize;
+
+        await supabase.from("projects").update(payload).eq("id", id);
       } catch (e) {
-        console.error("Supabase update error:", e);
+        console.error("Supabase update project error:", e);
       }
     }
     const current = getLocalData<ProjectItem>(
@@ -193,7 +220,7 @@ export const ProjectsService = {
       try {
         await supabase.from("projects").delete().eq("id", id);
       } catch (e) {
-        console.error("Supabase delete error:", e);
+        console.error("Supabase delete project error:", e);
       }
     }
     const current = getLocalData<ProjectItem>(
@@ -209,24 +236,30 @@ export const ProjectsService = {
 export const EmployeesService = {
   async getAll(): Promise<EmployeeItem[]> {
     if (isSupabaseConfigured && supabase) {
-      const { data, error } = await supabase
-        .from("employees")
-        .select("*")
-        .order("created_at", { ascending: false });
-      if (!error && data && data.length > 0) {
-        return data.map((d) => ({
-          id: d.id,
-          name: d.name,
-          role: d.role,
-          department: d.department || "Engineering",
-          experience: `${d.experience_years} years`,
-          experienceYears: Number(d.experience_years) || 0,
-          skills: d.skills || [],
-          certifications: d.certifications || [],
-          bio: d.bio,
-          status: d.availability_status === "available" ? "Available" : "Allocated",
-          email: d.email,
-        }));
+      try {
+        const { data, error } = await supabase
+          .from("employees")
+          .select("*")
+          .order("created_at", { ascending: false });
+        if (!error && data) {
+          if (data.length > 0) {
+            return data.map((d) => ({
+              id: d.id,
+              name: d.name,
+              role: d.role,
+              department: d.department || "Engineering",
+              experience: `${d.experience_years} years`,
+              experienceYears: Number(d.experience_years) || 0,
+              skills: d.skills || [],
+              certifications: d.certifications || [],
+              bio: d.bio,
+              status: d.availability_status === "available" ? "Available" : "Allocated",
+              email: d.email,
+            }));
+          }
+        }
+      } catch (err) {
+        console.error("Failed fetching employees from Supabase:", err);
       }
     }
     return getLocalData<EmployeeItem>(
@@ -240,6 +273,34 @@ export const EmployeesService = {
       ...employee,
       id: `EMP-${Date.now().toString().slice(-4)}`,
     };
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { data } = await supabase
+          .from("employees")
+          .insert([
+            {
+              organization_id: DEFAULT_ORG_ID,
+              name: newEmp.name,
+              email: newEmp.email,
+              role: newEmp.role,
+              department: newEmp.department,
+              experience_years: newEmp.experienceYears || 5,
+              skills: newEmp.skills,
+              certifications: newEmp.certifications,
+              bio: newEmp.bio,
+              availability_status: newEmp.status?.toLowerCase().includes("avail") ? "available" : "allocated",
+            },
+          ])
+          .select();
+        if (data && data.length > 0) {
+          newEmp.id = data[0].id;
+        }
+      } catch (e) {
+        console.error("Supabase insert employee error:", e);
+      }
+    }
+
     const current = getLocalData<EmployeeItem>(
       STORAGE_KEYS.EMPLOYEES,
       mockEmployees as unknown as EmployeeItem[]
@@ -250,6 +311,27 @@ export const EmployeesService = {
   },
 
   async update(id: string, updates: Partial<EmployeeItem>): Promise<EmployeeItem> {
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const payload: Record<string, unknown> = {};
+        if (updates.name) payload.name = updates.name;
+        if (updates.email) payload.email = updates.email;
+        if (updates.role) payload.role = updates.role;
+        if (updates.department) payload.department = updates.department;
+        if (updates.experienceYears !== undefined) payload.experience_years = updates.experienceYears;
+        if (updates.skills) payload.skills = updates.skills;
+        if (updates.certifications) payload.certifications = updates.certifications;
+        if (updates.bio) payload.bio = updates.bio;
+        if (updates.status) {
+          payload.availability_status = updates.status.toLowerCase().includes("avail") ? "available" : "allocated";
+        }
+
+        await supabase.from("employees").update(payload).eq("id", id);
+      } catch (e) {
+        console.error("Supabase update employee error:", e);
+      }
+    }
+
     const current = getLocalData<EmployeeItem>(
       STORAGE_KEYS.EMPLOYEES,
       mockEmployees as unknown as EmployeeItem[]
@@ -264,6 +346,14 @@ export const EmployeesService = {
   },
 
   async delete(id: string): Promise<void> {
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from("employees").delete().eq("id", id);
+      } catch (e) {
+        console.error("Supabase delete employee error:", e);
+      }
+    }
+
     const current = getLocalData<EmployeeItem>(
       STORAGE_KEYS.EMPLOYEES,
       mockEmployees as unknown as EmployeeItem[]
@@ -277,19 +367,25 @@ export const EmployeesService = {
 export const TechnologiesService = {
   async getAll(): Promise<TechnologyItem[]> {
     if (isSupabaseConfigured && supabase) {
-      const { data, error } = await supabase
-        .from("technologies")
-        .select("*")
-        .order("category", { ascending: true });
-      if (!error && data && data.length > 0) {
-        return data.map((t) => ({
-          id: t.id,
-          name: t.name,
-          category: t.category,
-          experienceLevel: t.experience_level,
-          description: t.description,
-          relatedProjects: t.related_projects || [],
-        }));
+      try {
+        const { data, error } = await supabase
+          .from("technologies")
+          .select("*")
+          .order("category", { ascending: true });
+        if (!error && data) {
+          if (data.length > 0) {
+            return data.map((t) => ({
+              id: t.id,
+              name: t.name,
+              category: t.category,
+              experienceLevel: t.experience_level,
+              description: t.description,
+              relatedProjects: t.related_projects || [],
+            }));
+          }
+        }
+      } catch (err) {
+        console.error("Failed fetching technologies from Supabase:", err);
       }
     }
     return getLocalData<TechnologyItem>(
@@ -303,6 +399,30 @@ export const TechnologiesService = {
       ...tech,
       id: `TECH-${Date.now().toString().slice(-4)}`,
     };
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { data } = await supabase
+          .from("technologies")
+          .insert([
+            {
+              organization_id: DEFAULT_ORG_ID,
+              name: newTech.name,
+              category: newTech.category,
+              experience_level: newTech.experienceLevel?.toLowerCase() || "advanced",
+              description: newTech.description,
+              related_projects: newTech.relatedProjects || [],
+            },
+          ])
+          .select();
+        if (data && data.length > 0) {
+          newTech.id = data[0].id;
+        }
+      } catch (e) {
+        console.error("Supabase insert technology error:", e);
+      }
+    }
+
     const current = getLocalData<TechnologyItem>(
       STORAGE_KEYS.TECHNOLOGIES,
       mockTechnologies as unknown as TechnologyItem[]
@@ -313,6 +433,21 @@ export const TechnologiesService = {
   },
 
   async update(id: string, updates: Partial<TechnologyItem>): Promise<TechnologyItem> {
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const payload: Record<string, unknown> = {};
+        if (updates.name) payload.name = updates.name;
+        if (updates.category) payload.category = updates.category;
+        if (updates.experienceLevel) payload.experience_level = updates.experienceLevel.toLowerCase();
+        if (updates.description) payload.description = updates.description;
+        if (updates.relatedProjects) payload.related_projects = updates.relatedProjects;
+
+        await supabase.from("technologies").update(payload).eq("id", id);
+      } catch (e) {
+        console.error("Supabase update technology error:", e);
+      }
+    }
+
     const current = getLocalData<TechnologyItem>(
       STORAGE_KEYS.TECHNOLOGIES,
       mockTechnologies as unknown as TechnologyItem[]
@@ -327,6 +462,14 @@ export const TechnologiesService = {
   },
 
   async delete(id: string): Promise<void> {
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from("technologies").delete().eq("id", id);
+      } catch (e) {
+        console.error("Supabase delete technology error:", e);
+      }
+    }
+
     const current = getLocalData<TechnologyItem>(
       STORAGE_KEYS.TECHNOLOGIES,
       mockTechnologies as unknown as TechnologyItem[]
@@ -340,23 +483,29 @@ export const TechnologiesService = {
 export const CertificationsService = {
   async getAll(): Promise<CertificationItem[]> {
     if (isSupabaseConfigured && supabase) {
-      const { data, error } = await supabase
-        .from("certifications")
-        .select("*")
-        .order("issue_date", { ascending: false });
-      if (!error && data && data.length > 0) {
-        return data.map((c) => ({
-          id: c.id,
-          name: c.name,
-          issuer: c.issuer,
-          holderType: c.holder_type === "company" ? "Company" : "Employee",
-          issueDate: c.issue_date,
-          expiryDate: c.expiry_date,
-          expiry: c.expiry_date || "2026-12-31",
-          credentialId: c.credential_id,
-          credentialUrl: c.credential_url,
-          status: "Active",
-        }));
+      try {
+        const { data, error } = await supabase
+          .from("certifications")
+          .select("*")
+          .order("issue_date", { ascending: false });
+        if (!error && data) {
+          if (data.length > 0) {
+            return data.map((c) => ({
+              id: c.id,
+              name: c.name,
+              issuer: c.issuer,
+              holderType: c.holder_type === "company" ? "Company" : "Employee",
+              issueDate: c.issue_date,
+              expiryDate: c.expiry_date,
+              expiry: c.expiry_date || "2026-12-31",
+              credentialId: c.credential_id,
+              credentialUrl: c.credential_url,
+              status: "Active",
+            }));
+          }
+        }
+      } catch (err) {
+        console.error("Failed fetching certifications from Supabase:", err);
       }
     }
     return getLocalData<CertificationItem>(
@@ -370,6 +519,32 @@ export const CertificationsService = {
       ...cert,
       id: `CRT-${Date.now().toString().slice(-4)}`,
     };
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { data } = await supabase
+          .from("certifications")
+          .insert([
+            {
+              organization_id: DEFAULT_ORG_ID,
+              name: newCert.name,
+              issuer: newCert.issuer,
+              holder_type: newCert.holderType?.toLowerCase() || "company",
+              issue_date: newCert.issueDate || null,
+              expiry_date: newCert.expiryDate || null,
+              credential_id: newCert.credentialId || null,
+              credential_url: newCert.credentialUrl || null,
+            },
+          ])
+          .select();
+        if (data && data.length > 0) {
+          newCert.id = data[0].id;
+        }
+      } catch (e) {
+        console.error("Supabase insert certification error:", e);
+      }
+    }
+
     const current = getLocalData<CertificationItem>(
       STORAGE_KEYS.CERTIFICATIONS,
       mockCertifications as unknown as CertificationItem[]
@@ -380,6 +555,23 @@ export const CertificationsService = {
   },
 
   async update(id: string, updates: Partial<CertificationItem>): Promise<CertificationItem> {
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const payload: Record<string, unknown> = {};
+        if (updates.name) payload.name = updates.name;
+        if (updates.issuer) payload.issuer = updates.issuer;
+        if (updates.holderType) payload.holder_type = updates.holderType.toLowerCase();
+        if (updates.issueDate) payload.issue_date = updates.issueDate;
+        if (updates.expiryDate) payload.expiry_date = updates.expiryDate;
+        if (updates.credentialId) payload.credential_id = updates.credentialId;
+        if (updates.credentialUrl) payload.credential_url = updates.credentialUrl;
+
+        await supabase.from("certifications").update(payload).eq("id", id);
+      } catch (e) {
+        console.error("Supabase update certification error:", e);
+      }
+    }
+
     const current = getLocalData<CertificationItem>(
       STORAGE_KEYS.CERTIFICATIONS,
       mockCertifications as unknown as CertificationItem[]
@@ -394,6 +586,14 @@ export const CertificationsService = {
   },
 
   async delete(id: string): Promise<void> {
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from("certifications").delete().eq("id", id);
+      } catch (e) {
+        console.error("Supabase delete certification error:", e);
+      }
+    }
+
     const current = getLocalData<CertificationItem>(
       STORAGE_KEYS.CERTIFICATIONS,
       mockCertifications as unknown as CertificationItem[]

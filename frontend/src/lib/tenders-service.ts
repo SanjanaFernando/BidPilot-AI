@@ -127,8 +127,24 @@ export const TendersService = {
   },
 
   async update(id: string, updates: Partial<TenderItem>): Promise<TenderItem> {
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const payload: Record<string, unknown> = {};
+        if (updates.name) payload.title = updates.name;
+        if (updates.client) payload.client_name = updates.client;
+        if (updates.deadline) payload.submission_deadline = updates.deadline;
+        if (updates.description) payload.summary = updates.description;
+        if (updates.status) payload.status = updates.status.toLowerCase();
+
+        await supabase.from("tenders").update(payload).eq("reference_code", id);
+        await supabase.from("tenders").update(payload).eq("id", id);
+      } catch (e) {
+        console.error("Supabase update tender error:", e);
+      }
+    }
+
     const current = getLocalTenders();
-    const index = current.findIndex((t) => t.id === id);
+    const index = current.findIndex((t) => t.id.toLowerCase() === id.toLowerCase());
     if (index !== -1) {
       current[index] = { ...current[index], ...updates };
       setLocalTenders(current);
@@ -138,8 +154,18 @@ export const TendersService = {
   },
 
   async delete(id: string): Promise<void> {
+    if (isSupabaseConfigured && supabase) {
+      try {
+        // Delete associated requirements or cascade if needed
+        await supabase.from("tenders").delete().eq("reference_code", id);
+        await supabase.from("tenders").delete().eq("id", id);
+      } catch (e) {
+        console.error("Supabase delete tender error:", e);
+      }
+    }
+
     const current = getLocalTenders();
-    const updated = current.filter((t) => t.id !== id);
+    const updated = current.filter((t) => t.id.toLowerCase() !== id.toLowerCase());
     setLocalTenders(updated);
   },
 };

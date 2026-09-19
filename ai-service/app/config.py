@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     # --- Google Gemini ---
     gemini_api_key: str = ""
     gemini_embed_model: str = "text-embedding-004"
-    gemini_generate_model: str = "gemini-2.0-flash"
+    gemini_generate_model: str = "gemini-3.6-flash"
 
     # --- Storage ---
     storage_bucket: str = "rfp-documents"
