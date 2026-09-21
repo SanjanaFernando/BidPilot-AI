@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "BidPilot AI — Multi-Agent RFP Response Platform",
+  title: "BidPilot AI",
   description:
     "AI-powered tender and RFP response platform with RAG, multi-agent orchestration, and evidence-backed proposal generation.",
   icons: {
