@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Eye, EyeOff, ShieldCheck, Check } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -30,62 +31,70 @@ export default function LoginPage() {
         alignItems: "stretch",
       }}
     >
-      {/* Left panel — maroon branding */}
+      {/* Left panel — branding */}
       <div
         style={{
-          width: "42%",
-          background: "#7A1C2C",
+          width: "480px",
+          background: "linear-gradient(145deg, #7A1C2C 0%, #4A0E18 100%)",
+          padding: "56px 48px",
           display: "flex",
           flexDirection: "column",
-          justifyContent: "center",
-          padding: "60px 56px",
+          justifyContent: "space-between",
           position: "relative",
           overflow: "hidden",
+          flexShrink: 0,
         }}
       >
-        {/* Decorative background geometry */}
+        {/* Background decorative circles */}
         <div
           style={{
             position: "absolute",
-            width: 400,
-            height: 400,
+            width: "360px",
+            height: "360px",
             borderRadius: "50%",
-            border: "1px solid rgba(255,255,255,0.06)",
-            top: -100,
-            left: -100,
+            background: "radial-gradient(circle, rgba(221,166,37,0.12) 0%, transparent 70%)",
+            top: -80,
+            left: -80,
           }}
         />
         <div
           style={{
             position: "absolute",
-            width: 300,
-            height: 300,
+            width: "280px",
+            height: "280px",
             borderRadius: "50%",
-            border: "1px solid rgba(255,255,255,0.04)",
+            background: "radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%)",
             bottom: -50,
             right: -80,
           }}
         />
 
         <div style={{ position: "relative" }}>
-          {/* Crest */}
+          {/* Logo */}
           <div
             style={{
               width: 64,
               height: 64,
-              borderRadius: "50%",
-              background: "#DDA625",
+              borderRadius: "14px",
+              background: "rgba(255,255,255,0.1)",
+              border: "1px solid rgba(255,255,255,0.2)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "20px",
-              fontWeight: 800,
-              color: "#1E252D",
               marginBottom: "32px",
-              boxShadow: "0 4px 24px rgba(221,166,37,0.3)",
+              boxShadow: "0 8px 30px rgba(0,0,0,0.25)",
+              overflow: "hidden",
+              padding: "4px",
             }}
           >
-            BP
+            <Image
+              src="/logo.png"
+              alt="BidPilot AI Logo"
+              width={56}
+              height={56}
+              style={{ objectFit: "contain", width: "100%", height: "100%" }}
+              priority
+            />
           </div>
 
           <h1

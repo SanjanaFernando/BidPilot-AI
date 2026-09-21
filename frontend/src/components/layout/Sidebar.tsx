@@ -159,9 +159,9 @@ export default function Sidebar() {
                 background: "#22C55E",
               }}
             />
-            Phase 5 — RAG
+            Phase 11 — Completed
           </span>
-          <span style={{ fontSize: "9.5px", opacity: 0.6 }}>v0.5.0</span>
+          <span style={{ fontSize: "9.5px", opacity: 0.6 }}>v1.0</span>
         </Link>
       </div>
 

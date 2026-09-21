@@ -9,6 +9,11 @@ export const metadata: Metadata = {
   title: "BidPilot AI — Multi-Agent RFP Response Platform",
   description:
     "AI-powered tender and RFP response platform with RAG, multi-agent orchestration, and evidence-backed proposal generation.",
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -7,6 +7,7 @@ executive-ready PDF document using ReportLab.
 from __future__ import annotations
 
 import io
+import os
 import re
 from typing import Any, Dict, List, Optional
 
@@ -22,6 +23,7 @@ from reportlab.platypus import (
     TableStyle,
     KeepTogether,
     HRFlowable,
+    Image as RLImage,
 )
 from reportlab.pdfgen import canvas
 
@@ -232,8 +234,21 @@ def build_proposal_pdf(
     story = []
 
     # -------------------------------------------------------------------------
-    # COVER / HEADER BANNER
+    # LOGO & COVER / HEADER BANNER
     # -------------------------------------------------------------------------
+    logo_candidates = [
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "frontend", "public", "logo.png")),
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "static", "logo.png")),
+        os.path.abspath("frontend/public/logo.png"),
+    ]
+    logo_path = next((p for p in logo_candidates if os.path.exists(p)), None)
+    if logo_path:
+        try:
+            story.append(RLImage(logo_path, width=0.9 * inch, height=0.9 * inch))
+            story.append(Spacer(1, 4))
+        except Exception:
+            pass
+
     story.append(Paragraph("FORMAL PROPOSAL RESPONSE", style_pretitle))
     story.append(Paragraph(tender_title, style_title))
     story.append(

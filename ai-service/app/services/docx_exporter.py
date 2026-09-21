@@ -5,6 +5,7 @@ executive-ready Microsoft Word (.docx) document.
 """
 
 import io
+import os
 import re
 from typing import Any, Dict, List, Optional
 from docx import Document
@@ -84,8 +85,24 @@ def build_proposal_docx(
     # -------------------------------------------------------------------------
     # COVER / HEADER BANNER
     # -------------------------------------------------------------------------
+    logo_candidates = [
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "frontend", "public", "logo.png")),
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "static", "logo.png")),
+        os.path.abspath("frontend/public/logo.png"),
+    ]
+    logo_path = next((p for p in logo_candidates if os.path.exists(p)), None)
+    if logo_path:
+        try:
+            logo_p = doc.add_paragraph()
+            logo_p.paragraph_format.space_before = Pt(0)
+            logo_p.paragraph_format.space_after = Pt(4)
+            logo_run = logo_p.add_run()
+            logo_run.add_picture(logo_path, width=Inches(1.0))
+        except Exception:
+            pass
+
     title_p = doc.add_paragraph()
-    title_p.paragraph_format.space_before = Pt(12)
+    title_p.paragraph_format.space_before = Pt(8)
     title_p.paragraph_format.space_after = Pt(4)
     run_pre = title_p.add_run("FORMAL PROPOSAL RESPONSE\n")
     run_pre.font.size = Pt(11)
