@@ -319,278 +319,210 @@ actions.
 Generate DOCX first. Add PDF conversion only after DOCX output is
 stable.
 
-## 16. Phase 12 --- Cloud Deployment Without Paid Services
+## 16. Phase 12 --- Real-World Multi-Tenant Role-Based Access Control (RBAC)
 
-Recommended portfolio deployment:
+Transition from the single-tenant demo/mock state to a production-grade enterprise RBAC system with cryptographic authorization, fine-grained permissions, and collaborative section assignments.
 
--   Next.js → Vercel Hobby.
+### 16.1 Enterprise Role Hierarchy & Permission Matrix
 
--   FastAPI → Render Free.
+| Role | Target Persona | Permissions & Scope |
+| --- | --- | --- |
+| **Org Admin** | VP / Operations Director | Organization-wide administration, user provisioning, role assignments, billing, API keys, knowledge base governance, and audit log inspection. |
+| **Bid Manager** | Proposal Lead / Capture Manager | Full RFP lifecycle management: tender creation, orchestrating AI agent pipelines, assigning section authors, approving/rejecting sections, executing final human sign-off, and exporting official DOCX/PDF bids. |
+| **Solution Architect** | Technical Lead / Enterprise Architect | Authoring and editing technical/architecture sections, triggering Technical Agent regeneration, proving technical claims, and verifying technical requirement compliance. |
+| **Compliance Officer** | Legal Counsel / Risk Manager | Reviewing mandatory compliance matrices, verifying certifications and regulatory criteria, and providing mandatory legal sign-off before bid release. |
+| **Domain SME / Contributor** | Senior Engineer / Project Manager | Editing assigned proposal sections, submitting evidence citations, contributing case studies and employee resumes to the Knowledge Base. |
+| **Executive Viewer / Auditor** | C-Level Executive / External Auditor | Read-only access to proposal status, compliance scorecards, audit event streams, and watermarked proposal previews. |
 
--   PostgreSQL + pgvector + Auth → Supabase Free.
+### 16.2 Real Database Schema & Authorization Architecture
 
--   RFP files → Cloudflare R2.
+1. **RBAC & Collaborative Schema Migration (`database/phase12_rbac_migration.sql`)**:
+   - `roles` (id, name, description, is_system_role)
+   - `permissions` (id, code, category, description)
+   - `role_permissions` (role_id, permission_id)
+   - `organization_members` (id, organization_id, user_id, role_id, status, invited_at, joined_at)
+   - `tender_collaborators` (tender_id, user_id, assigned_role, can_sign_off)
+   - `section_assignments` (section_id, assigned_user_id, status, review_notes)
+   - `section_locks` (section_id, locked_by_user_id, locked_at, expires_at) to prevent concurrent overwrite collisions.
 
--   Git repository + CI → GitHub.
+2. **Supabase Row Level Security (RLS) Engine**:
+   - Integrate custom JWT claims via Supabase Auth Hooks (`app_metadata.org_id`, `app_metadata.role`, `app_metadata.permissions`).
+   - Write strict PostgreSQL RLS policies enforcing tenant isolation and role gates on `tenders`, `requirements`, `proposals`, `proposal_sections`, `knowledge_chunks`, and `audit_logs`.
+   - Prevent any cross-organization data leakage even if API endpoints are queried directly.
 
--   AI inference during development → Ollama locally.
+3. **FastAPI Backend RBAC & JWT Verification Middleware**:
+   - Replace demo fallback IDs with verified Supabase JWT Bearer token validation (JWKS signature verification).
+   - FastAPI permission dependencies:
+     - `@require_permission("proposals:sign_off")`
+     - `@require_role(["OrgAdmin", "BidManager"])`
+     - `@require_section_access(action="edit")`
+   - Real-time collaborative section locking (`PUT /agents/proposals/sections/{id}/lock` with 5-minute heartbeat).
 
-Important: Vercel's current Hobby terms specify personal/non-commercial
-use. Treat the Vercel deployment as a portfolio/demo deployment, not a
-commercial SaaS service. Render Free is explicitly positioned for
-testing/hobby projects and its service sleeps when idle. Supabase Free
-can pause inactive projects. These are acceptable for a portfolio but
-not a production business workload.
+4. **Frontend Dynamic RBAC Guards & UI Enforcement**:
+   - Auth Context & `useUserPermissions()` hook.
+   - Dynamic UI gating: Hide or disable destructive/sensitive controls (e.g. *Human Sign-Off Modal*, *Regenerate Section*, *Approve Section*, *Export Proposal*, *Knowledge Base Deletion*) with informative tooltips based on the active user's role.
+   - Organization Team & Member Management page under `/settings/team`.
 
-## 17. Strict \$0 AI Strategy
+---
+
+## 17. Phase 13 --- Enterprise Knowledge Governance & Secret Scrubbing
+
+Prevent accidental exposure of client confidential data, internal salary rates, or proprietary credentials during LLM synthesis:
+
+1. **Knowledge Clearance & Document Tiers**:
+   - Assign classification tiers to Knowledge Base items (`Public Org-Wide`, `Confidential Leadership`, `Restricted NDA-Only`).
+   - Filtered RAG vector retrieval: pgvector cosine similarity search automatically injects `user_clearance_level` into metadata filters so LLMs never synthesize restricted internal data for low-clearance team members.
+
+2. **Automated PII & Secret Scrubbing Pipeline**:
+   - Pre-embedding scanning pipeline to detect and redact API keys, passwords, proprietary cost margins, and personally identifiable information (PII) before chunking and embedding.
+
+---
+
+## 18. Phase 14 --- Cryptographic Audit Trail & Tamper-Evident Electronic Signatures
+
+1. **Immutable Audit Event Chaining**:
+   - Enhance `audit_logs` with SHA-256 cryptographic hash chaining (`prev_event_hash`, `payload_hash`, `current_hash`) to provide verifiable tamper-evident compliance for government audits.
+   - Log all critical events: RFP Ingestion, Agent Execution, Section Edits, Citation Invalidation, Section Approvals, and Final Sign-Offs.
+
+2. **Formal Electronic Signature & Certificate Verification**:
+   - Capture legally binding sign-off records: Signer Full Name, Corporate Email, Timestamp (UTC), IP Address, Device User-Agent, and SHA-256 hash of the final generated proposal payload.
+   - Document Verification Engine: Exported PDF/DOCX embeds a verification badge and QR code linking to `/verify/[proposal_hash]` for tender evaluation committees to verify bid authenticity.
+
+---
+
+## 19. Phase 15 --- Enterprise Notifications, Webhooks & Automated Workflow Alerts
+
+1. **Automated Notification Engine**:
+   - Real-time alerts when tender deadlines approach, requirements are extracted, sections are assigned, or human approval is requested.
+   - In-app notification bell with live badge counters.
+   - Email notifications via Resend / SendGrid and webhook dispatch to Slack / Microsoft Teams channels.
+
+2. **External Tender Intake Webhook**:
+   - Secure API endpoint (`POST /webhooks/tenders/ingest`) allowing ERP/CRM systems to push new RFPs automatically into the analysis queue.
+
+---
+
+## 20. Phase 16 --- Cloud Production Deployment & High-Availability Scaling
+
+Enterprise deployment architecture for production workloads:
+
+- **Frontend**: Next.js App Router deployed on Vercel Pro / AWS Amplify with Edge CDN and custom domains.
+- **Backend AI Service**: FastAPI containerized via Docker on AWS ECS / Google Cloud Run / Render with auto-scaling workers.
+- **Database & Storage**: Managed Supabase PostgreSQL + pgvector (Pro tier with Point-in-Time Recovery and daily backups), Cloudflare R2 / AWS S3 for RFP document storage.
+- **Rate Limiting & Tenant Quotas**: Redis / Upstash token bucket rate limiter to prevent API abuse and manage LLM token quotas per organization.
+- **CI/CD Pipeline**: GitHub Actions automated pipeline running unit tests, linting, typechecking, and automated database migration rollouts.
+
+## 21. Strict $0 AI Strategy
 
 Hosted LLM APIs are the main place where a 'free' project can
-accidentally create charges. Therefore use local inference as the
+accidentally create charges. Therefore use local inference or verified free tiers as the
 default development path.
 
--   Ollama + a small instruct model for generation.
-
--   A local embedding model for RAG.
-
+-   Ollama + a small instruct model for generation (or Gemini 2.5 Flash Free Tier).
+-   A local embedding model / Google embedding for RAG.
 -   Local evaluation scripts.
-
 -   Optional Hugging Face free inference only for small experiments.
-
 -   Do not add a paid API key as a required dependency.
 
-Hugging Face currently provides a small monthly credit to free users for
-Inference Providers, but usage beyond that can require purchased
-credits. Treat it as optional, not as the foundation of a zero-cost
-guarantee.
-
-## 18. Free-Tier Safety Rules
+## 22. Free-Tier Safety & Cost Control Rules
 
 1.  Do not attach a credit card unless you understand the provider's
     billing controls and terms.
-
-2.  Never enable pay-as-you-go for this project if \$0 is a hard
+2.  Never enable pay-as-you-go for this project if $0 is a hard
     requirement.
-
 3.  Set usage alerts wherever the provider supports them.
-
 4.  Keep demo documents small and synthetic.
-
-5.  Do not run a GPU-hosted model in the cloud.
-
+5.  Do not run a GPU-hosted model in the cloud on paid instances.
 6.  Do not store confidential client/company documents in your public
     demo.
-
-7.  Keep production-like features behind authentication.
-
+7.  Keep production-like features behind authentication and RBAC.
 8.  Back up important demo data locally because free databases can pause
     or expire.
 
-## 19. 8-Week Development Roadmap
+## 23. 12-Week Comprehensive Enterprise Roadmap
 
-## 20. Evaluation Plan
+| Week | Deliverable |
+| --- | --- |
+| **Week 1** | Next.js foundation, base auth, organization model, dashboard layout and initial database schema. |
+| **Week 2** | Knowledge base CRUD: projects, employees, technologies, certifications. |
+| **Week 3** | RFP upload, R2 storage, PDF extraction, chunking and evidence metadata. |
+| **Week 4** | Embeddings, pgvector, semantic search, citations and RAG evaluation. |
+| **Week 5** | RFP Analysis Agent + Requirement Agent + requirement matrix dashboard. |
+| **Week 6** | Technical, Business, Proposal, Compliance and Review multi-agent pipeline. |
+| **Week 7** | Proposal editor, human sign-off modal, section revision loop, DOCX & PDF exports. |
+| **Week 8** | Multi-tenant RBAC system: roles table, permissions matrix, Supabase custom JWT claims, and RLS engine. |
+| **Week 9** | FastAPI RBAC middleware, `@require_permission` guards, collaborative section locking, and `/settings/team` UI. |
+| **Week 10** | Enterprise Knowledge Governance: clearance tiers, filtered RAG vector retrieval, and automated PII/secret scrubbing. |
+| **Week 11** | Cryptographic audit trail: SHA-256 event hash chaining, legally binding electronic signatures, and public `/verify` portal. |
+| **Week 12** | Enterprise notifications (Email/Slack webhooks), rate limiting, containerized cloud deployment, and production hardening. |
 
-Create a small benchmark rather than claiming that the AI 'works'.
+## 24. Evaluation & Verification Plan
 
--   Requirement extraction accuracy.
+Create a benchmark suite rather than claiming that the AI 'works':
 
+-   Requirement extraction precision & recall on benchmark RFPs.
 -   Retrieval precision/recall on known questions.
-
--   Citation correctness.
-
--   Unsupported-claim detection.
-
--   Requirement coverage after proposal generation.
-
--   Agent failure rate.
-
--   Average RAG latency.
-
--   Average proposal-generation time.
-
-Create 50--100 synthetic requirements with expected source documents.
-Use them to regression-test every change.
-
-## 21. Portfolio Demonstration Scenario
-
-Use a fictional Sri Lankan software company and fictional tender.
-
--   Company: LankaTech Solutions (fictional).
-
--   Tender: Hospital Information Management System.
-
--   RFP: 50--100 page synthetic document.
-
--   Knowledge base: 10 fictional projects, 20 fictional employees,
-    technologies, certifications and 5 previous proposals.
-
--   Run: upload → analyze → requirements → retrieve evidence → generate
-    → compliance review → human edit → export.
-
-This gives you a safe, repeatable demo without exposing real client
-information.
-
-## 22. Final Architecture
-
-User ↓ Next.js + TypeScript ↓ FastAPI ↓ Agent Orchestrator ├── RFP
-Analysis Agent ├── Requirement Agent ├── Technical Agent ├── Business
-Agent ├── Proposal Agent ├── Compliance Agent └── Review Agent ↓ RAG
-Service ├── Embedding Model ├── PostgreSQL + pgvector └──
-Evidence/Citations ↓ Supabase + Cloudflare R2 ↓ Vercel + Render + GitHub
-
-## 23. What Makes This Strong for an AI Engineer Portfolio
-
--   Next.js full-stack product engineering.
-
--   Python/FastAPI AI service.
-
--   Production-style RAG with metadata and citations.
-
--   Multi-agent orchestration instead of a single chatbot.
-
--   Structured outputs and deterministic workflow state.
-
--   Human-in-the-loop AI.
-
--   Multi-tenant authorization and data isolation.
-
--   Cloud deployment using free-tier services.
-
--   AI evaluation and regression testing.
-
--   Hallucination and prompt-injection defenses.
-
--   Observability, audit logs, latency and cost awareness.
-
-## 24. First Milestone to Complete
-
-Do not attempt the whole system at once. Your first target is:
-
-> Upload RFP → extract text → chunk → embed → store in pgvector → ask a
-> question → retrieve relevant chunks → show answer + page citation.
-
-Once this works reliably, build the Requirement Agent. Once the
-requirement workflow works, add the other agents. This order prevents
-you from building an impressive-looking multi-agent demo on top of a
-weak retrieval layer.
-
-## 25. Free-Tier Reference Notes (Checked 17 September 2026)
-
-Vercel Hobby: free personal-project plan; current documentation lists
-included compute/function limits. Vercel's terms also state Hobby is for
-personal/non-commercial use.
-
-Supabase Free: \$0, 500 MB database, 1 GB file storage, 5 GB egress and
-up to two active projects; free projects can pause after inactivity.
-
-Cloudflare R2: current free tier lists 10 GB-month Standard storage, 1
-million Class A operations and 10 million Class B operations per month,
-with free egress.
-
-Render Free: free web services are available, but free services spin
-down after 15 minutes of inactivity; free Render Postgres expires after
-30 days, so use Supabase for the persistent database.
-
-GitHub Actions: standard runners are free for public repositories;
-GitHub Free private repositories have a monthly included quota.
-
-Hugging Face Inference Providers: free users currently receive a small
-monthly credit; additional usage can require purchased credits. Local
-Ollama inference is therefore the safer \$0 default.
-
-## 26. Suggested Project Title
-
-BidPilot AI --- A Multi-Agent RAG Platform for Evidence-Backed Tender
-and RFP Response Generation
-
-Document purpose: implementation blueprint for a portfolio-grade
-project. Provider limits and terms are time-sensitive and should be
-rechecked before deployment.
-
-| Layer \| Recommended choice \| Free-tier role \| Important limitation
-  \|
-
-| --- \| --- \| --- \| --- \|
-
-| Frontend \| Next.js + Vercel Hobby \| Host the web app \| Hobby is
-  intended for personal/non-commercial use; keep this as a
-  portfolio/demo deployment. \|
-
-| Database + Auth \| Supabase Free + PostgreSQL + pgvector \| Relational
-  data, auth, vector search \| 500 MB database, 1 GB file storage;
-  projects pause after inactivity. \|
-
-| Object storage \| Cloudflare R2 \| Store RFPs and documents \| 10
-  GB-month storage, 1M Class A and 10M Class B operations/month on free
-  tier. \|
-
-| AI for development \| Ollama + local open models \| Zero API cost
-  during development \| Uses your laptop CPU/RAM; slower than hosted
-  models. \|
-
-| Optional hosted AI \| Hugging Face Inference Providers \| Small
-  experiments \| Free users currently receive a small monthly credit; do
-  not design the system around paid overages. \|
-
-| Backend \| FastAPI on Render Free \| Deploy Python API \| Free service
-  sleeps after inactivity and has limited resources; suitable for
-  demos/testing. \|
-
-| Source control/CI \| GitHub Free + Actions \| Repository and CI \|
-  Public repositories get free standard Actions usage; private
-  repositories have monthly quotas. \|
-
-| Monitoring \| Application logs + simple DB audit logs \| Track agents
-  and errors \| Use lightweight logging rather than paid observability.
-  \|
-
-| Agent \| Responsibility \|
-
-| --- \| --- \|
-
-| RFP Analysis Agent \| Understand the tender and extract structured
-  facts. \|
-
-| Requirement Agent \| Extract and classify mandatory/optional
-  requirements. \|
-
-| Technical Agent \| Propose architecture, technology and implementation
-  approach using retrieved evidence. \|
-
-| Business Agent \| Find relevant company capabilities, projects, team
-  and methodology. \|
-
-| Proposal Agent \| Compose proposal sections from verified inputs. \|
-
-| Compliance Agent \| Map every requirement to proposal evidence and
-  flag gaps. \|
-
-| Review Agent \| Find contradictions, unsupported claims and quality
-  issues. \|
-
-| Week \| Deliverable \|
-
-| --- \| --- \|
-
-| Week 1 \| Next.js foundation, auth, organization model, dashboard and
-  database schema. \|
-
-| Week 2 \| Knowledge base CRUD: projects, employees, technologies,
-  certifications. \|
-
-| Week 3 \| RFP upload, R2 storage, PDF extraction, chunking and
-  metadata. \|
-
-| Week 4 \| Embeddings, pgvector, semantic search, citations and RAG
-  evaluation. \|
-
-| Week 5 \| RFP Analysis Agent + Requirement Agent + requirement
-  dashboard. \|
-
-| Week 6 \| Technical, Business, Proposal, Compliance and Review agents.
-  \|
-
-| Week 7 \| Proposal editor, human approval, audit logs, DOCX export and
-  streaming. \|
-
-| Week 8 \| Cloud deployment, security hardening, evaluation, demo data
-  and documentation. \|
+-   Citation correctness and provenance linking.
+-   Unsupported-claim detection rate.
+-   Requirement coverage verification after proposal synthesis.
+-   Agent failure rate & retry resilience.
+-   RBAC security test suite: verify zero cross-tenant leakage and privilege escalation prevention.
+-   Average RAG latency and proposal-generation throughput.
+
+## 25. Portfolio & Production Demonstration Scenario
+
+-   **Company**: LankaTech Solutions (Sri Lankan Enterprise IT Firm).
+-   **Tender**: National Hospital Information Management System (ICTA / Ministry of Health).
+-   **RFP**: 50–100 page synthetic public tender document.
+-   **Knowledge Base**: 10 enterprise projects, 20 qualified personnel, technology stack, ISO/CMMI certifications.
+-   **Personas & Real-World Flow**:
+    1. *Bid Manager* uploads RFP, runs Multi-Agent Analysis, and reviews extracted requirements.
+    2. *Solution Architect* authors and regenerates technical sections, verifying architecture claims.
+    3. *Compliance Officer* reviews mandatory criteria compliance and flags missing certifications.
+    4. *Bid Manager* executes formal Human Sign-off with cryptographic timestamp and exports official PDF/DOCX.
+    5. *Auditor* inspects immutable audit logs and verifies document authenticity via the verification badge.
+
+## 26. Final System Architecture
+
+```
+User / Browser (Next.js 16 + React 19 + TailwindCSS)
+  │
+  ├── Dynamic RBAC UI Guards (useUserPermissions)
+  │
+  ▼ [JWT with Org ID & Roles]
+FastAPI AI Backend (Python 3.11+)
+  ├── RBAC & Permission Middleware (@require_permission)
+  ├── Collaborative Section Locking (Redis / Supabase)
+  │
+  ├── Multi-Agent Orchestrator
+  │     ├── RFP Analysis Agent
+  │     ├── Requirement Agent
+  │     ├── Technical Agent
+  │     ├── Business Agent
+  │     ├── Proposal Synthesis Agent
+  │     ├── Compliance Verification Agent
+  │     └── Review & Quality Agent
+  │
+  ├── Enterprise Knowledge Governance & Secret Scrubber
+  │
+  └── RAG Retrieval Engine (pgvector + Embeddings)
+        │
+        ▼
+Supabase PostgreSQL & Storage Layer
+  ├── Tenant-Isolated Tables with RLS Policies
+  ├── Cryptographic Hash-Chained Audit Logs
+  └── Cloudflare R2 / S3 Document Vault
+```
+
+## 27. Summary of System Layers & Technologies
+
+| Layer | Technology Choice | Enterprise Role | Security & Governance Focus |
+| --- | --- | --- | --- |
+| **Frontend** | Next.js 16 + TypeScript + Tailwind | Responsive App, Dashboard, Proposal Editor | Client-side RBAC guards, role-based conditional rendering. |
+| **Authentication & RBAC** | Supabase Auth + Custom JWT Claims | Multi-tenant auth, roles, permissions | Secure tokens, RLS enforcement, session refresh. |
+| **AI Backend** | FastAPI + Python 3.11 | API Router, Agent Orchestration, Exporters | `@require_permission` decorators, token validation, audit hooks. |
+| **Vector Database** | PostgreSQL + pgvector (Supabase) | Semantic storage, metadata-filtered search | Clearance-filtered vector matching, strict RLS isolation. |
+| **Multi-Agent Engine** | LangGraph / Native Python Orchestrator | Structured RFP extraction & synthesis | Evidence-backed prompt templates, deterministic JSON schemas. |
+| **Document Vault** | Cloudflare R2 / Supabase Storage | RFP PDFs, generated DOCX & PDF bids | Signed URLs, encrypted at rest, access-controlled buckets. |
+| **Audit & Integrity** | Postgres + SHA-256 Hashing | Immutable audit trail, e-signatures | Tamper-evident event chaining, electronic signature records. |
+| **Export Engine** | python-docx + ReportLab | Executive DOCX & PDF generation | Professional typography, verification QR code, evidence matrix. |
