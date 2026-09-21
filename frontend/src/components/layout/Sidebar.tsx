@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -66,23 +67,30 @@ export default function Sidebar() {
             gap: "10px",
           }}
         >
-          {/* Crest */}
+          {/* Logo */}
           <div
             style={{
               width: 38,
               height: 38,
-              borderRadius: "50%",
-              background: "var(--gov-gold)",
+              borderRadius: "8px",
+              background: "rgba(255,255,255,0.12)",
+              border: "1px solid rgba(255,255,255,0.2)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "12px",
-              fontWeight: 800,
-              color: "var(--gov-text-main)",
               flexShrink: 0,
+              overflow: "hidden",
+              padding: "2px",
             }}
           >
-            BP
+            <Image
+              src="/logo.png"
+              alt="BidPilot AI Logo"
+              width={34}
+              height={34}
+              style={{ objectFit: "contain", width: "100%", height: "100%" }}
+              priority
+            />
           </div>
           <div>
             <div style={{ color: "#fff", fontWeight: 700, fontSize: "13.5px", lineHeight: 1.2 }}>
