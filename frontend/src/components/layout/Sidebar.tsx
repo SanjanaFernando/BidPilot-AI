@@ -68,30 +68,14 @@ export default function Sidebar() {
           }}
         >
           {/* Logo */}
-          <div
-            style={{
-              width: 38,
-              height: 38,
-              borderRadius: "8px",
-              background: "rgba(255,255,255,0.12)",
-              border: "1px solid rgba(255,255,255,0.2)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-              overflow: "hidden",
-              padding: "2px",
-            }}
-          >
-            <Image
-              src="/logo.png"
-              alt="BidPilot AI Logo"
-              width={34}
-              height={34}
-              style={{ objectFit: "contain", width: "100%", height: "100%" }}
-              priority
-            />
-          </div>
+          <Image
+            src="/logo.png"
+            alt="BidPilot AI Logo"
+            width={38}
+            height={38}
+            style={{ objectFit: "contain", flexShrink: 0 }}
+            priority
+          />
           <div>
             <div style={{ color: "#fff", fontWeight: 700, fontSize: "13.5px", lineHeight: 1.2 }}>
               BidPilot AI
