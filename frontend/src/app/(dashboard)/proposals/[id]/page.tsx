@@ -48,6 +48,7 @@ import { FindEvidenceModal } from "@/components/proposals/FindEvidenceModal";
 import { SectionSourcesDrawer } from "@/components/proposals/SectionSourcesDrawer";
 import { claimsService, type CitationItem } from "@/lib/claims-service";
 import { complianceService, type GovernanceStatus } from "@/lib/compliance-service";
+import { useUserPermissions } from "@/hooks/useUserPermissions";
 
 interface DisplaySection {
   id: string;
@@ -94,6 +95,14 @@ export default function ProposalEditorPage({
 
   // Document View Mode (Executive Formatted Word-style vs Markdown)
   const [viewMode, setViewMode] = useState<"document" | "markdown">("document");
+
+  // Role & Permissions check (Phase 12 RBAC)
+  const { hasPermission, roleDef } = useUserPermissions();
+  const canEditSection = hasPermission("proposals:edit_own") || hasPermission("proposals:edit_any");
+  const canSynthesize = hasPermission("agents:run") || hasPermission("proposals:create");
+  const canApproveSection = hasPermission("proposals:approve_section");
+  const canSignOff = hasPermission("proposals:sign_off");
+  const canExport = hasPermission("proposals:export");
 
   // Load tender metadata
   useEffect(() => {
@@ -520,8 +529,18 @@ export default function ProposalEditorPage({
 
           {/* Run Multi-Agent Pipeline */}
           <Button
-            onClick={() => setShowPipelineModal(true)}
-            className="h-8 gap-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 px-3 text-xs font-bold text-white hover:from-indigo-500 hover:to-purple-500 shadow-sm"
+            onClick={() => canSynthesize && setShowPipelineModal(true)}
+            disabled={!canSynthesize}
+            title={
+              !canSynthesize
+                ? `Running pipeline requires 'agents:run' permission (Disabled for ${roleDef.displayName})`
+                : "Run AI Generation Pipeline"
+            }
+            className={`h-8 gap-1.5 px-3 text-xs font-bold text-white shadow-sm transition-all ${
+              canSynthesize
+                ? "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 cursor-pointer"
+                : "bg-slate-300 text-slate-500 cursor-not-allowed opacity-60 pointer-events-auto"
+            }`}
           >
             <Zap size={13} />
             Re-Synthesize Pipeline
@@ -530,9 +549,18 @@ export default function ProposalEditorPage({
           {/* Phase 11: Export DOCX */}
           <Button
             variant="outline"
-            disabled={exportingDocx}
-            className="h-8 gap-1.5 border-[#CBD5E1] bg-white px-3 text-xs font-semibold text-[#1E252D] hover:bg-[#F1F5F9]"
-            onClick={handleExportDocx}
+            disabled={exportingDocx || !canExport}
+            title={
+              !canExport
+                ? `Exporting requires 'proposals:export' permission (Disabled for ${roleDef.displayName})`
+                : "Export to DOCX"
+            }
+            className={`h-8 gap-1.5 border-[#CBD5E1] bg-white px-3 text-xs font-semibold text-[#1E252D] ${
+              canExport
+                ? "hover:bg-[#F1F5F9] cursor-pointer"
+                : "cursor-not-allowed opacity-50 pointer-events-auto"
+            }`}
+            onClick={() => canExport && handleExportDocx()}
           >
             {exportingDocx ? (
               <Loader2 size={13} className="animate-spin" />
@@ -545,9 +573,18 @@ export default function ProposalEditorPage({
           {/* Phase 11: Export PDF */}
           <Button
             variant="outline"
-            disabled={exportingPdf}
-            className="h-8 gap-1.5 border-[#CBD5E1] bg-white px-3 text-xs font-semibold text-[#7A1C2C] hover:bg-rose-50"
-            onClick={handleExportPdf}
+            disabled={exportingPdf || !canExport}
+            title={
+              !canExport
+                ? `Exporting requires 'proposals:export' permission (Disabled for ${roleDef.displayName})`
+                : "Export to PDF"
+            }
+            className={`h-8 gap-1.5 border-[#CBD5E1] bg-white px-3 text-xs font-semibold text-[#7A1C2C] ${
+              canExport
+                ? "hover:bg-rose-50 cursor-pointer"
+                : "cursor-not-allowed opacity-50 pointer-events-auto"
+            }`}
+            onClick={() => canExport && handleExportPdf()}
           >
             {exportingPdf ? (
               <Loader2 size={13} className="animate-spin" />
@@ -560,8 +597,19 @@ export default function ProposalEditorPage({
           {/* Markdown Download */}
           <Button
             variant="outline"
-            className="h-8 gap-1.5 border-[#E2E8F0] px-2.5 text-xs font-semibold text-[#64748B] hover:bg-[#F1F5F9]"
+            disabled={!canExport}
+            title={
+              !canExport
+                ? `Exporting requires 'proposals:export' permission (Disabled for ${roleDef.displayName})`
+                : "Download Markdown"
+            }
+            className={`h-8 gap-1.5 border-[#E2E8F0] px-2.5 text-xs font-semibold text-[#64748B] ${
+              canExport
+                ? "hover:bg-[#F1F5F9] cursor-pointer"
+                : "cursor-not-allowed opacity-50 pointer-events-auto"
+            }`}
             onClick={() => {
+              if (!canExport) return;
               const fullText = sections
                 .map((s) => `# ${s.title}\n\n${s.content}`)
                 .join("\n\n---\n\n");
@@ -583,8 +631,18 @@ export default function ProposalEditorPage({
             </div>
           ) : (
             <Button
-              onClick={() => setShowSignOffModal(true)}
-              className="h-8 gap-1.5 bg-gradient-to-r from-[#7A1C2C] to-[#921E33] px-3 text-xs font-bold text-white hover:bg-[#631724] shadow-sm"
+              onClick={() => canSignOff && setShowSignOffModal(true)}
+              disabled={!canSignOff}
+              title={
+                !canSignOff
+                  ? `Sign-Off requires 'proposals:sign_off' permission (Disabled for ${roleDef.displayName})`
+                  : "Submit authorized human sign-off"
+              }
+              className={`h-8 gap-1.5 px-3 text-xs font-bold text-white shadow-sm transition-all ${
+                canSignOff
+                  ? "bg-gradient-to-r from-[#7A1C2C] to-[#921E33] hover:bg-[#631724] cursor-pointer"
+                  : "bg-slate-300 text-slate-500 cursor-not-allowed opacity-60 pointer-events-auto"
+              }`}
             >
               <CheckCircle size={13} /> Human Sign-Off
             </Button>
@@ -735,18 +793,38 @@ export default function ProposalEditorPage({
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setShowEditModal(true)}
-                  className="h-8 gap-1 border-slate-300 text-slate-800 text-xs font-bold hover:bg-slate-100"
+                  disabled={!canEditSection}
+                  onClick={() => canEditSection && setShowEditModal(true)}
+                  title={
+                    !canEditSection
+                      ? `Editing requires 'proposals:edit_own' permission (Read-only for ${roleDef.displayName})`
+                      : "Edit section content"
+                  }
+                  className={`h-8 gap-1 border-slate-300 text-xs font-bold ${
+                    canEditSection
+                      ? "text-slate-800 hover:bg-slate-100 cursor-pointer"
+                      : "text-slate-400 border-slate-200 cursor-not-allowed opacity-50 pointer-events-auto"
+                  }`}
                 >
-                  <FileEdit size={12} className="text-[#7A1C2C]" /> Edit
+                  <FileEdit size={12} className={canEditSection ? "text-[#7A1C2C]" : "text-slate-400"} /> Edit
                 </Button>
 
                 {/* Phase 11 Action 2: Regenerate Section with AI */}
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setShowRegenerateModal(true)}
-                  className="h-8 gap-1 border-indigo-200 bg-indigo-50/50 text-indigo-700 text-xs font-bold hover:bg-indigo-100"
+                  disabled={!canEditSection}
+                  onClick={() => canEditSection && setShowRegenerateModal(true)}
+                  title={
+                    !canEditSection
+                      ? `Regeneration requires 'proposals:edit_own' permission (Disabled for ${roleDef.displayName})`
+                      : "Regenerate section with AI"
+                  }
+                  className={`h-8 gap-1 text-xs font-bold ${
+                    canEditSection
+                      ? "border-indigo-200 bg-indigo-50/50 text-indigo-700 hover:bg-indigo-100 cursor-pointer"
+                      : "border-slate-200 bg-slate-50 text-slate-400 cursor-not-allowed opacity-50 pointer-events-auto"
+                  }`}
                 >
                   <RefreshCw size={12} /> Regenerate
                 </Button>
@@ -756,7 +834,7 @@ export default function ProposalEditorPage({
                   variant="outline"
                   size="sm"
                   onClick={() => setShowFindEvidenceModal(true)}
-                  className="h-8 gap-1 border-emerald-200 bg-emerald-50/50 text-emerald-800 text-xs font-bold hover:bg-emerald-100"
+                  className="h-8 gap-1 border-emerald-200 bg-emerald-50/50 text-emerald-800 text-xs font-bold hover:bg-emerald-100 cursor-pointer"
                 >
                   <Search size={12} /> Find Evidence
                 </Button>
@@ -766,7 +844,7 @@ export default function ProposalEditorPage({
                   variant="outline"
                   size="sm"
                   onClick={() => setShowSourcesDrawer(true)}
-                  className="h-8 gap-1 border-purple-200 bg-purple-50/50 text-purple-800 text-xs font-bold hover:bg-purple-100"
+                  className="h-8 gap-1 border-purple-200 bg-purple-50/50 text-purple-800 text-xs font-bold hover:bg-purple-100 cursor-pointer"
                 >
                   <BookOpen size={12} /> Sources
                 </Button>
@@ -779,7 +857,7 @@ export default function ProposalEditorPage({
                     const firstClaim = activeSection.content.split("\n").find((l) => l.trim().length > 20) || activeSection.title;
                     triggerProveClaim(firstClaim);
                   }}
-                  className="h-8 gap-1 border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-100"
+                  className="h-8 gap-1 border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-100 cursor-pointer"
                 >
                   <Sparkles size={12} className="text-amber-500" /> Prove Claim
                 </Button>
@@ -790,15 +868,35 @@ export default function ProposalEditorPage({
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => requestRevision(activeSection.id)}
-                      className="h-8 gap-1 border-amber-300 bg-amber-50 text-xs font-semibold text-amber-800 hover:bg-amber-100"
+                      disabled={!canApproveSection}
+                      onClick={() => canApproveSection && requestRevision(activeSection.id)}
+                      title={
+                        !canApproveSection
+                          ? `Requesting revision requires 'proposals:approve_section' permission (Disabled for ${roleDef.displayName})`
+                          : "Request revision on this section"
+                      }
+                      className={`h-8 gap-1 text-xs font-semibold ${
+                        canApproveSection
+                          ? "border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100 cursor-pointer"
+                          : "border-slate-200 bg-slate-50 text-slate-400 cursor-not-allowed opacity-50 pointer-events-auto"
+                      }`}
                     >
-                      <AlertCircle size={12} className="text-amber-600" /> Revision
+                      <AlertCircle size={12} className={canApproveSection ? "text-amber-600" : "text-slate-400"} /> Revision
                     </Button>
                     <Button
                       size="sm"
-                      onClick={() => approve(activeSection.id)}
-                      className="h-8 gap-1 bg-[#15803D] text-xs font-semibold text-white hover:bg-[#166534]"
+                      disabled={!canApproveSection}
+                      onClick={() => canApproveSection && approve(activeSection.id)}
+                      title={
+                        !canApproveSection
+                          ? `Approving section requires 'proposals:approve_section' permission (Disabled for ${roleDef.displayName})`
+                          : "Approve this section"
+                      }
+                      className={`h-8 gap-1 text-xs font-semibold text-white ${
+                        canApproveSection
+                          ? "bg-[#15803D] hover:bg-[#166534] cursor-pointer"
+                          : "bg-slate-300 text-slate-500 cursor-not-allowed opacity-60 pointer-events-auto"
+                      }`}
                     >
                       <ThumbsUp size={12} /> Approve
                     </Button>
@@ -811,8 +909,18 @@ export default function ProposalEditorPage({
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => requestRevision(activeSection.id)}
-                      className="h-7 text-[11px] text-slate-500 hover:text-amber-700"
+                      disabled={!canApproveSection}
+                      onClick={() => canApproveSection && requestRevision(activeSection.id)}
+                      title={
+                        !canApproveSection
+                          ? `Reopening section requires 'proposals:approve_section' permission (Disabled for ${roleDef.displayName})`
+                          : "Reopen section for editing"
+                      }
+                      className={`h-7 text-[11px] ${
+                        canApproveSection
+                          ? "text-slate-500 hover:text-amber-700 cursor-pointer"
+                          : "text-slate-300 cursor-not-allowed pointer-events-auto"
+                      }`}
                     >
                       Reopen
                     </Button>

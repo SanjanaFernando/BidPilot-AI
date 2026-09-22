@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     # --- Supabase ---
     supabase_url: str = ""
     supabase_service_key: str = ""
+    supabase_jwt_secret: str = ""  # For Phase 12 JWT Bearer verification
     database_url: str = ""
 
     # --- Google Gemini ---
@@ -33,6 +34,9 @@ class Settings(BaseSettings):
 
     # --- CORS ---
     frontend_url: str = "http://localhost:3000"
+
+    # --- RBAC ---
+    rbac_strict_mode: bool = False  # When False, missing JWT falls back to demo org_admin in dev
 
     # --- App ---
     app_env: str = "development"

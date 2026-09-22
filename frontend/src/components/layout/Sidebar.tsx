@@ -45,12 +45,18 @@ const NAV = [
   },
   {
     label: "System",
-    items: [{ href: "/settings", label: "Settings", icon: Settings }],
+    items: [
+      { href: "/settings/team", label: "Team & RBAC", icon: ShieldCheck },
+      { href: "/settings", label: "Settings", icon: Settings },
+    ],
   },
 ];
 
+import { useUserPermissions } from "@/hooks/useUserPermissions";
+
 export default function Sidebar() {
   const pathname = usePathname();
+  const { fullName, roleDef, avatarInitials } = useUserPermissions();
   const isActive = (href: string) =>
     pathname === href || (href !== "/" && pathname.startsWith(href));
 
@@ -73,7 +79,7 @@ export default function Sidebar() {
             alt="BidPilot AI Logo"
             width={38}
             height={38}
-            style={{ objectFit: "contain", flexShrink: 0 }}
+            style={{ width: "38px", height: "38px", objectFit: "contain", flexShrink: 0 }}
             priority
           />
           <div>
@@ -151,9 +157,9 @@ export default function Sidebar() {
                 background: "#22C55E",
               }}
             />
-            Phase 11 — Completed
+            Phase 12 — RBAC Active
           </span>
-          <span style={{ fontSize: "9.5px", opacity: 0.6 }}>v1.0</span>
+          <span style={{ fontSize: "9.5px", opacity: 0.6 }}>v0.12</span>
         </Link>
       </div>
 
@@ -165,17 +171,17 @@ export default function Sidebar() {
               width: 30,
               height: 30,
               borderRadius: "50%",
-              background: "var(--gov-gold)",
+              background: roleDef.color || "var(--gov-gold)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               fontSize: "10.5px",
               fontWeight: 700,
-              color: "var(--gov-text-main)",
+              color: roleDef.textColor || "var(--gov-text-main)",
               flexShrink: 0,
             }}
           >
-            AP
+            {avatarInitials}
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div
@@ -189,10 +195,10 @@ export default function Sidebar() {
                 whiteSpace: "nowrap",
               }}
             >
-              Ashan Perera
+              {fullName}
             </div>
             <div style={{ color: "rgba(255,255,255,0.4)", fontSize: "10.5px" }}>
-              Proposal Manager
+              {roleDef.icon} {roleDef.displayName}
             </div>
           </div>
           <Link

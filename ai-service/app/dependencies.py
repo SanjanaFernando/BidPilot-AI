@@ -33,3 +33,11 @@ def get_supabase() -> Client:
         )
     return create_client(settings.supabase_url, settings.supabase_service_key)
 
+
+# Re-export get_current_user and UserContext from RBAC engine for convenience
+def get_current_user():
+    """Convenience alias pointing to app.rbac.get_current_user."""
+    from app.rbac import get_current_user as _get_user
+    return _get_user
+
+

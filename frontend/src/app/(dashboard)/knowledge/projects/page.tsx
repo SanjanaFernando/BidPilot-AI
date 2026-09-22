@@ -21,8 +21,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ProjectsService, ProjectItem } from "@/lib/knowledge-service";
+import { useUserPermissions } from "@/hooks/useUserPermissions";
 
 export default function ProjectsPage() {
+  const { hasPermission, roleDef } = useUserPermissions();
+  const canCreate = hasPermission("knowledge:create");
+  const canEdit = hasPermission("knowledge:edit");
+  const canDelete = hasPermission("knowledge:delete");
+
   const [projects, setProjects] = useState<ProjectItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -194,8 +200,18 @@ export default function ProjectsPage() {
           </div>
         </div>
         <Button
-          onClick={handleOpenAdd}
-          className="h-8 gap-1.5 border-none bg-[#DDA625] px-3 text-xs font-bold text-[#1E252D] shadow-none hover:bg-[#C8951E]"
+          disabled={!canCreate}
+          onClick={() => canCreate && handleOpenAdd()}
+          title={
+            !canCreate
+              ? `Adding projects requires 'knowledge:create' permission (Disabled for ${roleDef.displayName})`
+              : "Add Project"
+          }
+          className={`h-8 gap-1.5 border-none px-3 text-xs font-bold text-[#1E252D] shadow-none ${
+            canCreate
+              ? "bg-[#DDA625] hover:bg-[#C8951E] cursor-pointer"
+              : "bg-slate-200 text-slate-400 cursor-not-allowed opacity-60 pointer-events-auto"
+          }`}
         >
           <Plus size={14} /> Add Project
         </Button>
@@ -354,21 +370,39 @@ export default function ProjectsPage() {
                           <button
                             onClick={() => handleViewDetails(p)}
                             title="View Case Study"
-                            className="rounded p-1 text-[#64748B] hover:bg-[#F1F5F9] hover:text-[#1E252D]"
+                            className="rounded p-1 text-[#64748B] hover:bg-[#F1F5F9] hover:text-[#1E252D] cursor-pointer"
                           >
                             <Eye size={14} />
                           </button>
                           <button
-                            onClick={() => handleOpenEdit(p)}
-                            title="Edit Project"
-                            className="rounded p-1 text-[#64748B] hover:bg-[#F1F5F9] hover:text-[#7A1C2C]"
+                            disabled={!canEdit}
+                            onClick={() => canEdit && handleOpenEdit(p)}
+                            title={
+                              !canEdit
+                                ? `Editing projects requires 'knowledge:edit' permission (Disabled for ${roleDef.displayName})`
+                                : "Edit Project"
+                            }
+                            className={`rounded p-1 transition-all ${
+                              canEdit
+                                ? "text-[#64748B] hover:bg-[#F1F5F9] hover:text-[#7A1C2C] cursor-pointer"
+                                : "text-slate-300 cursor-not-allowed opacity-40 pointer-events-auto"
+                            }`}
                           >
                             <Edit2 size={14} />
                           </button>
                           <button
-                            onClick={() => handleDelete(p.id)}
-                            title="Delete Project"
-                            className="rounded p-1 text-[#64748B] hover:bg-[#FEE2E2] hover:text-[#DC2626]"
+                            disabled={!canDelete}
+                            onClick={() => canDelete && handleDelete(p.id)}
+                            title={
+                              !canDelete
+                                ? `Deleting projects requires 'knowledge:delete' permission (Disabled for ${roleDef.displayName})`
+                                : "Delete Project"
+                            }
+                            className={`rounded p-1 transition-all ${
+                              canDelete
+                                ? "text-[#64748B] hover:bg-[#FEE2E2] hover:text-[#DC2626] cursor-pointer"
+                                : "text-slate-300 cursor-not-allowed opacity-40 pointer-events-auto"
+                            }`}
                           >
                             <Trash2 size={14} />
                           </button>

@@ -1,6 +1,6 @@
 /**
- * BidPilot AI - Database & Domain TypeScript Type Definitions (Phase 2)
- * Matches the PostgreSQL multi-tenant schema with 15 tables and Supabase client types.
+ * BidPilot AI - Database & Domain TypeScript Type Definitions (Phase 2 + Phase 12 RBAC)
+ * Matches the PostgreSQL multi-tenant schema with 22 tables and Supabase client types.
  */
 
 // ==============================================================================
@@ -9,8 +9,14 @@
 
 export type OrganizationPlan = "free" | "pro" | "enterprise";
 
+/** Phase 12: Enterprise role hierarchy */
 export type UserRole =
-  "owner" | "admin" | "bid_manager" | "technical_writer" | "reviewer" | "member";
+  | "org_admin"         // VP / Operations Director
+  | "bid_manager"       // Proposal Lead / Capture Manager
+  | "solution_architect" // Technical Lead / Enterprise Architect
+  | "compliance_officer" // Legal Counsel / Risk Manager
+  | "domain_sme"        // Senior Engineer / Project Manager
+  | "executive_viewer"; // C-Level / External Auditor (read-only)
 
 export type AvailabilityStatus = "available" | "allocated" | "partially_available";
 
@@ -366,4 +372,106 @@ export interface VectorMatchResult {
   section_heading: string | null;
   metadata: Record<string, unknown>;
   similarity: number;
+}
+
+// ==============================================================================
+// Phase 12: RBAC Entities
+// ==============================================================================
+
+/** System-defined role */
+export interface Role {
+  id: string;
+  name: UserRole;
+  display_name: string;
+  description: string | null;
+  is_system_role: boolean;
+  color: string;
+  created_at: string;
+}
+
+/** Fine-grained permission code */
+export interface Permission {
+  id: string;
+  code: string;
+  category: string;
+  description: string | null;
+  created_at: string;
+}
+
+/** Many-to-many: role → permission */
+export interface RolePermission {
+  role_id: string;
+  permission_id: string;
+}
+
+/** Organization member with role assignment */
+export type MemberStatus = "active" | "invited" | "suspended";
+
+export interface OrganizationMember {
+  id: string;
+  organization_id: string;
+  user_id: string;
+  role_id: string;
+  status: MemberStatus;
+  invited_by: string | null;
+  invited_at: string | null;
+  joined_at: string | null;
+  created_at: string;
+  updated_at: string;
+  // Joined fields (from roles table)
+  role_name?: UserRole;
+  role_display_name?: string;
+  role_color?: string;
+  // Joined fields (from users table)
+  full_name?: string;
+  email?: string;
+  avatar_url?: string | null;
+  job_title?: string | null;
+}
+
+/** Per-tender collaborator with specific role */
+export interface TenderCollaborator {
+  id: string;
+  tender_id: string;
+  user_id: string;
+  organization_id: string;
+  assigned_role: UserRole;
+  can_sign_off: boolean;
+  assigned_at: string;
+  assigned_by: string | null;
+  // Joined
+  full_name?: string;
+  email?: string;
+}
+
+/** Section-level work assignment */
+export type SectionAssignmentStatus =
+  | "assigned" | "in_progress" | "submitted" | "approved" | "rejected";
+
+export interface SectionAssignment {
+  id: string;
+  section_id: string;
+  organization_id: string;
+  assigned_user_id: string;
+  assigned_by: string | null;
+  status: SectionAssignmentStatus;
+  due_date: string | null;
+  review_notes: string | null;
+  submitted_at: string | null;
+  reviewed_at: string | null;
+  created_at: string;
+  updated_at: string;
+  // Joined
+  full_name?: string;
+  email?: string;
+}
+
+/** Optimistic concurrency lock on a proposal section */
+export interface SectionLock {
+  section_id: string;
+  organization_id: string;
+  locked_by_user_id: string;
+  locked_by_name: string | null;
+  locked_at: string;
+  expires_at: string;
 }

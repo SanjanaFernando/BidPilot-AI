@@ -73,6 +73,7 @@ import {
 import RequirementEvidenceDrawer from "@/components/tenders/RequirementEvidenceDrawer";
 import RequirementVerifyModal from "@/components/tenders/RequirementVerifyModal";
 import MultiAgentWorkflowModal from "@/components/tenders/MultiAgentWorkflowModal";
+import { useUserPermissions } from "@/hooks/useUserPermissions";
 
 
 // ---------------------------------------------------------------------------
@@ -739,6 +740,12 @@ export default function TenderDetailPage({
 }) {
   const { id } = use(params);
   const router = useRouter();
+  const { hasPermission, roleDef } = useUserPermissions();
+  const canRunAgents = hasPermission("agents:run");
+  const canVerifyCompliance = hasPermission("compliance:verify");
+  const canEditRequirements = hasPermission("requirements:edit");
+  const canDeleteTender = hasPermission("tenders:delete");
+
   const [tender, setTender] = useState<TenderItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
@@ -1070,8 +1077,18 @@ export default function TenderDetailPage({
             <div className="flex flex-wrap items-center gap-3">
               <Button
                 id="run-ai-analysis-btn"
-                onClick={() => setShowAnalysisModal(true)}
-                className="h-9 gap-2 bg-[#7A1C2C] px-4 text-xs font-semibold text-white hover:bg-[#631724]"
+                disabled={!canRunAgents}
+                onClick={() => canRunAgents && setShowAnalysisModal(true)}
+                title={
+                  !canRunAgents
+                    ? `Running RFP Analysis requires 'agents:run' permission (Disabled for ${roleDef.displayName})`
+                    : undefined
+                }
+                className={`h-9 gap-2 px-4 text-xs font-semibold ${
+                  canRunAgents
+                    ? "bg-[#7A1C2C] text-white hover:bg-[#631724] cursor-pointer"
+                    : "bg-slate-200 text-slate-400 cursor-not-allowed opacity-60 pointer-events-auto"
+                }`}
               >
                 <Bot size={14} />
                 {analysis ? "Re-Analyze RFP" : "Run AI RFP Analysis"}
@@ -1079,8 +1096,18 @@ export default function TenderDetailPage({
 
               <Button
                 id="run-ai-verify-btn"
-                onClick={() => setShowVerifyModal(true)}
-                className="h-9 gap-2 border-none bg-gradient-to-r from-[#DDA625] to-[#B45309] px-4 text-xs font-bold text-white shadow-xs hover:opacity-90"
+                disabled={!canRunAgents && !canVerifyCompliance}
+                onClick={() => (canRunAgents || canVerifyCompliance) && setShowVerifyModal(true)}
+                title={
+                  !canRunAgents && !canVerifyCompliance
+                    ? `Running verification requires 'agents:run' or 'compliance:verify' permission (Disabled for ${roleDef.displayName})`
+                    : undefined
+                }
+                className={`h-9 gap-2 px-4 text-xs font-bold ${
+                  canRunAgents || canVerifyCompliance
+                    ? "border-none bg-gradient-to-r from-[#DDA625] to-[#B45309] text-white shadow-xs hover:opacity-90 cursor-pointer"
+                    : "bg-slate-200 text-slate-400 cursor-not-allowed opacity-60 pointer-events-auto"
+                }`}
               >
                 <Sparkles size={14} />
                 Run Requirement Verification Agent
@@ -1088,8 +1115,18 @@ export default function TenderDetailPage({
 
               <Button
                 id="run-multi-agent-pipeline-btn"
-                onClick={() => setShowPipelineModal(true)}
-                className="h-9 gap-2 border-none bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 px-4 text-xs font-bold text-white shadow-md shadow-indigo-500/20 hover:opacity-95"
+                disabled={!canRunAgents}
+                onClick={() => canRunAgents && setShowPipelineModal(true)}
+                title={
+                  !canRunAgents
+                    ? `Running multi-agent pipeline requires 'agents:run' permission (Disabled for ${roleDef.displayName})`
+                    : undefined
+                }
+                className={`h-9 gap-2 px-4 text-xs font-bold ${
+                  canRunAgents
+                    ? "border-none bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 text-white shadow-md shadow-indigo-500/20 hover:opacity-95 cursor-pointer"
+                    : "bg-slate-200 text-slate-400 cursor-not-allowed opacity-60 pointer-events-auto"
+                }`}
               >
                 <Zap size={14} />
                 Run Multi-Agent Proposal Pipeline
@@ -1111,9 +1148,18 @@ export default function TenderDetailPage({
 
               <Button
                 variant="outline"
-                onClick={handleDeleteTender}
-                disabled={deleting}
-                className="ml-auto h-9 gap-2 border-red-200 text-xs font-semibold text-red-600 hover:bg-red-50 hover:text-red-700"
+                onClick={() => canDeleteTender && handleDeleteTender()}
+                disabled={deleting || !canDeleteTender}
+                title={
+                  !canDeleteTender
+                    ? `Deleting tenders requires 'tenders:delete' permission (Disabled for ${roleDef.displayName})`
+                    : undefined
+                }
+                className={`ml-auto h-9 gap-2 text-xs font-semibold ${
+                  canDeleteTender
+                    ? "border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 cursor-pointer"
+                    : "border-slate-200 text-slate-300 cursor-not-allowed opacity-40 pointer-events-auto"
+                }`}
               >
                 <Trash2 size={14} />
                 {deleting ? "Deleting…" : "Delete"}
@@ -1218,8 +1264,18 @@ export default function TenderDetailPage({
                     </div>
                   </div>
                   <Button
-                    onClick={() => setShowAnalysisModal(true)}
-                    className="h-9 shrink-0 bg-[#7A1C2C] px-4 text-xs font-semibold text-white hover:bg-[#631724]"
+                    disabled={!canRunAgents}
+                    onClick={() => canRunAgents && setShowAnalysisModal(true)}
+                    title={
+                      !canRunAgents
+                        ? `Running analysis requires 'agents:run' permission (Disabled for ${roleDef.displayName})`
+                        : undefined
+                    }
+                    className={`h-9 shrink-0 px-4 text-xs font-semibold ${
+                      canRunAgents
+                        ? "bg-[#7A1C2C] text-white hover:bg-[#631724] cursor-pointer"
+                        : "bg-slate-200 text-slate-400 cursor-not-allowed opacity-60 pointer-events-auto"
+                    }`}
                   >
                     Start Analysis
                   </Button>
@@ -1247,8 +1303,18 @@ export default function TenderDetailPage({
                   </p>
                 </div>
                 <Button
-                  onClick={() => setShowPipelineModal(true)}
-                  className="h-9 shrink-0 gap-1.5 bg-gradient-to-r from-indigo-500 to-purple-600 px-4 text-xs font-bold text-white hover:from-indigo-400 hover:to-purple-500 shadow-lg shadow-indigo-500/30 border border-indigo-400/30"
+                  disabled={!canRunAgents}
+                  onClick={() => canRunAgents && setShowPipelineModal(true)}
+                  title={
+                    !canRunAgents
+                      ? `Running multi-agent pipeline requires 'agents:run' permission (Disabled for ${roleDef.displayName})`
+                      : undefined
+                  }
+                  className={`h-9 shrink-0 gap-1.5 px-4 text-xs font-bold border ${
+                    canRunAgents
+                      ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-400 hover:to-purple-500 shadow-lg shadow-indigo-500/30 border-indigo-400/30 cursor-pointer"
+                      : "bg-slate-700 text-slate-400 border-slate-600 cursor-not-allowed opacity-60 pointer-events-auto"
+                  }`}
                 >
                   <Zap size={14} />
                   Launch Multi-Agent Pipeline
@@ -1322,9 +1388,19 @@ export default function TenderDetailPage({
               {/* Action Buttons */}
               <div className="flex items-center gap-2">
                 <Button
-                  onClick={() => setShowVerifyModal(true)}
+                  disabled={!canRunAgents && !canVerifyCompliance}
+                  onClick={() => (canRunAgents || canVerifyCompliance) && setShowVerifyModal(true)}
+                  title={
+                    !canRunAgents && !canVerifyCompliance
+                      ? `AI verification requires 'agents:run' or 'compliance:verify' permission (Disabled for ${roleDef.displayName})`
+                      : undefined
+                  }
                   size="sm"
-                  className="h-8 gap-1.5 bg-[#7A1C2C] px-3 text-xs font-semibold text-white hover:bg-[#631724]"
+                  className={`h-8 gap-1.5 px-3 text-xs font-semibold ${
+                    canRunAgents || canVerifyCompliance
+                      ? "bg-[#7A1C2C] text-white hover:bg-[#631724] cursor-pointer"
+                      : "bg-slate-200 text-slate-400 cursor-not-allowed opacity-60 pointer-events-auto"
+                  }`}
                 >
                   <Bot size={13} /> Run AI Verification
                 </Button>
@@ -1469,11 +1545,21 @@ export default function TenderDetailPage({
                               {/* Interactive Inline Status Selector */}
                               <select
                                 value={req.status}
-                                disabled={isUpdating}
+                                disabled={isUpdating || !canEditRequirements}
                                 onChange={(e) =>
+                                  canEditRequirements &&
                                   handleInlineStatusChange(req.id, e.target.value as RequirementStatus)
                                 }
-                                className="rounded-lg border border-[#CBD5E1] bg-white px-2 py-1 text-[11px] font-bold text-[#1E252D] focus:border-[#7A1C2C] focus:outline-none cursor-pointer"
+                                title={
+                                  !canEditRequirements
+                                    ? `Changing status requires 'requirements:edit' permission (Disabled for ${roleDef.displayName})`
+                                    : undefined
+                                }
+                                className={`rounded-lg border border-[#CBD5E1] bg-white px-2 py-1 text-[11px] font-bold text-[#1E252D] focus:border-[#7A1C2C] focus:outline-none ${
+                                  canEditRequirements && !isUpdating
+                                    ? "cursor-pointer"
+                                    : "cursor-not-allowed opacity-60 pointer-events-auto"
+                                }`}
                               >
                                 <option value="covered">✓ Covered</option>
                                 <option value="partially_covered">⚠ Partial</option>
@@ -1510,7 +1596,7 @@ export default function TenderDetailPage({
                                   onClick={() => setSelectedReqForEvidence(req)}
                                   size="sm"
                                   variant="outline"
-                                  className="h-7 gap-1 border-[#CBD5E1] px-2 text-[10px] font-bold text-[#7A1C2C] hover:bg-[#FDF2F4]"
+                                  className="h-7 gap-1 border-[#CBD5E1] px-2 text-[10px] font-bold text-[#7A1C2C] hover:bg-[#FDF2F4] cursor-pointer"
                                   title="Signature Feature: Prove this claim with company evidence citations"
                                 >
                                   <Eye size={11} /> Evidence
@@ -1518,11 +1604,22 @@ export default function TenderDetailPage({
 
                                 {/* AI Verify Button */}
                                 <Button
-                                  onClick={() => handleSingleRowVerify(req)}
-                                  disabled={isUpdating}
+                                  onClick={() =>
+                                    (canRunAgents || canVerifyCompliance) &&
+                                    handleSingleRowVerify(req)
+                                  }
+                                  disabled={isUpdating || (!canRunAgents && !canVerifyCompliance)}
                                   size="sm"
-                                  className="h-7 w-7 p-0 bg-[#F1F5F9] text-[#475569] hover:bg-[#7A1C2C] hover:text-white"
-                                  title="Run AI capability evaluation"
+                                  className={`h-7 w-7 p-0 transition-all ${
+                                    (canRunAgents || canVerifyCompliance) && !isUpdating
+                                      ? "bg-[#F1F5F9] text-[#475569] hover:bg-[#7A1C2C] hover:text-white cursor-pointer"
+                                      : "bg-slate-100 text-slate-300 cursor-not-allowed opacity-50 pointer-events-auto"
+                                  }`}
+                                  title={
+                                    !canRunAgents && !canVerifyCompliance
+                                      ? `AI evaluation requires 'agents:run' or 'compliance:verify' permission (Disabled for ${roleDef.displayName})`
+                                      : "Run AI capability evaluation"
+                                  }
                                 >
                                   {isUpdating ? (
                                     <Loader2 size={11} className="animate-spin" />

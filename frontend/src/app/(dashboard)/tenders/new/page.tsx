@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { TendersService } from "@/lib/tenders-service";
 import { uploadRFP, type UploadProgress, type UploadResult } from "@/lib/ai-service";
+import { useUserPermissions } from "@/hooks/useUserPermissions";
 
 // Demo org from seed data
 const DEMO_ORG_ID = "a0000000-0000-0000-0001-000000000001";
@@ -40,6 +41,8 @@ const PIPELINE_STEPS = [
 
 export default function NewTenderPage() {
   const router = useRouter();
+  const { hasPermission, roleDef } = useUserPermissions();
+  const canCreate = hasPermission("tenders:create");
   const [dragOver, setDragOver] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -196,6 +199,16 @@ export default function NewTenderPage() {
             <ArrowLeft size={14} /> Back to Tender Register
           </Link>
 
+          {/* Permission warning banner */}
+          {!canCreate && (
+            <div className="flex items-center gap-3 rounded-lg border border-amber-300 bg-amber-50 p-4 text-xs text-amber-900 shadow-xs">
+              <AlertCircle size={18} className="shrink-0 text-amber-600" />
+              <div>
+                <strong>Read-Only Mode:</strong> Your role ({roleDef.displayName}) does not have permission to register new tenders (requires <code className="bg-amber-100 px-1 py-0.5 rounded text-[11px] font-mono">tenders:create</code>). Actions are disabled.
+              </div>
+            </div>
+          )}
+
           {/* Info banner */}
           <Card className="border-l-4 border-[#E2E8F0] border-l-[#7A1C2C] bg-[#F7F9FB] shadow-none">
             <CardContent className="flex items-start gap-3 p-4">
@@ -222,20 +235,27 @@ export default function NewTenderPage() {
               </CardHeader>
               <CardContent className="p-6">
                 <div
-                  className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 text-center transition-colors ${
-                    dragOver
-                      ? "border-[#7A1C2C] bg-[#FDF3DA]/30"
-                      : file
-                        ? "border-[#15803D] bg-[#DCFCE7]/20"
-                        : "border-[#CBD5E1] bg-[#F8FAFC] hover:bg-[#F1F5F9]"
+                  className={`flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 text-center transition-colors ${
+                    !canCreate
+                      ? "border-slate-200 bg-slate-50 cursor-not-allowed opacity-60 pointer-events-auto"
+                      : dragOver
+                        ? "border-[#7A1C2C] bg-[#FDF3DA]/30 cursor-pointer"
+                        : file
+                          ? "border-[#15803D] bg-[#DCFCE7]/20 cursor-pointer"
+                          : "border-[#CBD5E1] bg-[#F8FAFC] hover:bg-[#F1F5F9] cursor-pointer"
                   }`}
                   onDragOver={(e) => {
+                    if (!canCreate) return;
                     e.preventDefault();
                     setDragOver(true);
                   }}
                   onDragLeave={() => setDragOver(false)}
-                  onDrop={handleDrop}
-                  onClick={() => document.getElementById("file-input")?.click()}
+                  onDrop={(e) => {
+                    if (!canCreate) return;
+                    handleDrop(e);
+                  }}
+                  onClick={() => canCreate && document.getElementById("file-input")?.click()}
+                  title={!canCreate ? `Uploading disabled for ${roleDef.displayName}` : undefined}
                 >
                   <input
                     id="file-input"
@@ -461,8 +481,17 @@ export default function NewTenderPage() {
               <Button
                 id="create-tender-btn"
                 type="submit"
-                disabled={isSubmitting}
-                className="h-9 gap-2 bg-[#7A1C2C] px-6 text-xs font-semibold text-white hover:bg-[#631724]"
+                disabled={isSubmitting || !canCreate}
+                title={
+                  !canCreate
+                    ? `Creating tenders requires 'tenders:create' permission (Disabled for ${roleDef.displayName})`
+                    : undefined
+                }
+                className={`h-9 gap-2 px-6 text-xs font-semibold ${
+                  canCreate && !isSubmitting
+                    ? "bg-[#7A1C2C] text-white hover:bg-[#631724] cursor-pointer"
+                    : "bg-slate-200 text-slate-400 cursor-not-allowed opacity-60 pointer-events-auto"
+                }`}
               >
                 {isSubmitting ? (
                   <>

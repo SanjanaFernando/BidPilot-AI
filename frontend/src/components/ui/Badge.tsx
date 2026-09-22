@@ -25,3 +25,6 @@ export default function Badge({ status }: { status: StatusKey }) {
   const entry = MAP[status] ?? { cls: "badge-neutral" };
   return <span className={`status-badge ${entry.cls}`}>{entry.label ?? status}</span>;
 }
+
+export { Badge };
+

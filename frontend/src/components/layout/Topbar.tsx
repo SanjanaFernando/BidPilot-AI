@@ -6,13 +6,36 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Bell, Search, Plus, ChevronRight } from "lucide-react";
 
+import { useUserPermissions } from "@/hooks/useUserPermissions";
+
+import { PermissionCode } from "@/lib/rbac";
+
 interface TopbarProps {
   title: string;
   breadcrumb?: string[];
-  action?: { label: string; href?: string; onClick?: () => void };
+  action?: {
+    label: string;
+    href?: string;
+    onClick?: () => void;
+    permission?: PermissionCode;
+  };
 }
 
 export default function Topbar({ title, breadcrumb, action }: TopbarProps) {
+  const { roleDef, fullName, avatarInitials, hasPermission } = useUserPermissions();
+
+  // Auto-detect permission if not explicitly provided
+  let isActionAllowed = true;
+  if (action) {
+    if (action.permission) {
+      isActionAllowed = hasPermission(action.permission);
+    } else if (action.label.toLowerCase().includes("tender")) {
+      isActionAllowed = hasPermission("tenders:create");
+    } else if (action.label.toLowerCase().includes("project") || action.label.toLowerCase().includes("employee") || action.label.toLowerCase().includes("tech") || action.label.toLowerCase().includes("cert")) {
+      isActionAllowed = hasPermission("knowledge:create");
+    }
+  }
+
   return (
     <header className="gov-topbar">
       {/* Title / breadcrumb */}
@@ -61,12 +84,12 @@ export default function Topbar({ title, breadcrumb, action }: TopbarProps) {
 
       {/* Action */}
       {action &&
-        (action.href ? (
+        (action.href && isActionAllowed ? (
           <Link href={action.href}>
             <Button
               size="sm"
               variant="secondary"
-              className="gap-1.5 bg-[#DDA625] font-semibold text-[#1E252D] hover:bg-[#C8951E]"
+              className="gap-1.5 bg-[#DDA625] font-semibold text-[#1E252D] hover:bg-[#C8951E] cursor-pointer"
             >
               <Plus size={13} />
               {action.label}
@@ -76,8 +99,18 @@ export default function Topbar({ title, breadcrumb, action }: TopbarProps) {
           <Button
             size="sm"
             variant="secondary"
-            onClick={action.onClick}
-            className="gap-1.5 bg-[#DDA625] font-semibold text-[#1E252D] hover:bg-[#C8951E]"
+            disabled={!isActionAllowed}
+            onClick={isActionAllowed ? action.onClick : undefined}
+            title={
+              !isActionAllowed
+                ? `Action '${action.label}' disabled for ${roleDef.displayName}`
+                : action.label
+            }
+            className={`gap-1.5 font-semibold text-[#1E252D] ${
+              isActionAllowed
+                ? "bg-[#DDA625] hover:bg-[#C8951E] cursor-pointer"
+                : "bg-slate-200 text-slate-400 border border-slate-300 cursor-not-allowed opacity-50 pointer-events-auto"
+            }`}
           >
             <Plus size={13} />
             {action.label}
@@ -104,25 +137,36 @@ export default function Topbar({ title, breadcrumb, action }: TopbarProps) {
         />
       </Button>
 
-      {/* Avatar */}
-      <div
+      {/* Avatar with Role Tooltip */}
+      <Link
+        href="/settings/team"
+        title={`${fullName} (${roleDef.displayName}) — Click to manage team & roles`}
         style={{
-          width: 30,
-          height: 30,
-          borderRadius: "50%",
-          background: "var(--gov-maroon)",
           display: "flex",
           alignItems: "center",
-          justifyContent: "center",
-          color: "#fff",
-          fontSize: "10.5px",
-          fontWeight: 700,
-          flexShrink: 0,
-          cursor: "pointer",
+          gap: "6px",
+          textDecoration: "none",
         }}
       >
-        AP
-      </div>
+        <div
+          style={{
+            width: 30,
+            height: 30,
+            borderRadius: "50%",
+            background: roleDef.color || "var(--gov-maroon)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: roleDef.textColor || "#fff",
+            fontSize: "10.5px",
+            fontWeight: 700,
+            flexShrink: 0,
+            boxShadow: "0 1px 3px rgba(0,0,0,0.15)",
+          }}
+        >
+          {avatarInitials}
+        </div>
+      </Link>
     </header>
   );
 }

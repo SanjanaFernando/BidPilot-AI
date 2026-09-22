@@ -34,6 +34,7 @@ export default function SettingsPage() {
 
   const sections = [
     { id: "database", label: "Database & Cloud (Phase 2)", icon: <Database size={14} /> },
+    { id: "rbac", label: "Team & RBAC (Phase 12)", icon: <ShieldCheck size={14} /> },
     { id: "organization", label: "Organisation Profile", icon: <Building2 size={14} /> },
     { id: "profile", label: "User Account", icon: <User size={14} /> },
     { id: "ai", label: "AI Engine Configuration", icon: <Cpu size={14} /> },
@@ -167,9 +168,75 @@ export default function SettingsPage() {
                 </div>
 
                 <div className="rounded border border-[#E2E8F0] p-3 text-xs text-[#64748B]">
-                  <strong className="text-[#1E252D]">Schema Status:</strong> 15 tables defined in{" "}
-                  <code>database/schema.sql</code> · Row Level Security configured in{" "}
+                  <strong className="text-[#1E252D]">Schema Status:</strong> 22 tables defined in{" "}
+                  <code>database/schema.sql</code> + <code>phase12_rbac_migration.sql</code> · Row Level Security configured in{" "}
                   <code>database/rls_policies.sql</code>.
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Team & RBAC Management (Phase 12) */}
+            <Card className="border-[#E2E8F0] bg-white" id="rbac">
+              <CardHeader className="flex flex-row items-center justify-between border-b border-[#E2E8F0] px-6 py-4">
+                <div>
+                  <CardTitle className="text-sm font-bold text-[#1E252D] flex items-center gap-2">
+                    <ShieldCheck size={16} className="text-[#7A1C2C]" />
+                    Team &amp; Access Control (Phase 12 RBAC)
+                  </CardTitle>
+                  <CardDescription className="text-xs text-[#64748B]">
+                    Enterprise 6-role hierarchy, granular permissions, live persona switcher, and section locking
+                  </CardDescription>
+                </div>
+                <a
+                  href="/settings/team"
+                  className="inline-flex h-8 items-center gap-1.5 rounded-md bg-[#7A1C2C] px-3 text-xs font-semibold text-white hover:bg-[#631724]"
+                >
+                  Open Team &amp; RBAC Control Center →
+                </a>
+              </CardHeader>
+              <CardContent className="space-y-4 p-6">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                  <div className="rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-3">
+                    <div className="text-[11px] font-semibold text-[#64748B] uppercase tracking-wider">
+                      Configured Roles
+                    </div>
+                    <div className="text-lg font-bold text-[#1E252D] mt-1">6 Enterprise Roles</div>
+                    <p className="text-[11px] text-[#64748B] mt-0.5">
+                      Admin, Bid Manager, Solution Architect, Compliance, SME, Executive
+                    </p>
+                  </div>
+
+                  <div className="rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-3">
+                    <div className="text-[11px] font-semibold text-[#64748B] uppercase tracking-wider">
+                      Granular Gates
+                    </div>
+                    <div className="text-lg font-bold text-[#1E252D] mt-1">24 Action Codes</div>
+                    <p className="text-[11px] text-[#64748B] mt-0.5">
+                      Tenders, AI pipeline, sign-off, knowledge RAG, audit
+                    </p>
+                  </div>
+
+                  <div className="rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-3">
+                    <div className="text-[11px] font-semibold text-[#64748B] uppercase tracking-wider">
+                      Concurrency Engine
+                    </div>
+                    <div className="text-lg font-bold text-emerald-700 mt-1">Optimistic Locking</div>
+                    <p className="text-[11px] text-[#64748B] mt-0.5">
+                      Section-level lock expiration &amp; collaborator tracking
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between rounded-md border border-amber-200 bg-amber-50/60 p-3.5">
+                  <div className="text-xs text-amber-900">
+                    <strong>Phase 12 Live Simulation:</strong> Switch between simulated user personas or manage team rosters in the full control center.
+                  </div>
+                  <a
+                    href="/settings/team"
+                    className="text-xs font-bold text-[#7A1C2C] underline hover:text-[#631724]"
+                  >
+                    Manage Roster &amp; Matrix
+                  </a>
                 </div>
               </CardContent>
             </Card>

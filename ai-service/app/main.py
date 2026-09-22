@@ -18,6 +18,7 @@ from app.routers import (
     pipeline,
     claims,
     compliance,
+    rbac,
 )
 
 # ---------------------------------------------------------------------------
@@ -108,7 +109,7 @@ def _ensure_phase5_schema():
 async def lifespan(app: FastAPI):
     """Run startup checks and cleanup on shutdown."""
     settings = get_settings()
-    logger.info("=== Starting BidPilot AI Service (Phase 10: Compliance & Human Approval) ===")
+    logger.info("=== Starting BidPilot AI Service (Phase 12: Enterprise RBAC) ===")
     logger.info(f"Supabase URL: {settings.supabase_url or 'NOT SET'}")
     logger.info(f"Gemini API key: {'SET' if settings.gemini_api_key else 'NOT SET'}")
     logger.info(f"Generate model: {settings.gemini_generate_model}")
@@ -132,8 +133,8 @@ async def lifespan(app: FastAPI):
 # ---------------------------------------------------------------------------
 app = FastAPI(
     title="BidPilot AI Service",
-    description="Multi-Agent AI Service with LangGraph, pgvector RAG, Prove This Claim, and Compliance Governance.",
-    version="0.10.0",
+    description="Multi-Agent AI Service with LangGraph, pgvector RAG, Prove This Claim, Compliance Governance, and Enterprise RBAC.",
+    version="0.12.0",
     lifespan=lifespan,
 )
 
@@ -164,6 +165,7 @@ app.include_router(requirements.router, prefix="/agents/requirements", tags=["Re
 app.include_router(pipeline.router, prefix="/agents", tags=["Multi-Agent Pipeline"])
 app.include_router(claims.router, prefix="/agents/claims", tags=["Prove This Claim"])
 app.include_router(compliance.router, prefix="/agents/compliance", tags=["Compliance & Human Approval"])
+app.include_router(rbac.router, prefix="/rbac", tags=["RBAC & Team Management"])
 
 
 # ---------------------------------------------------------------------------
@@ -176,12 +178,13 @@ async def health():
     return {
         "status": "ok",
         "service": "BidPilot AI Service",
-        "version": "0.10.0",
-        "phase": "Phase 10 — Compliance Cross-Checking & Human Review Workflow",
+        "version": "0.12.0",
+        "phase": "Phase 12 — Enterprise RBAC & Multi-Tenant Role-Based Access Control",
         "dependencies": {
             "supabase": settings.is_supabase_configured,
             "gemini": settings.is_gemini_configured,
             "embed_model": settings.gemini_embed_model,
             "generate_model": settings.gemini_generate_model,
+            "rbac_strict_mode": settings.rbac_strict_mode,
         },
     }

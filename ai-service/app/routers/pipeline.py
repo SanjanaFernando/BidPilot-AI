@@ -133,7 +133,7 @@ async def get_pipeline_status(
     supabase: Client = Depends(get_supabase),
 ) -> Dict[str, Any]:
     try:
-        resolved_uuid = requirement_agent._resolve_tender_uuid(supabase, organization_id, tender_id) or tender_id
+        resolved_uuid = requirement_agent._resolve_tender_uuid(supabase, organization_id, tender_id)
 
         # Query agent_runs table for recent orchestration telemetry
         runs_query = (
@@ -147,16 +147,18 @@ async def get_pipeline_status(
         runs_data = runs_res.data or []
 
         # Check existing proposal
-        prop_query = (
-            supabase.table("proposals")
-            .select("id, title, version, status, compliance_score, win_probability, created_at, updated_at")
-            .eq("tender_id", resolved_uuid)
-            .eq("organization_id", organization_id)
-            .order("created_at", desc=True)
-            .limit(1)
-            .execute()
-        )
-        latest_proposal = prop_query.data[0] if prop_query.data else None
+        latest_proposal = None
+        if resolved_uuid:
+            prop_query = (
+                supabase.table("proposals")
+                .select("id, title, version, status, compliance_score, win_probability, created_at, updated_at")
+                .eq("tender_id", resolved_uuid)
+                .eq("organization_id", organization_id)
+                .order("created_at", desc=True)
+                .limit(1)
+                .execute()
+            )
+            latest_proposal = prop_query.data[0] if prop_query.data else None
 
         return {
             "tender_id": tender_id,
@@ -187,7 +189,12 @@ async def get_proposal(
     supabase: Client = Depends(get_supabase),
 ) -> ProposalDetailResponse:
     try:
-        resolved_uuid = requirement_agent._resolve_tender_uuid(supabase, organization_id, tender_id) or tender_id
+        resolved_uuid = requirement_agent._resolve_tender_uuid(supabase, organization_id, tender_id)
+        if not resolved_uuid:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"No proposal found for tender '{tender_id}' in organization {organization_id}",
+            )
 
         prop_query = (
             supabase.table("proposals")

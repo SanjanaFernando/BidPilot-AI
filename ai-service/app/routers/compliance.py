@@ -18,6 +18,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from supabase import Client
 
 from app.dependencies import get_supabase
+from app.rbac import UserContext, require_permission, get_current_user
 from app.agents.requirement_agent import _resolve_tender_uuid
 from app.models.schemas import (
     ComplianceMatrixRow,
@@ -263,6 +264,7 @@ def update_section_review(
     section_id: str,
     payload: SectionReviewRequest,
     supabase: Client = Depends(get_supabase),
+    _user: UserContext = Depends(require_permission("proposals:approve_section")),
 ):
     """
     Updates the review status and comments for a specific proposal section.
@@ -350,6 +352,7 @@ def sign_off_proposal(
     proposal_id: str,
     payload: ProposalSignOffRequest,
     supabase: Client = Depends(get_supabase),
+    _user: UserContext = Depends(require_permission("proposals:sign_off")),
 ):
     """
     Submits authorized executive human sign-off for tender proposal submission.

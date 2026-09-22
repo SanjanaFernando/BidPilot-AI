@@ -1,4 +1,4 @@
-// Mock data for BidPilot AI — Phase 1 demo
+// Mock data for BidPilot AI — Phase 1 demo (Phase 12: RBAC team data added)
 // LankaTech Solutions (fictional) demo dataset
 
 export const mockOrg = {
@@ -14,6 +14,124 @@ export const mockUser = {
   role: "Proposal Manager",
   avatar: "AP",
 };
+
+// ─── Phase 12: Mock Team Members ──────────────────────────────────────────────
+
+export interface MockTeamMember {
+  id: string;
+  user_id: string;
+  full_name: string;
+  email: string;
+  job_title: string;
+  avatar: string;
+  role_name: string;
+  role_display_name: string;
+  role_color: string;
+  role_text_color: string;
+  role_icon: string;
+  status: "active" | "invited" | "suspended";
+  joined_at: string;
+  department: string;
+}
+
+export const mockTeamMembers: MockTeamMember[] = [
+  {
+    id: "mem-001",
+    user_id: "u0000000-0000-0000-0001-000000000001",
+    full_name: "Nuwan Rajapaksa",
+    email: "nuwan@lankatech.lk",
+    job_title: "VP of Operations",
+    avatar: "NR",
+    role_name: "org_admin",
+    role_display_name: "Org Admin",
+    role_color: "#7A1C2C",
+    role_text_color: "#FFFFFF",
+    role_icon: "🛡️",
+    status: "active",
+    joined_at: "2024-01-15",
+    department: "Executive",
+  },
+  {
+    id: "mem-002",
+    user_id: "u0000000-0000-0000-0001-000000000002",
+    full_name: "Ashan Perera",
+    email: "ashan@lankatech.lk",
+    job_title: "Proposal Lead",
+    avatar: "AP",
+    role_name: "bid_manager",
+    role_display_name: "Bid Manager",
+    role_color: "#1D4ED8",
+    role_text_color: "#FFFFFF",
+    role_icon: "📋",
+    status: "active",
+    joined_at: "2024-02-01",
+    department: "Business Development",
+  },
+  {
+    id: "mem-003",
+    user_id: "u0000000-0000-0000-0001-000000000003",
+    full_name: "Dilshan Wijesinghe",
+    email: "dilshan@lankatech.lk",
+    job_title: "Enterprise Architect",
+    avatar: "DW",
+    role_name: "solution_architect",
+    role_display_name: "Solution Architect",
+    role_color: "#0F766E",
+    role_text_color: "#FFFFFF",
+    role_icon: "⚙️",
+    status: "active",
+    joined_at: "2024-02-10",
+    department: "Technology",
+  },
+  {
+    id: "mem-004",
+    user_id: "u0000000-0000-0000-0001-000000000004",
+    full_name: "Priya Seneviratne",
+    email: "priya@lankatech.lk",
+    job_title: "Legal Counsel",
+    avatar: "PS",
+    role_name: "compliance_officer",
+    role_display_name: "Compliance Officer",
+    role_color: "#B45309",
+    role_text_color: "#FFFFFF",
+    role_icon: "⚖️",
+    status: "active",
+    joined_at: "2024-03-05",
+    department: "Legal & Risk",
+  },
+  {
+    id: "mem-005",
+    user_id: "u0000000-0000-0000-0001-000000000005",
+    full_name: "Kasun Fernando",
+    email: "kasun@lankatech.lk",
+    job_title: "Senior Software Engineer",
+    avatar: "KF",
+    role_name: "domain_sme",
+    role_display_name: "Domain SME",
+    role_color: "#6D28D9",
+    role_text_color: "#FFFFFF",
+    role_icon: "🔬",
+    status: "active",
+    joined_at: "2024-03-20",
+    department: "Engineering",
+  },
+  {
+    id: "mem-006",
+    user_id: "u0000000-0000-0000-0001-000000000006",
+    full_name: "Chaminda Bandara",
+    email: "chaminda@lankatech.lk",
+    job_title: "Chief Executive Officer",
+    avatar: "CB",
+    role_name: "executive_viewer",
+    role_display_name: "Executive Viewer",
+    role_color: "#374151",
+    role_text_color: "#FFFFFF",
+    role_icon: "👁️",
+    status: "active",
+    joined_at: "2024-01-10",
+    department: "Executive",
+  },
+];
 
 // ─── Tenders ─────────────────────────────────────────────────────────────────
 
@@ -678,3 +796,5 @@ export const mockDashboardStats = {
   knowledgeTrend: "+5 this month",
   complianceTrend: "+8% vs last month",
 };
+
+

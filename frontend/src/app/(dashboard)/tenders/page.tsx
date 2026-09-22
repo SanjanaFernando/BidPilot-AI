@@ -10,10 +10,13 @@ import { Building2, FileText, Plus, Search, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { TendersService, TenderItem } from "@/lib/tenders-service";
+import { useUserPermissions } from "@/hooks/useUserPermissions";
 
 const FILTERS = ["All", "Analyzing", "Draft", "Review", "Approved"];
 
 export default function TendersPage() {
+  const { hasPermission, roleDef } = useUserPermissions();
+  const canDelete = hasPermission("tenders:delete");
   const [tenders, setTenders] = useState<TenderItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedStatus, setSelectedStatus] = useState("All");
@@ -291,9 +294,18 @@ export default function TendersPage() {
                               </Button>
                             </Link>
                             <button
-                              onClick={() => handleDelete(t.id)}
-                              title="Delete tender"
-                              className="rounded p-1 text-[#64748B] hover:bg-[#FEE2E2] hover:text-[#DC2626]"
+                              disabled={!canDelete}
+                              onClick={() => canDelete && handleDelete(t.id)}
+                              title={
+                                !canDelete
+                                  ? `Deleting tenders requires 'tenders:delete' permission (Disabled for ${roleDef.displayName})`
+                                  : "Delete tender"
+                              }
+                              className={`rounded p-1 transition-all ${
+                                canDelete
+                                  ? "text-[#64748B] hover:bg-[#FEE2E2] hover:text-[#DC2626] cursor-pointer"
+                                  : "text-slate-300 cursor-not-allowed opacity-40 pointer-events-auto"
+                              }`}
                             >
                               <Trash2 size={13} />
                             </button>
