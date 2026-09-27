@@ -1,14 +1,32 @@
 "use client";
 
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { Bell, Search, Plus, ChevronRight } from "lucide-react";
+import {
+  Bell,
+  Search,
+  Plus,
+  ChevronRight,
+  ShieldCheck,
+  AlertTriangle,
+  FileText,
+  Lock,
+  CheckCircle2,
+  ExternalLink,
+  Check,
+} from "lucide-react";
 
 import { useUserPermissions } from "@/hooks/useUserPermissions";
-
 import { PermissionCode } from "@/lib/rbac";
+import {
+  getNotifications,
+  markNotificationRead,
+  markAllNotificationsRead,
+  NotificationItem,
+} from "@/lib/ai-service";
 
 interface TopbarProps {
   title: string;
@@ -23,6 +41,53 @@ interface TopbarProps {
 
 export default function Topbar({ title, breadcrumb, action }: TopbarProps) {
   const { roleDef, fullName, avatarInitials, hasPermission } = useUserPermissions();
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [isOpen, setIsOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<"all" | "unread">("all");
+  const popoverRef = useRef<HTMLDivElement>(null);
+
+  // Fetch notifications
+  const fetchNotifs = () => {
+    getNotifications("a0000000-0000-0000-0001-000000000001")
+      .then((res) => {
+        setNotifications(res.notifications || []);
+        setUnreadCount(res.unread_count || 0);
+      })
+      .catch(() => {});
+  };
+
+  useEffect(() => {
+    fetchNotifs();
+    const interval = setInterval(fetchNotifs, 15000); // Polling every 15s
+    return () => clearInterval(interval);
+  }, []);
+
+  // Close popup on outside click
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleMarkAsRead = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    await markNotificationRead(id).catch(() => {});
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
+    );
+    setUnreadCount((c) => Math.max(0, c - 1));
+  };
+
+  const handleMarkAllRead = async () => {
+    await markAllNotificationsRead("a0000000-0000-0000-0001-000000000001").catch(() => {});
+    setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
+    setUnreadCount(0);
+  };
 
   // Auto-detect permission if not explicitly provided
   let isActionAllowed = true;
@@ -31,13 +96,30 @@ export default function Topbar({ title, breadcrumb, action }: TopbarProps) {
       isActionAllowed = hasPermission(action.permission);
     } else if (action.label.toLowerCase().includes("tender")) {
       isActionAllowed = hasPermission("tenders:create");
-    } else if (action.label.toLowerCase().includes("project") || action.label.toLowerCase().includes("employee") || action.label.toLowerCase().includes("tech") || action.label.toLowerCase().includes("cert")) {
+    } else if (
+      action.label.toLowerCase().includes("project") ||
+      action.label.toLowerCase().includes("employee") ||
+      action.label.toLowerCase().includes("tech") ||
+      action.label.toLowerCase().includes("cert")
+    ) {
       isActionAllowed = hasPermission("knowledge:create");
     }
   }
 
+  const filteredNotifs =
+    activeTab === "unread"
+      ? notifications.filter((n) => !n.is_read)
+      : notifications;
+
+  const getNotifIcon = (type: string, severity: string) => {
+    if (type === "proposal_signed") return <ShieldCheck size={14} className="text-emerald-500" />;
+    if (type === "secret_detected") return <Lock size={14} className="text-sky-500" />;
+    if (severity === "urgent" || severity === "warning") return <AlertTriangle size={14} className="text-amber-500" />;
+    return <FileText size={14} className="text-slate-400" />;
+  };
+
   return (
-    <header className="gov-topbar">
+    <header className="gov-topbar relative">
       {/* Title / breadcrumb */}
       <div style={{ flex: 1, minWidth: 0 }}>
         {breadcrumb && breadcrumb.length > 0 && (
@@ -120,22 +202,137 @@ export default function Topbar({ title, breadcrumb, action }: TopbarProps) {
       {/* Separator */}
       <Separator orientation="vertical" className="h-6" />
 
-      {/* Notifications */}
-      <Button variant="ghost" size="icon" className="relative h-8 w-8">
-        <Bell size={15} />
-        <span
-          style={{
-            position: "absolute",
-            top: "7px",
-            right: "7px",
-            width: "6px",
-            height: "6px",
-            borderRadius: "50%",
-            background: "var(--gov-danger)",
-            border: "1.5px solid white",
-          }}
-        />
-      </Button>
+      {/* Notifications Popover (Phase 15) */}
+      <div className="relative" ref={popoverRef}>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setIsOpen(!isOpen)}
+          className="relative h-8 w-8 hover:bg-slate-100"
+          title="Notifications & System Alerts"
+        >
+          <Bell size={15} />
+          {unreadCount > 0 && (
+            <span
+              className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 rounded-full bg-rose-600 text-white font-bold text-[9px] flex items-center justify-center border-2 border-white shadow"
+            >
+              {unreadCount > 9 ? "9+" : unreadCount}
+            </span>
+          )}
+        </Button>
+
+        {/* Dropdown Card */}
+        {isOpen && (
+          <div className="absolute right-0 mt-2 w-84 sm:w-96 bg-white border border-slate-200 rounded-xl shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-100">
+            {/* Header */}
+            <div className="p-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-xs text-slate-900">Notifications</span>
+                {unreadCount > 0 && (
+                  <span className="bg-rose-100 text-rose-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                    {unreadCount} new
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleMarkAllRead}
+                  className="text-[11px] text-slate-500 hover:text-slate-900 transition-colors flex items-center gap-1 font-medium"
+                >
+                  <Check size={11} /> Mark all read
+                </button>
+              </div>
+            </div>
+
+            {/* Tabs */}
+            <div className="flex border-b border-slate-100 text-xs px-3 pt-2 bg-white">
+              <button
+                onClick={() => setActiveTab("all")}
+                className={`pb-1.5 px-2 font-medium border-b-2 transition-colors ${
+                  activeTab === "all"
+                    ? "border-rose-700 text-rose-700 font-bold"
+                    : "border-transparent text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                All ({notifications.length})
+              </button>
+              <button
+                onClick={() => setActiveTab("unread")}
+                className={`pb-1.5 px-2 font-medium border-b-2 transition-colors ${
+                  activeTab === "unread"
+                    ? "border-rose-700 text-rose-700 font-bold"
+                    : "border-transparent text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                Unread ({unreadCount})
+              </button>
+            </div>
+
+            {/* List */}
+            <div className="max-h-80 overflow-y-auto divide-y divide-slate-100">
+              {filteredNotifs.length === 0 ? (
+                <div className="py-8 text-center text-xs text-slate-400">
+                  <CheckCircle2 size={24} className="mx-auto mb-2 text-slate-300" />
+                  No notifications to display
+                </div>
+              ) : (
+                filteredNotifs.map((n) => (
+                  <div
+                    key={n.id}
+                    className={`p-3 text-xs transition-colors hover:bg-slate-50 flex gap-2.5 items-start ${
+                      !n.is_read ? "bg-rose-50/40" : ""
+                    }`}
+                  >
+                    <div className="mt-0.5 shrink-0">{getNotifIcon(n.type, n.severity)}</div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-1">
+                        <span className={`font-semibold text-slate-900 text-xs ${!n.is_read ? "font-bold text-rose-950" : ""}`}>
+                          {n.title}
+                        </span>
+                        {!n.is_read && (
+                          <button
+                            onClick={(e) => handleMarkAsRead(n.id, e)}
+                            title="Mark as read"
+                            className="text-[10px] text-slate-400 hover:text-slate-700"
+                          >
+                            <Check size={12} />
+                          </button>
+                        )}
+                      </div>
+                      <p className="text-slate-600 text-[11px] mt-0.5 leading-tight line-clamp-2">
+                        {n.message}
+                      </p>
+                      <div className="flex items-center justify-between mt-1.5 text-[10px] text-slate-400">
+                        <span>{new Date(n.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
+                        {n.link && (
+                          <Link
+                            href={n.link}
+                            onClick={() => setIsOpen(false)}
+                            className="text-rose-700 hover:text-rose-800 font-semibold flex items-center gap-0.5"
+                          >
+                            View details <ChevronRight size={10} />
+                          </Link>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="p-2 bg-slate-50 border-t border-slate-100 text-center text-[10px] text-slate-500">
+              <Link
+                href="/settings"
+                onClick={() => setIsOpen(false)}
+                className="text-rose-800 hover:underline font-medium"
+              >
+                Configure Webhooks & Notification Settings
+              </Link>
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Avatar with Role Tooltip */}
       <Link

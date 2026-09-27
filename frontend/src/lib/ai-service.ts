@@ -266,3 +266,154 @@ export async function getTenderAnalysis(
 
   return res.json();
 }
+
+// ---------------------------------------------------------------------------
+// Phase 13: Knowledge Governance & Secret Scrubbing API
+// ---------------------------------------------------------------------------
+
+export interface ScanSecretsResult {
+  findings_count: number;
+  has_sensitive_data: boolean;
+  findings: Array<{
+    type: string;
+    category: string;
+    start: number;
+    end: number;
+    masked_preview: string;
+  }>;
+  scrubbed_preview: string;
+}
+
+export async function scanSecrets(text: string): Promise<ScanSecretsResult> {
+  const res = await fetch(`${AI_SERVICE_URL}/rag/scan-secrets`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text }),
+  });
+  if (!res.ok) throw new Error("Failed to scan secrets");
+  return res.json();
+}
+
+// ---------------------------------------------------------------------------
+// Phase 14: Cryptographic Audit & Electronic Signatures API
+// ---------------------------------------------------------------------------
+
+export interface VerifyChainResult {
+  organization_id: string;
+  total_events: number;
+  is_valid: boolean;
+  status: string;
+  message: string;
+  latest_hash: string;
+  verified_at?: string;
+}
+
+export interface ProposalVerificationResult {
+  is_valid: boolean;
+  proposal_hash: string;
+  proposal_id?: string;
+  signer_full_name?: string;
+  signer_email?: string;
+  signer_role?: string;
+  signed_at?: string;
+  status: string;
+  certificate_data?: Record<string, any>;
+  message: string;
+}
+
+export async function getAuditLogs(organizationId: string, limit = 50) {
+  const res = await fetch(`${AI_SERVICE_URL}/audit/logs?organization_id=${encodeURIComponent(organizationId)}&limit=${limit}`);
+  if (!res.ok) throw new Error("Failed to fetch audit logs");
+  return res.json();
+}
+
+export async function verifyAuditChain(organizationId: string): Promise<VerifyChainResult> {
+  const res = await fetch(`${AI_SERVICE_URL}/audit/verify-chain?organization_id=${encodeURIComponent(organizationId)}`);
+  if (!res.ok) throw new Error("Failed to verify audit chain");
+  return res.json();
+}
+
+export async function sealElectronicSignature(payload: {
+  organization_id: string;
+  proposal_id: string;
+  proposal_content: string;
+  signer_name: string;
+  signer_email: string;
+  signer_role: string;
+  tender_title?: string;
+  tender_code?: string;
+  bid_value?: string;
+}) {
+  const res = await fetch(`${AI_SERVICE_URL}/audit/sign-off`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error("Failed to seal electronic signature");
+  return res.json();
+}
+
+export async function verifyProposalHash(proposalHash: string): Promise<ProposalVerificationResult> {
+  const res = await fetch(`${AI_SERVICE_URL}/audit/verify/${encodeURIComponent(proposalHash)}`);
+  if (!res.ok) {
+    return {
+      is_valid: false,
+      proposal_hash: proposalHash,
+      status: "ERROR",
+      message: "Server returned error during signature check",
+    };
+  }
+  return res.json();
+}
+
+// ---------------------------------------------------------------------------
+// Phase 15: Notifications & Webhook API
+// ---------------------------------------------------------------------------
+
+export interface NotificationItem {
+  id: string;
+  organization_id: string;
+  type: string;
+  title: string;
+  message: string;
+  link?: string;
+  is_read: boolean;
+  severity: "info" | "success" | "warning" | "urgent";
+  created_at: string;
+}
+
+export interface NotificationsResponse {
+  organization_id: string;
+  total: number;
+  unread_count: number;
+  notifications: NotificationItem[];
+}
+
+export async function getNotifications(organizationId: string, unreadOnly = false): Promise<NotificationsResponse> {
+  const res = await fetch(`${AI_SERVICE_URL}/notifications?organization_id=${encodeURIComponent(organizationId)}&unread_only=${unreadOnly}`);
+  if (!res.ok) throw new Error("Failed to fetch notifications");
+  return res.json();
+}
+
+export async function markNotificationRead(id: string) {
+  const res = await fetch(`${AI_SERVICE_URL}/notifications/${encodeURIComponent(id)}/read`, { method: "PUT" });
+  if (!res.ok) throw new Error("Failed to mark notification as read");
+  return res.json();
+}
+
+export async function markAllNotificationsRead(organizationId: string) {
+  const res = await fetch(`${AI_SERVICE_URL}/notifications/read-all?organization_id=${encodeURIComponent(organizationId)}`, { method: "PUT" });
+  if (!res.ok) throw new Error("Failed to mark all as read");
+  return res.json();
+}
+
+export async function testWebhookDispatch(payload: { webhook_url: string; service_type: string; title: string; message: string; link?: string }) {
+  const res = await fetch(`${AI_SERVICE_URL}/notifications/test-webhook`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error("Failed to dispatch test webhook");
+  return res.json();
+}
+
