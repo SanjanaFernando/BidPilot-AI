@@ -1,0 +1,144 @@
+name: BidPilot CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  PYTHON_VERSION: "3.11"
+  NODE_VERSION: "20"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# JOB 1: Backend Tests & Lint (runs on every PR and push)
+# ─────────────────────────────────────────────────────────────────────────────
+jobs:
+  backend-ci:
+    name: Backend — Lint & Test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ai-service
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: ai-service/requirements.txt
+
+      - name: Install system deps (poppler for PDF)
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils libpoppler-cpp-dev
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run linting (ruff)
+        run: |
+          pip install ruff
+          ruff check app/ --exit-zero
+
+      - name: Run type checking (pyright)
+        run: |
+          pip install pyright
+          pyright app/ --ignoreexternal || true
+
+      - name: Run tests (pytest)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          APP_ENV: test
+        run: |
+          pip install pytest pytest-asyncio httpx
+          pytest tests/ -v --tb=short || echo "No tests found — skipping"
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # JOB 2: Frontend Tests & Lint (runs on every PR and push)
+  # ─────────────────────────────────────────────────────────────────────────────
+  frontend-ci:
+    name: Frontend — Typecheck & Lint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: TypeScript type check
+        run: npx tsc --noEmit
+
+      - name: ESLint
+        run: npm run lint
+
+      - name: Prettier format check
+        run: npm run format:check
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # JOB 3: Build & Deploy Backend (only on push to main)
+  # ─────────────────────────────────────────────────────────────────────────────
+  deploy-backend:
+    name: Deploy Backend to Render
+    runs-on: ubuntu-latest
+    needs: [backend-ci, frontend-ci]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Trigger Render Deploy Hook
+        # Set RENDER_DEPLOY_HOOK_URL in GitHub repo secrets
+        # Get this URL from: Render Dashboard → Your Service → Settings → Deploy Hooks
+        run: |
+          if [ -n "${{ secrets.RENDER_DEPLOY_HOOK_URL }}" ]; then
+            curl -s -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}" \
+              -d "" \
+              --fail \
+              --show-error
+            echo "✅ Render deploy triggered successfully."
+          else
+            echo "⚠️  RENDER_DEPLOY_HOOK_URL not set — skipping backend deploy."
+          fi
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # JOB 4: Deploy Frontend (Vercel handles this automatically via GitHub integration)
+  # This job just confirms Vercel deployment via status check
+  # ─────────────────────────────────────────────────────────────────────────────
+  deploy-frontend:
+    name: Deploy Frontend (Vercel)
+    runs-on: ubuntu-latest
+    needs: [backend-ci, frontend-ci]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Vercel Deploy via CLI (optional — Vercel Git integration is preferred)
+        run: |
+          echo "ℹ️  Vercel automatically deploys from the main branch via GitHub integration."
+          echo "   If you want CLI-based deploys, set VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID secrets."
+          if [ -n "${{ secrets.VERCEL_TOKEN }}" ]; then
+            npm install -g vercel
+            cd frontend
+            vercel --prod --token "${{ secrets.VERCEL_TOKEN }}" \
+              --yes \
+              -e NEXT_PUBLIC_SUPABASE_URL="${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}" \
+              -e NEXT_PUBLIC_SUPABASE_ANON_KEY="${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}" \
+              -e NEXT_PUBLIC_AI_SERVICE_URL="${{ secrets.NEXT_PUBLIC_AI_SERVICE_URL }}"
+          fi

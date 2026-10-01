@@ -9,6 +9,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
+from app.middleware.rate_limiter import RateLimiterMiddleware
 from app.routers import (
     documents,
     rag,
@@ -19,6 +20,9 @@ from app.routers import (
     claims,
     compliance,
     rbac,
+    audit,
+    notifications,
+    webhooks,
 )
 
 # ---------------------------------------------------------------------------
@@ -63,41 +67,18 @@ def _ensure_phase5_schema():
             source_name VARCHAR(255) NOT NULL,
             content TEXT NOT NULL,
             embedding vector(768),
+            clearance_level VARCHAR(30) DEFAULT 'public_org_wide',
+            is_scrubbed BOOLEAN DEFAULT FALSE,
             metadata JSONB DEFAULT '{}',
             created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
         );
         CREATE INDEX IF NOT EXISTS idx_knowledge_chunks_org ON knowledge_chunks(organization_id);
         CREATE INDEX IF NOT EXISTS idx_knowledge_chunks_type ON knowledge_chunks(organization_id, source_type);
-        CREATE OR REPLACE FUNCTION match_knowledge_chunks(
-            query_embedding vector(768),
-            match_threshold double precision,
-            match_count integer,
-            filter_organization_id uuid,
-            filter_source_type text DEFAULT NULL
-        )
-        RETURNS TABLE (
-            id uuid, source_type varchar(50), source_id text,
-            source_name varchar(255), content text, metadata jsonb,
-            similarity double precision
-        )
-        LANGUAGE plpgsql AS $func$
-        BEGIN
-            RETURN QUERY
-            SELECT kc.id, kc.source_type, kc.source_id, kc.source_name, kc.content, kc.metadata,
-                   1 - (kc.embedding <=> query_embedding) AS similarity
-            FROM knowledge_chunks kc
-            WHERE kc.organization_id = filter_organization_id
-              AND (filter_source_type IS NULL OR kc.source_type = filter_source_type)
-              AND (1 - (kc.embedding <=> query_embedding)) >= match_threshold
-            ORDER BY kc.embedding <=> query_embedding
-            LIMIT match_count;
-        END; $func$;
         """
         try:
             sb.rpc("exec_sql", {"sql": CREATE_TABLE_SQL}).execute()
         except Exception:
             pass
-
     except Exception as exc:
         logger.warning(f"Could not bootstrap knowledge_chunks table: {exc}")
 
@@ -109,11 +90,12 @@ def _ensure_phase5_schema():
 async def lifespan(app: FastAPI):
     """Run startup checks and cleanup on shutdown."""
     settings = get_settings()
-    logger.info("=== Starting BidPilot AI Service (Phase 12: Enterprise RBAC) ===")
+    logger.info("=== Starting BidPilot AI Service (Phases 13-15: Governance, E-Signatures, Notifications) ===")
     logger.info(f"Supabase URL: {settings.supabase_url or 'NOT SET'}")
     logger.info(f"Gemini API key: {'SET' if settings.gemini_api_key else 'NOT SET'}")
     logger.info(f"Generate model: {settings.gemini_generate_model}")
     logger.info(f"Embed model:    {settings.gemini_embed_model}")
+    logger.info(f"Rate limiter:   {'Redis @ ' + settings.upstash_redis_rest_url if settings.is_redis_configured else 'DISABLED (no Upstash Redis configured)'}")
 
     if not settings.is_supabase_configured:
         logger.warning("WARNING: Supabase is not fully configured. Some endpoints will fail.")
@@ -133,8 +115,8 @@ async def lifespan(app: FastAPI):
 # ---------------------------------------------------------------------------
 app = FastAPI(
     title="BidPilot AI Service",
-    description="Multi-Agent AI Service with LangGraph, pgvector RAG, Prove This Claim, Compliance Governance, and Enterprise RBAC.",
-    version="0.12.0",
+    description="Multi-Agent AI Service with LangGraph, pgvector RAG, Prove This Claim, Compliance Governance, Enterprise RBAC, Secret Scrubbing, Cryptographic Audit Trail & Webhooks.",
+    version="0.15.0",
     lifespan=lifespan,
 )
 
@@ -155,6 +137,15 @@ app.add_middleware(
 )
 
 # ---------------------------------------------------------------------------
+# Rate Limiter (Phase 16) — added after CORSMiddleware
+# ---------------------------------------------------------------------------
+app.add_middleware(
+    RateLimiterMiddleware,
+    redis_url=settings.upstash_redis_rest_url or None,
+    redis_token=settings.upstash_redis_rest_token or None,
+)
+
+# ---------------------------------------------------------------------------
 # Routers
 # ---------------------------------------------------------------------------
 app.include_router(documents.router, prefix="/documents", tags=["Documents"])
@@ -166,6 +157,9 @@ app.include_router(pipeline.router, prefix="/agents", tags=["Multi-Agent Pipelin
 app.include_router(claims.router, prefix="/agents/claims", tags=["Prove This Claim"])
 app.include_router(compliance.router, prefix="/agents/compliance", tags=["Compliance & Human Approval"])
 app.include_router(rbac.router, prefix="/rbac", tags=["RBAC & Team Management"])
+app.include_router(audit.router, prefix="/audit", tags=["Cryptographic Audit & E-Signatures"])
+app.include_router(notifications.router, prefix="/notifications", tags=["Enterprise Notifications"])
+app.include_router(webhooks.router, prefix="/webhooks", tags=["Inbound Webhooks"])
 
 
 # ---------------------------------------------------------------------------
@@ -178,13 +172,15 @@ async def health():
     return {
         "status": "ok",
         "service": "BidPilot AI Service",
-        "version": "0.12.0",
-        "phase": "Phase 12 — Enterprise RBAC & Multi-Tenant Role-Based Access Control",
+        "version": "0.16.0",
+        "phase": "Phase 16 — Cloud Production Deployment & High-Availability Scaling",
         "dependencies": {
             "supabase": settings.is_supabase_configured,
             "gemini": settings.is_gemini_configured,
             "embed_model": settings.gemini_embed_model,
             "generate_model": settings.gemini_generate_model,
             "rbac_strict_mode": settings.rbac_strict_mode,
+            "rate_limiter": settings.is_redis_configured,
+            "environment": settings.app_env,
         },
     }

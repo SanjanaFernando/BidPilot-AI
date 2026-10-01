@@ -80,11 +80,13 @@ def store_knowledge_chunk(
     source_id: str,
     source_name: str,
     extra_metadata: Optional[dict] = None,
+    clearance_level: str = "public_org_wide",
+    is_scrubbed: bool = False,
 ) -> str:
     """
     Insert a single knowledge-base record (project, employee, tech, cert) as an
     embedded vector into the knowledge_chunks table.
-    Returns the new chunk id.
+    Includes Phase 13 enterprise governance metadata (clearance_level, is_scrubbed).
     """
     chunk_id = str(uuid.uuid4())
     row = {
@@ -95,15 +97,19 @@ def store_knowledge_chunk(
         "source_name": source_name,
         "content": content,
         "embedding": embedding,
+        "clearance_level": clearance_level,
+        "is_scrubbed": is_scrubbed,
         "metadata": {
             "source_type": source_type,
             "source_id": source_id,
             "source_name": source_name,
+            "clearance_level": clearance_level,
+            "is_scrubbed": is_scrubbed,
             **(extra_metadata or {}),
         },
     }
     supabase.table("knowledge_chunks").insert(row).execute()
-    logger.info(f"Stored KB chunk {chunk_id} (type={source_type}, name={source_name})")
+    logger.info(f"Stored KB chunk {chunk_id} (type={source_type}, name={source_name}, clearance={clearance_level})")
     return chunk_id
 
 
@@ -153,8 +159,14 @@ def similarity_search(
 
 
 # ---------------------------------------------------------------------------
-# Similarity search — Knowledge Base chunks
+# Similarity search — Knowledge Base chunks with Clearance Filtering (Phase 13)
 # ---------------------------------------------------------------------------
+
+CLEARANCE_HIERARCHY = {
+    "restricted_nda_only": ["public_org_wide", "confidential_leadership", "restricted_nda_only"],
+    "confidential_leadership": ["public_org_wide", "confidential_leadership"],
+    "public_org_wide": ["public_org_wide"],
+}
 
 def knowledge_similarity_search(
     supabase: Client,
@@ -163,29 +175,53 @@ def knowledge_similarity_search(
     top_k: int = 5,
     source_type: Optional[str] = None,
     similarity_threshold: float = 0.3,
+    user_clearance_level: str = "restricted_nda_only",
 ) -> List[dict]:
     """
-    Search knowledge_chunks for the most relevant KB records (projects, employees, etc.)
-    using pgvector cosine similarity.
-    Calls the match_knowledge_chunks RPC defined in schema.sql.
+    Search knowledge_chunks for the most relevant KB records.
+    Applies Phase 13 Enterprise Clearance Filtering so users only retrieve chunks
+    permitted for their clearance tier.
     """
+    allowed_levels = CLEARANCE_HIERARCHY.get(
+        user_clearance_level, ["public_org_wide"]
+    )
+
+    # First attempt governed RPC if available
+    try:
+        params_gov = {
+            "query_embedding": query_embedding,
+            "match_threshold": similarity_threshold,
+            "match_count": top_k,
+            "filter_organization_id": organization_id,
+            "filter_source_type": source_type,
+            "filter_clearance_levels": allowed_levels,
+        }
+        response = supabase.rpc("match_knowledge_chunks_governed", params_gov).execute()
+        if response.data is not None and len(response.data) > 0:
+            logger.info(f"Governed KB search returned {len(response.data)} results (clearance={user_clearance_level})")
+            return response.data
+    except Exception as e:
+        logger.debug(f"Governed RPC not available, using standard RPC with client filter: {e}")
+
     params = {
         "query_embedding": query_embedding,
         "match_threshold": similarity_threshold,
-        "match_count": top_k,
+        "match_count": top_k * 2,
         "filter_organization_id": organization_id,
         "filter_source_type": source_type,
     }
 
-    logger.info(
-        f"KB search: org={organization_id}, type={source_type}, top_k={top_k}"
-    )
-
     try:
         response = supabase.rpc("match_knowledge_chunks", params).execute()
         results = response.data or []
-        logger.info(f"KB search returned {len(results)} results")
-        return results
+        filtered = [
+            r for r in results
+            if r.get("clearance_level") in allowed_levels
+            or (r.get("metadata") or {}).get("clearance_level") in allowed_levels
+            or not r.get("clearance_level")
+        ][:top_k]
+        logger.info(f"KB search returned {len(filtered)} clearance-filtered results")
+        return filtered
     except Exception as e:
         logger.error(f"Knowledge search failed: {e}")
         return []

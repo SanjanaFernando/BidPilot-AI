@@ -1,11 +1,12 @@
 """
-BidPilot AI — Knowledge Base Ingest Router (Phase 5)
-POST /rag/ingest-knowledge → embed all KB records and store in knowledge_chunks
+BidPilot AI — Knowledge Base Ingest Router (Phase 5 & Phase 13)
+POST /rag/ingest-knowledge → embed all KB records and store in knowledge_chunks with secret scrubbing
 GET  /rag/ingest-knowledge/status → show ingestion status for an org
+POST /rag/scan-secrets → test/preview secret and PII detection
 """
 
 import logging
-from typing import Optional
+from typing import Optional, List, Dict, Any
 
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, Field
@@ -13,7 +14,7 @@ from supabase import Client
 
 from app.dependencies import get_supabase
 from app.config import get_settings
-from app.services import embedding_service, vector_service
+from app.services import embedding_service, vector_service, scrubber_service
 
 logger = logging.getLogger("bidpilot.knowledge_ingest")
 router = APIRouter()
@@ -65,16 +66,15 @@ def _employee_to_text(e: dict) -> str:
 
 
 def _technology_to_text(t: dict) -> str:
-    projects = ", ".join(t.get("related_projects") or [])
     lines = [
         f"Technology: {t.get('name', '')}",
         f"Category: {t.get('category', '')}",
-        f"Experience level: {t.get('experience_level', '')}",
+        f"Proficiency: {t.get('proficiency_level', '')}",
     ]
     if t.get("description"):
         lines.append(f"Description: {t['description']}")
-    if projects:
-        lines.append(f"Used in projects: {projects}")
+    if t.get("years_experience"):
+        lines.append(f"Years of Experience: {t['years_experience']} years")
     return "\n".join(lines)
 
 
@@ -82,27 +82,22 @@ def _certification_to_text(c: dict) -> str:
     lines = [
         f"Certification: {c.get('name', '')}",
         f"Issuer: {c.get('issuer', '')}",
-        f"Holder type: {c.get('holder_type', '')}",
     ]
-    if c.get("issue_date"):
-        lines.append(f"Issue date: {c['issue_date']}")
-    if c.get("expiry_date"):
-        lines.append(f"Expiry date: {c['expiry_date']}")
     if c.get("credential_id"):
         lines.append(f"Credential ID: {c['credential_id']}")
+    if c.get("description"):
+        lines.append(f"Description: {c['description']}")
     return "\n".join(lines)
 
 
 # ---------------------------------------------------------------------------
-# Request / Response schemas
+# Schemas
 # ---------------------------------------------------------------------------
 
 class IngestRequest(BaseModel):
-    organization_id: str = Field(..., description="UUID of the organization to ingest KB for")
-    overwrite: bool = Field(
-        False,
-        description="If true, delete existing knowledge_chunks for this org before re-ingesting",
-    )
+    organization_id: str = Field(..., description="Organization UUID")
+    overwrite: bool = Field(False, description="Whether to clear existing knowledge_chunks first")
+    enable_scrubbing: bool = Field(True, description="Phase 13: Automatically detect and redact secrets/PII")
 
 
 class IngestResponse(BaseModel):
@@ -112,12 +107,37 @@ class IngestResponse(BaseModel):
     technologies_ingested: int
     certifications_ingested: int
     total_chunks_stored: int
+    total_secrets_scrubbed: int
     errors: int
     message: str
 
 
+class ScanSecretsRequest(BaseModel):
+    text: str = Field(..., description="Text payload to inspect for secrets, credentials, or PII")
+
+
 # ---------------------------------------------------------------------------
-# POST /rag/ingest-knowledge
+# POST /rag/scan-secrets (Phase 13 Governance)
+# ---------------------------------------------------------------------------
+
+@router.post("/scan-secrets")
+async def scan_secrets(request: ScanSecretsRequest):
+    """
+    Inspect text payload for secrets, credentials, internal rates, and PII without modifying it.
+    Returns findings summary with masked previews.
+    """
+    findings = scrubber_service.scan_text(request.text)
+    scrubbed_preview, _ = scrubber_service.scrub_text(request.text)
+    return {
+        "findings_count": len(findings),
+        "has_sensitive_data": len(findings) > 0,
+        "findings": findings,
+        "scrubbed_preview": scrubbed_preview,
+    }
+
+
+# ---------------------------------------------------------------------------
+# POST /rag/ingest-knowledge (Phase 13 Governed & Scrubbed)
 # ---------------------------------------------------------------------------
 
 @router.post("/ingest-knowledge", response_model=IngestResponse)
@@ -128,14 +148,11 @@ async def ingest_knowledge(
     """
     Embed all structured knowledge base records (projects, employees, technologies,
     certifications) for an organization and store them in knowledge_chunks.
-
-    This endpoint powers the knowledge-search RAG search over company capability.
-    Safe to call repeatedly — use overwrite=true to refresh stale embeddings.
+    Applies Phase 13 Secret Scrubbing and Enterprise Clearance Tiers.
     """
     org_id = request.organization_id
-    logger.info(f"Starting KB ingestion for org={org_id}, overwrite={request.overwrite}")
+    logger.info(f"Starting KB ingestion for org={org_id}, overwrite={request.overwrite}, scrubbing={request.enable_scrubbing}")
 
-    # ── Optional: clear existing KB chunks ────────────────────────────────────
     if request.overwrite:
         try:
             supabase.table("knowledge_chunks").delete().eq("organization_id", org_id).execute()
@@ -148,6 +165,7 @@ async def ingest_knowledge(
         "employees": 0,
         "technologies": 0,
         "certifications": 0,
+        "scrubbed": 0,
         "errors": 0,
     }
 
@@ -157,7 +175,17 @@ async def ingest_knowledge(
         projects = resp.data or []
         for p in projects:
             try:
-                text = _project_to_text(p)
+                raw_text = _project_to_text(p)
+                clearance = p.get("clearance_level", "public_org_wide")
+                is_scrubbed = False
+                if request.enable_scrubbing:
+                    text, findings = scrubber_service.scrub_text(raw_text)
+                    if findings:
+                        is_scrubbed = True
+                        counts["scrubbed"] += len(findings)
+                else:
+                    text = raw_text
+
                 emb = embedding_service.get_embedding(text, task_type="RETRIEVAL_DOCUMENT")
                 vector_service.store_knowledge_chunk(
                     supabase=supabase,
@@ -168,6 +196,8 @@ async def ingest_knowledge(
                     source_id=str(p.get("id", "")),
                     source_name=p.get("name", "Unknown Project"),
                     extra_metadata={"industry": p.get("industry", ""), "client": p.get("client", "")},
+                    clearance_level=clearance,
+                    is_scrubbed=is_scrubbed,
                 )
                 counts["projects"] += 1
             except Exception as e:
@@ -182,7 +212,17 @@ async def ingest_knowledge(
         employees = resp.data or []
         for e in employees:
             try:
-                text = _employee_to_text(e)
+                raw_text = _employee_to_text(e)
+                clearance = e.get("clearance_level", "public_org_wide")
+                is_scrubbed = False
+                if request.enable_scrubbing:
+                    text, findings = scrubber_service.scrub_text(raw_text)
+                    if findings:
+                        is_scrubbed = True
+                        counts["scrubbed"] += len(findings)
+                else:
+                    text = raw_text
+
                 emb = embedding_service.get_embedding(text, task_type="RETRIEVAL_DOCUMENT")
                 vector_service.store_knowledge_chunk(
                     supabase=supabase,
@@ -193,6 +233,8 @@ async def ingest_knowledge(
                     source_id=str(e.get("id", "")),
                     source_name=e.get("name", "Unknown Employee"),
                     extra_metadata={"role": e.get("role", ""), "department": e.get("department", "")},
+                    clearance_level=clearance,
+                    is_scrubbed=is_scrubbed,
                 )
                 counts["employees"] += 1
             except Exception as ex:
@@ -207,7 +249,17 @@ async def ingest_knowledge(
         technologies = resp.data or []
         for t in technologies:
             try:
-                text = _technology_to_text(t)
+                raw_text = _technology_to_text(t)
+                clearance = t.get("clearance_level", "public_org_wide")
+                is_scrubbed = False
+                if request.enable_scrubbing:
+                    text, findings = scrubber_service.scrub_text(raw_text)
+                    if findings:
+                        is_scrubbed = True
+                        counts["scrubbed"] += len(findings)
+                else:
+                    text = raw_text
+
                 emb = embedding_service.get_embedding(text, task_type="RETRIEVAL_DOCUMENT")
                 vector_service.store_knowledge_chunk(
                     supabase=supabase,
@@ -218,6 +270,8 @@ async def ingest_knowledge(
                     source_id=str(t.get("id", "")),
                     source_name=t.get("name", "Unknown Technology"),
                     extra_metadata={"category": t.get("category", "")},
+                    clearance_level=clearance,
+                    is_scrubbed=is_scrubbed,
                 )
                 counts["technologies"] += 1
             except Exception as ex:
@@ -232,7 +286,17 @@ async def ingest_knowledge(
         certifications = resp.data or []
         for c in certifications:
             try:
-                text = _certification_to_text(c)
+                raw_text = _certification_to_text(c)
+                clearance = c.get("clearance_level", "public_org_wide")
+                is_scrubbed = False
+                if request.enable_scrubbing:
+                    text, findings = scrubber_service.scrub_text(raw_text)
+                    if findings:
+                        is_scrubbed = True
+                        counts["scrubbed"] += len(findings)
+                else:
+                    text = raw_text
+
                 emb = embedding_service.get_embedding(text, task_type="RETRIEVAL_DOCUMENT")
                 vector_service.store_knowledge_chunk(
                     supabase=supabase,
@@ -243,6 +307,8 @@ async def ingest_knowledge(
                     source_id=str(c.get("id", "")),
                     source_name=c.get("name", "Unknown Certification"),
                     extra_metadata={"issuer": c.get("issuer", "")},
+                    clearance_level=clearance,
+                    is_scrubbed=is_scrubbed,
                 )
                 counts["certifications"] += 1
             except Exception as ex:
@@ -253,7 +319,7 @@ async def ingest_knowledge(
 
     total = counts["projects"] + counts["employees"] + counts["technologies"] + counts["certifications"]
     logger.info(
-        f"KB ingestion complete: {total} chunks stored "
+        f"KB ingestion complete: {total} chunks stored, {counts['scrubbed']} secrets scrubbed "
         f"(projects={counts['projects']}, employees={counts['employees']}, "
         f"technologies={counts['technologies']}, certifications={counts['certifications']}, "
         f"errors={counts['errors']})"
@@ -266,9 +332,11 @@ async def ingest_knowledge(
         technologies_ingested=counts["technologies"],
         certifications_ingested=counts["certifications"],
         total_chunks_stored=total,
+        total_secrets_scrubbed=counts["scrubbed"],
         errors=counts["errors"],
         message=(
             f"Ingested {total} knowledge base records into pgvector. "
+            f"Scrubbed {counts['scrubbed']} sensitive tokens. "
             f"{'Some records failed — check logs.' if counts['errors'] > 0 else 'All records embedded successfully.'}"
         ),
     )
@@ -287,20 +355,24 @@ async def ingest_status(
     try:
         resp = (
             supabase.table("knowledge_chunks")
-            .select("source_type", count="exact")
+            .select("source_type, clearance_level, is_scrubbed", count="exact")
             .eq("organization_id", organization_id)
             .execute()
         )
         total = resp.count or 0
-        # Group by source_type
         by_type: dict = {}
+        scrubbed_count = 0
         for row in (resp.data or []):
             st = row.get("source_type", "unknown")
             by_type[st] = by_type.get(st, 0) + 1
+            if row.get("is_scrubbed"):
+                scrubbed_count += 1
+
         return {
             "organization_id": organization_id,
             "total_knowledge_chunks": total,
             "by_source_type": by_type,
+            "scrubbed_chunks": scrubbed_count,
             "is_ingested": total > 0,
         }
     except Exception as e:
@@ -309,5 +381,6 @@ async def ingest_status(
             "organization_id": organization_id,
             "total_knowledge_chunks": 0,
             "by_source_type": {},
+            "scrubbed_chunks": 0,
             "is_ingested": False,
         }

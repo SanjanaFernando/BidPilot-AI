@@ -38,6 +38,10 @@ class Settings(BaseSettings):
     # --- RBAC ---
     rbac_strict_mode: bool = False  # When False, missing JWT falls back to demo org_admin in dev
 
+    # --- Rate Limiting (Upstash Redis — Phase 16) ---
+    upstash_redis_rest_url: str = ""   # e.g. https://xxxxx.upstash.io
+    upstash_redis_rest_token: str = "" # Upstash REST token
+
     # --- App ---
     app_env: str = "development"
     log_level: str = "INFO"
@@ -49,6 +53,14 @@ class Settings(BaseSettings):
     @property
     def is_supabase_configured(self) -> bool:
         return bool(self.supabase_url and self.supabase_service_key)
+
+    @property
+    def is_redis_configured(self) -> bool:
+        return bool(self.upstash_redis_rest_url and self.upstash_redis_rest_token)
+
+    @property
+    def is_production(self) -> bool:
+        return self.app_env == "production"
 
 
 @lru_cache()
