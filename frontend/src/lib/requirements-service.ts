@@ -4,8 +4,12 @@
  * coverage verification, evidence citation tracking, and matrix exports.
  */
 
-const AI_SERVICE_URL =
-  process.env.NEXT_PUBLIC_AI_SERVICE_URL || "http://localhost:8000";
+const AI_SERVICE_URL = (
+  process.env.NEXT_PUBLIC_AI_SERVICE_URL || "http://localhost:8000"
+)
+  .trim()
+  .replace(/^["']|["']$/g, "")
+  .replace(/\/+$/, "");
 
 export type RequirementStatus =
   | "covered"

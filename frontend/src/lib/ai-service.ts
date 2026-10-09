@@ -3,8 +3,12 @@
  * Communicates with the FastAPI AI service (localhost:8000 in dev).
  */
 
-const AI_SERVICE_URL =
-  process.env.NEXT_PUBLIC_AI_SERVICE_URL || "http://localhost:8000";
+const AI_SERVICE_URL = (
+  process.env.NEXT_PUBLIC_AI_SERVICE_URL || "http://localhost:8000"
+)
+  .trim()
+  .replace(/^["']|["']$/g, "")
+  .replace(/\/+$/, "");
 
 // ---------------------------------------------------------------------------
 // Types

@@ -3,8 +3,12 @@
  * Typed wrappers for all RAG and Knowledge Ingest API endpoints.
  */
 
-const AI_SERVICE_URL =
-  process.env.NEXT_PUBLIC_AI_SERVICE_URL || "http://localhost:8000";
+const AI_SERVICE_URL = (
+  process.env.NEXT_PUBLIC_AI_SERVICE_URL || "http://localhost:8000"
+)
+  .trim()
+  .replace(/^["']|["']$/g, "")
+  .replace(/\/+$/, "");
 
 const DEFAULT_ORG_ID =
   process.env.NEXT_PUBLIC_DEFAULT_ORG_ID ||

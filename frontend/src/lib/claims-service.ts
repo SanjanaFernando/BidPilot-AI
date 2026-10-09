@@ -3,8 +3,12 @@
  * Connects frontend to the Prove This Claim engine and citations table.
  */
 
-const AI_SERVICE_URL =
-  process.env.NEXT_PUBLIC_AI_SERVICE_URL || "http://localhost:8000";
+const AI_SERVICE_URL = (
+  process.env.NEXT_PUBLIC_AI_SERVICE_URL || "http://localhost:8000"
+)
+  .trim()
+  .replace(/^["']|["']$/g, "")
+  .replace(/\/+$/, "");
 
 export interface ClaimVerifyEvidenceItem {
   chunk_id?: string | null;

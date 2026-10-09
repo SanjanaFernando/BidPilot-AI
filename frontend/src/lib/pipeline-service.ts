@@ -5,8 +5,12 @@
  * source citations inspection, and dual DOCX / PDF exports.
  */
 
-const AI_SERVICE_URL =
-  process.env.NEXT_PUBLIC_AI_SERVICE_URL || "http://localhost:8000";
+const AI_SERVICE_URL = (
+  process.env.NEXT_PUBLIC_AI_SERVICE_URL || "http://localhost:8000"
+)
+  .trim()
+  .replace(/^["']|["']$/g, "")
+  .replace(/\/+$/, "");
 
 export interface PipelineStageResult {
   stage_name: string;
