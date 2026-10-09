@@ -3,9 +3,7 @@
  * Connects frontend to the Prove This Claim engine and citations table.
  */
 
-const AI_SERVICE_URL = (
-  process.env.NEXT_PUBLIC_AI_SERVICE_URL || "http://localhost:8000"
-)
+const AI_SERVICE_URL = (process.env.NEXT_PUBLIC_AI_SERVICE_URL || "http://localhost:8000")
   .trim()
   .replace(/^["']|["']$/g, "")
   .replace(/\/+$/, "");
@@ -131,10 +129,7 @@ export const claimsService = {
   /**
    * Fetch all active citations for a proposal section.
    */
-  async getSectionCitations(
-    sectionId: string,
-    organizationId: string
-  ): Promise<CitationItem[]> {
+  async getSectionCitations(sectionId: string, organizationId: string): Promise<CitationItem[]> {
     const params = new URLSearchParams({ organization_id: organizationId });
     const res = await fetch(
       `${AI_SERVICE_URL}/agents/claims/${encodeURIComponent(sectionId)}?${params.toString()}`

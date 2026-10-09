@@ -7,8 +7,7 @@ import { ROLES, ROLE_LIST, RoleName } from "@/lib/rbac";
 import { Shield, ChevronDown, ChevronUp, Users, ExternalLink, Check, Sparkles } from "lucide-react";
 
 export default function GlobalRoleSwitcher() {
-  const { role, roleDef, permissions, fullName, switchDemoRole, isDemo } =
-    useUserPermissions();
+  const { role, roleDef, permissions, fullName, switchDemoRole, isDemo } = useUserPermissions();
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
 
@@ -123,9 +122,7 @@ export default function GlobalRoleSwitcher() {
                     border: isActive
                       ? `1.5px solid ${r.color}`
                       : "1px solid rgba(255,255,255,0.12)",
-                    background: isActive
-                      ? "rgba(255,255,255,0.15)"
-                      : "rgba(255,255,255,0.04)",
+                    background: isActive ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.04)",
                     color: isActive ? "#fff" : "rgba(255,255,255,0.75)",
                     transition: "all 0.15s ease",
                   }}

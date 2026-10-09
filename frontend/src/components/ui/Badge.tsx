@@ -27,4 +27,3 @@ export default function Badge({ status }: { status: StatusKey }) {
 }
 
 export { Badge };
-

@@ -11,11 +11,11 @@ export type OrganizationPlan = "free" | "pro" | "enterprise";
 
 /** Phase 12: Enterprise role hierarchy */
 export type UserRole =
-  | "org_admin"         // VP / Operations Director
-  | "bid_manager"       // Proposal Lead / Capture Manager
+  | "org_admin" // VP / Operations Director
+  | "bid_manager" // Proposal Lead / Capture Manager
   | "solution_architect" // Technical Lead / Enterprise Architect
   | "compliance_officer" // Legal Counsel / Risk Manager
-  | "domain_sme"        // Senior Engineer / Project Manager
+  | "domain_sme" // Senior Engineer / Project Manager
   | "executive_viewer"; // C-Level / External Auditor (read-only)
 
 export type AvailabilityStatus = "available" | "allocated" | "partially_available";
@@ -446,7 +446,7 @@ export interface TenderCollaborator {
 
 /** Section-level work assignment */
 export type SectionAssignmentStatus =
-  | "assigned" | "in_progress" | "submitted" | "approved" | "rejected";
+  "assigned" | "in_progress" | "submitted" | "approved" | "rejected";
 
 export interface SectionAssignment {
   id: string;

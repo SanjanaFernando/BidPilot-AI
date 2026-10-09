@@ -83,13 +83,15 @@ export function clearCachedAnalysis(tenderId: string): void {
 
 export async function fetchRequirementsFromDB(
   tenderId: string,
-  organizationId: string,
+  organizationId: string
 ): Promise<ExtractedRequirement[]> {
   if (!isSupabaseConfigured || !supabase) return [];
   try {
     const { data, error } = await supabase
       .from("requirements")
-      .select("req_code, category, title, description, is_mandatory, source_page, source_section, status")
+      .select(
+        "req_code, category, title, description, is_mandatory, source_page, source_section, status"
+      )
       .eq("tender_id", tenderId)
       .eq("organization_id", organizationId)
       .order("req_code");
@@ -146,7 +148,7 @@ export interface AnalysisProgress {
  */
 export async function runAnalysis(
   options: RunAnalysisOptions,
-  onProgress?: (p: AnalysisProgress) => void,
+  onProgress?: (p: AnalysisProgress) => void
 ): Promise<AnalyzeRFPResponse> {
   const emit = (step: AnalysisStep, label: string, percent: number) => {
     onProgress?.({ step, label, percent });
@@ -160,7 +162,7 @@ export async function runAnalysis(
     options.tenderId,
     options.organizationId,
     options.documentId,
-    options.saveRequirements ?? true,
+    options.saveRequirements ?? true
   );
 
   emit("parsing_output", `Parsed ${result.analysis.requirements.length} requirements & scope…`, 75);
@@ -168,13 +170,17 @@ export async function runAnalysis(
   emit(
     "saving_requirements",
     `Saved ${result.requirements_saved} requirements to tender database…`,
-    90,
+    90
   );
 
   // Cache locally
   setCachedAnalysis(options.tenderId, result.analysis, options.documentId);
 
-  emit("done", `Analysis complete — ${result.analysis.requirements.length} requirements ready.`, 100);
+  emit(
+    "done",
+    `Analysis complete — ${result.analysis.requirements.length} requirements ready.`,
+    100
+  );
 
   return result;
 }
@@ -186,7 +192,7 @@ export async function runAnalysis(
  */
 export async function loadAnalysisState(
   tenderId: string,
-  organizationId: string,
+  organizationId: string
 ): Promise<{ analysis: RFPAnalysis | null; requirements: ExtractedRequirement[] }> {
   // 1. Try localStorage first (fast)
   const cached = getCachedAnalysis(tenderId);

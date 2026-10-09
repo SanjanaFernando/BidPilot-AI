@@ -75,7 +75,6 @@ import RequirementVerifyModal from "@/components/tenders/RequirementVerifyModal"
 import MultiAgentWorkflowModal from "@/components/tenders/MultiAgentWorkflowModal";
 import { useUserPermissions } from "@/hooks/useUserPermissions";
 
-
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
@@ -87,8 +86,7 @@ const DEFAULT_ORG_ID_STR = DEFAULT_ORG_ID;
 
 function SimilarityPill({ score }: { score: number }) {
   const pct = Math.round(score * 100);
-  const bg =
-    pct >= 80 ? "#15803D" : pct >= 60 ? "#D97706" : pct >= 40 ? "#B45309" : "#94A3B8";
+  const bg = pct >= 80 ? "#15803D" : pct >= 60 ? "#D97706" : pct >= 40 ? "#B45309" : "#94A3B8";
   return (
     <span
       className="rounded-full px-2 py-0.5 text-[10px] font-bold text-white"
@@ -180,7 +178,7 @@ function AnalysisProgressModal({
           organizationId: DEFAULT_ORG_ID_STR,
           saveRequirements: true,
         },
-        (p) => setState((s) => ({ ...s, progress: p })),
+        (p) => setState((s) => ({ ...s, progress: p }))
       );
 
       setState((s) => ({
@@ -216,7 +214,9 @@ function AnalysisProgressModal({
             </div>
             <div>
               <div className="text-sm font-bold text-[#1E252D]">AI RFP Analysis Agent</div>
-              <div className="text-xs text-[#64748B]">Automated Tender Intelligence · Gemini Flash</div>
+              <div className="text-xs text-[#64748B]">
+                Automated Tender Intelligence · Gemini Flash
+              </div>
             </div>
           </div>
           {state.step !== "running" && (
@@ -226,26 +226,30 @@ function AnalysisProgressModal({
           )}
         </div>
 
-        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
+        <div className="flex-1 space-y-5 overflow-y-auto px-6 py-5">
           {/* Idle State — Automated Agent Overview */}
           {state.step === "idle" && (
             <div className="space-y-4">
               {/* Tender Context Card */}
               <div className="rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-4">
-                <div className="text-[10px] font-bold uppercase tracking-wider text-[#64748B] mb-1">
+                <div className="mb-1 text-[10px] font-bold tracking-wider text-[#64748B] uppercase">
                   Target Tender
                 </div>
-                <div className="text-sm font-bold text-[#1E252D] line-clamp-1">{tender.name}</div>
-                <div className="text-xs text-[#64748B] mt-0.5 flex items-center gap-2">
-                  <span>Client: <strong className="text-[#1E252D]">{tender.client}</strong></span>
+                <div className="line-clamp-1 text-sm font-bold text-[#1E252D]">{tender.name}</div>
+                <div className="mt-0.5 flex items-center gap-2 text-xs text-[#64748B]">
+                  <span>
+                    Client: <strong className="text-[#1E252D]">{tender.client}</strong>
+                  </span>
                   <span>•</span>
-                  <span>Industry: <strong className="text-[#1E252D]">{tender.industry}</strong></span>
+                  <span>
+                    Industry: <strong className="text-[#1E252D]">{tender.industry}</strong>
+                  </span>
                 </div>
               </div>
 
               {/* Automated Extraction Highlights */}
-              <div className="rounded-xl border border-[#E2E8F0] bg-white p-4 space-y-3">
-                <div className="text-xs font-bold text-[#1E252D] flex items-center gap-1.5">
+              <div className="space-y-3 rounded-xl border border-[#E2E8F0] bg-white p-4">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-[#1E252D]">
                   <Sparkles size={14} className="text-[#DDA625]" /> What the AI Agent will extract:
                 </div>
                 <div className="grid grid-cols-1 gap-2.5 text-xs text-[#475569]">
@@ -254,7 +258,8 @@ function AnalysisProgressModal({
                       <CheckCircle2 size={11} />
                     </div>
                     <div>
-                      <strong className="text-[#1E252D]">Categorized Requirements:</strong> Technical, Functional, Security & Compliance clauses with mandatory flags.
+                      <strong className="text-[#1E252D]">Categorized Requirements:</strong>{" "}
+                      Technical, Functional, Security & Compliance clauses with mandatory flags.
                     </div>
                   </div>
                   <div className="flex items-start gap-2.5">
@@ -262,7 +267,8 @@ function AnalysisProgressModal({
                       <CheckCircle2 size={11} />
                     </div>
                     <div>
-                      <strong className="text-[#1E252D]">Evaluation Criteria:</strong> Scoring weights, technical qualification hurdles & financial matrices.
+                      <strong className="text-[#1E252D]">Evaluation Criteria:</strong> Scoring
+                      weights, technical qualification hurdles & financial matrices.
                     </div>
                   </div>
                   <div className="flex items-start gap-2.5">
@@ -270,14 +276,16 @@ function AnalysisProgressModal({
                       <CheckCircle2 size={11} />
                     </div>
                     <div>
-                      <strong className="text-[#1E252D]">Scope & Tech Stack:</strong> Deliverables, timelines, certifications, and required technologies.
+                      <strong className="text-[#1E252D]">Scope & Tech Stack:</strong> Deliverables,
+                      timelines, certifications, and required technologies.
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="text-[11px] text-[#64748B] text-center italic">
-                The agent will automatically locate and process the uploaded RFP document for this tender.
+              <div className="text-center text-[11px] text-[#64748B] italic">
+                The agent will automatically locate and process the uploaded RFP document for this
+                tender.
               </div>
             </div>
           )}
@@ -294,8 +302,7 @@ function AnalysisProgressModal({
                   return (
                     <div key={s} className="flex items-center gap-3">
                       <div
-                        className={`flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full text-[11px] font-bold transition-all
-                          ${done ? "bg-[#15803D] text-white" : active ? "bg-[#7A1C2C] text-white" : "bg-[#F1F5F9] text-[#94A3B8]"}`}
+                        className={`flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full text-[11px] font-bold transition-all ${done ? "bg-[#15803D] text-white" : active ? "bg-[#7A1C2C] text-white" : "bg-[#F1F5F9] text-[#94A3B8]"}`}
                       >
                         {done ? (
                           <CheckCircle2 size={14} />
@@ -327,7 +334,7 @@ function AnalysisProgressModal({
               </div>
 
               {state.progress?.label && (
-                <p className="text-xs italic text-[#64748B]">{state.progress.label}</p>
+                <p className="text-xs text-[#64748B] italic">{state.progress.label}</p>
               )}
             </div>
           )}
@@ -341,8 +348,8 @@ function AnalysisProgressModal({
                   <div className="text-sm font-bold text-green-800">Analysis Complete</div>
                   <div className="mt-0.5 text-xs text-green-700">
                     {state.analysis.requirements.length} requirements extracted in{" "}
-                    {(state.latencyMs / 1000).toFixed(1)}s ·{" "}
-                    {state.requirementsSaved} saved to database
+                    {(state.latencyMs / 1000).toFixed(1)}s · {state.requirementsSaved} saved to
+                    database
                   </div>
                 </div>
               </div>
@@ -351,20 +358,36 @@ function AnalysisProgressModal({
                 <div className="text-xs font-bold text-[#1E252D]">RFP Summary</div>
                 <div className="grid grid-cols-2 gap-2">
                   <div className="rounded-lg bg-[#F7F9FB] p-3">
-                    <div className="text-[10px] font-semibold uppercase tracking-wide text-[#64748B]">Title</div>
-                    <div className="mt-0.5 text-xs font-medium text-[#1E252D] line-clamp-2">{state.analysis.title}</div>
+                    <div className="text-[10px] font-semibold tracking-wide text-[#64748B] uppercase">
+                      Title
+                    </div>
+                    <div className="mt-0.5 line-clamp-2 text-xs font-medium text-[#1E252D]">
+                      {state.analysis.title}
+                    </div>
                   </div>
                   <div className="rounded-lg bg-[#F7F9FB] p-3">
-                    <div className="text-[10px] font-semibold uppercase tracking-wide text-[#64748B]">Client</div>
-                    <div className="mt-0.5 text-xs font-medium text-[#1E252D] line-clamp-2">{state.analysis.client_name}</div>
+                    <div className="text-[10px] font-semibold tracking-wide text-[#64748B] uppercase">
+                      Client
+                    </div>
+                    <div className="mt-0.5 line-clamp-2 text-xs font-medium text-[#1E252D]">
+                      {state.analysis.client_name}
+                    </div>
                   </div>
                   <div className="rounded-lg bg-[#F7F9FB] p-3">
-                    <div className="text-[10px] font-semibold uppercase tracking-wide text-[#64748B]">Deadline</div>
-                    <div className="mt-0.5 text-xs font-medium text-[#1E252D]">{state.analysis.submission_deadline ?? "Not specified"}</div>
+                    <div className="text-[10px] font-semibold tracking-wide text-[#64748B] uppercase">
+                      Deadline
+                    </div>
+                    <div className="mt-0.5 text-xs font-medium text-[#1E252D]">
+                      {state.analysis.submission_deadline ?? "Not specified"}
+                    </div>
                   </div>
                   <div className="rounded-lg bg-[#F7F9FB] p-3">
-                    <div className="text-[10px] font-semibold uppercase tracking-wide text-[#64748B]">Requirements</div>
-                    <div className="mt-0.5 text-2xl font-extrabold text-[#7A1C2C]">{state.analysis.requirements.length}</div>
+                    <div className="text-[10px] font-semibold tracking-wide text-[#64748B] uppercase">
+                      Requirements
+                    </div>
+                    <div className="mt-0.5 text-2xl font-extrabold text-[#7A1C2C]">
+                      {state.analysis.requirements.length}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -379,15 +402,15 @@ function AnalysisProgressModal({
               </div>
               <div className="text-xs text-red-700">{state.errorMsg}</div>
               <div className="mt-2 text-[11px] text-red-500">
-                Make sure the AI service is running at <code className="font-mono">localhost:8000</code>{" "}
-                and GEMINI_API_KEY is set.
+                Make sure the AI service is running at{" "}
+                <code className="font-mono">localhost:8000</code> and GEMINI_API_KEY is set.
               </div>
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="border-t border-[#E2E8F0] px-6 py-4 flex items-center justify-between gap-3">
+        <div className="flex items-center justify-between gap-3 border-t border-[#E2E8F0] px-6 py-4">
           {state.step === "idle" && (
             <>
               <Button
@@ -407,18 +430,14 @@ function AnalysisProgressModal({
             </>
           )}
           {state.step === "running" && (
-            <div className="text-xs text-[#64748B] italic">
-              Analysis in progress — please wait…
-            </div>
+            <div className="text-xs text-[#64748B] italic">Analysis in progress — please wait…</div>
           )}
           {(state.step === "done" || state.step === "error") && (
             <>
               {state.step === "error" && (
                 <Button
                   variant="outline"
-                  onClick={() =>
-                    setState((s) => ({ ...s, step: "idle", errorMsg: null }))
-                  }
+                  onClick={() => setState((s) => ({ ...s, step: "idle", errorMsg: null }))}
                   className="h-9 border-[#E2E8F0] px-4 text-xs text-[#64748B]"
                 >
                   Try Again
@@ -442,20 +461,10 @@ function AnalysisProgressModal({
 // RAG Evidence Modal (keep as secondary action)
 // ---------------------------------------------------------------------------
 
-type UnifiedResult =
-  | ({ kind: "rfp" } & RAGChunkResult)
-  | ({ kind: "kb" } & KnowledgeChunkResult);
+type UnifiedResult = ({ kind: "rfp" } & RAGChunkResult) | ({ kind: "kb" } & KnowledgeChunkResult);
 
-function RAGResultModal({
-  tender,
-  onClose,
-}: {
-  tender: TenderItem;
-  onClose: () => void;
-}) {
-  const [query, setQuery] = useState(
-    `Healthcare cloud platform experience for ${tender.name}`,
-  );
+function RAGResultModal({ tender, onClose }: { tender: TenderItem; onClose: () => void }) {
+  const [query, setQuery] = useState(`Healthcare cloud platform experience for ${tender.name}`);
   const [results, setResults] = useState<UnifiedResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -565,10 +574,13 @@ function RAGResultModal({
                 if (r.kind === "kb") {
                   const color = SOURCE_TYPE_COLORS[r.source_type] || "#64748B";
                   return (
-                    <div key={r.chunk_id} className="rounded-lg border border-[#E2E8F0] bg-white p-4">
+                    <div
+                      key={r.chunk_id}
+                      className="rounded-lg border border-[#E2E8F0] bg-white p-4"
+                    >
                       <div className="mb-2 flex flex-wrap items-center gap-2">
                         <span
-                          className="rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase text-white"
+                          className="rounded-full px-2.5 py-0.5 text-[10px] font-bold text-white uppercase"
                           style={{ background: color }}
                         >
                           {SOURCE_TYPE_LABELS[r.source_type] || r.source_type}
@@ -576,12 +588,17 @@ function RAGResultModal({
                         <span className="text-xs font-bold text-[#1E252D]">{r.source_name}</span>
                         <SimilarityPill score={r.similarity} />
                       </div>
-                      <p className="line-clamp-4 text-xs leading-relaxed text-[#475569]">{r.content}</p>
+                      <p className="line-clamp-4 text-xs leading-relaxed text-[#475569]">
+                        {r.content}
+                      </p>
                     </div>
                   );
                 }
                 return (
-                  <div key={r.chunk_id} className="rounded-lg border border-[#E2E8F0] bg-[#F7F9FB] p-4">
+                  <div
+                    key={r.chunk_id}
+                    className="rounded-lg border border-[#E2E8F0] bg-[#F7F9FB] p-4"
+                  >
                     <div className="mb-2 flex flex-wrap items-center gap-2">
                       <span className="rounded-full bg-blue-100 px-2.5 py-0.5 text-[10px] font-bold text-blue-700">
                         RFP
@@ -592,7 +609,9 @@ function RAGResultModal({
                       </span>
                       <SimilarityPill score={r.similarity} />
                     </div>
-                    <p className="line-clamp-4 text-xs leading-relaxed text-[#475569]">{r.content}</p>
+                    <p className="line-clamp-4 text-xs leading-relaxed text-[#475569]">
+                      {r.content}
+                    </p>
                   </div>
                 );
               })}
@@ -600,7 +619,7 @@ function RAGResultModal({
           )}
         </div>
 
-        <div className="border-t border-[#E2E8F0] px-6 py-3 flex items-center justify-between">
+        <div className="flex items-center justify-between border-t border-[#E2E8F0] px-6 py-3">
           <Link
             href="/knowledge/search"
             className="flex items-center gap-1 text-xs font-semibold text-[#7A1C2C] hover:underline"
@@ -626,7 +645,7 @@ function RAGResultModal({
 
 function RFPSummaryCard({ analysis }: { analysis: RFPAnalysis }) {
   return (
-    <Card className="border-[#E2E8F0] bg-white overflow-hidden">
+    <Card className="overflow-hidden border-[#E2E8F0] bg-white">
       <CardHeader className="border-b border-[#E2E8F0] px-6 py-4">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-sm font-bold text-[#1E252D]">
@@ -640,10 +659,10 @@ function RFPSummaryCard({ analysis }: { analysis: RFPAnalysis }) {
           </span>
         </div>
       </CardHeader>
-      <CardContent className="p-6 space-y-5">
+      <CardContent className="space-y-5 p-6">
         {/* Summary */}
         <div>
-          <div className="text-xs font-semibold uppercase tracking-wide text-[#64748B] mb-1">
+          <div className="mb-1 text-xs font-semibold tracking-wide text-[#64748B] uppercase">
             Executive Summary
           </div>
           <p className="text-sm leading-relaxed text-[#475569]">{analysis.summary}</p>
@@ -655,7 +674,7 @@ function RFPSummaryCard({ analysis }: { analysis: RFPAnalysis }) {
           {/* Evaluation Criteria */}
           {analysis.evaluation_criteria.length > 0 && (
             <div>
-              <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-[#64748B]">
+              <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold tracking-wide text-[#64748B] uppercase">
                 <BarChart3 size={12} className="text-[#7A1C2C]" /> Evaluation Criteria
               </div>
               <ul className="space-y-1">
@@ -672,7 +691,7 @@ function RFPSummaryCard({ analysis }: { analysis: RFPAnalysis }) {
           {/* Deliverables */}
           {analysis.deliverables.length > 0 && (
             <div>
-              <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-[#64748B]">
+              <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold tracking-wide text-[#64748B] uppercase">
                 <Boxes size={12} className="text-[#DDA625]" /> Key Deliverables
               </div>
               <ul className="space-y-1">
@@ -689,7 +708,7 @@ function RFPSummaryCard({ analysis }: { analysis: RFPAnalysis }) {
           {/* Technologies required */}
           {analysis.technologies.length > 0 && (
             <div>
-              <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-[#64748B]">
+              <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold tracking-wide text-[#64748B] uppercase">
                 <Cpu size={12} className="text-blue-600" /> Technologies Required
               </div>
               <div className="flex flex-wrap gap-1.5">
@@ -708,7 +727,7 @@ function RFPSummaryCard({ analysis }: { analysis: RFPAnalysis }) {
           {/* Certifications required */}
           {analysis.certifications_required.length > 0 && (
             <div>
-              <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-[#64748B]">
+              <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold tracking-wide text-[#64748B] uppercase">
                 <Award size={12} className="text-[#15803D]" /> Certifications Required
               </div>
               <div className="flex flex-wrap gap-1.5">
@@ -733,11 +752,7 @@ function RFPSummaryCard({ analysis }: { analysis: RFPAnalysis }) {
 // Main page
 // ---------------------------------------------------------------------------
 
-export default function TenderDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default function TenderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
   const { hasPermission, roleDef } = useUserPermissions();
@@ -781,7 +796,8 @@ export default function TenderDetailPage({
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [mandatoryFilter, setMandatoryFilter] = useState<"all" | "mandatory" | "optional">("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [selectedReqForEvidence, setSelectedReqForEvidence] = useState<RequirementMatrixItem | null>(null);
+  const [selectedReqForEvidence, setSelectedReqForEvidence] =
+    useState<RequirementMatrixItem | null>(null);
   const [showVerifyModal, setShowVerifyModal] = useState<boolean>(false);
   const [showPipelineModal, setShowPipelineModal] = useState<boolean>(false);
   const [updatingReqId, setUpdatingReqId] = useState<string | null>(null);
@@ -846,7 +862,7 @@ export default function TenderDetailPage({
       loadMatrix();
       setActiveTab("requirements");
     },
-    [loadMatrix],
+    [loadMatrix]
   );
 
   const handleInlineStatusChange = async (reqId: string, newStatus: RequirementStatus) => {
@@ -908,7 +924,8 @@ export default function TenderDetailPage({
   // Filtered requirements for matrix table
   const filteredMatrix = matrixRequirements.filter((r) => {
     if (statusFilter !== "all" && r.status !== statusFilter) return false;
-    if (categoryFilter !== "all" && r.category.toLowerCase() !== categoryFilter.toLowerCase()) return false;
+    if (categoryFilter !== "all" && r.category.toLowerCase() !== categoryFilter.toLowerCase())
+      return false;
     if (mandatoryFilter === "mandatory" && !r.is_mandatory) return false;
     if (mandatoryFilter === "optional" && r.is_mandatory) return false;
     if (searchQuery.trim()) {
@@ -934,8 +951,10 @@ export default function TenderDetailPage({
         })
       : tender.deadline || "TBD";
 
-  const totalReqCount = matrixStats?.total ?? (isLiveData ? aiRequirements.length : tender.requirements || 0);
-  const coveredCount = matrixStats?.covered ?? (isLiveData ? aiRequirements.filter((r) => r.is_mandatory).length : 0);
+  const totalReqCount =
+    matrixStats?.total ?? (isLiveData ? aiRequirements.length : tender.requirements || 0);
+  const coveredCount =
+    matrixStats?.covered ?? (isLiveData ? aiRequirements.filter((r) => r.is_mandatory).length : 0);
   const partialCount = matrixStats?.partially_covered ?? 0;
   const evidenceNeededCount = matrixStats?.evidence_required ?? 0;
   const missingCount = matrixStats?.missing ?? 0;
@@ -987,9 +1006,7 @@ export default function TenderDetailPage({
           organizationId={DEFAULT_ORG_ID_STR}
           onClose={() => setSelectedReqForEvidence(null)}
           onUpdated={(updated) => {
-            setMatrixRequirements((prev) =>
-              prev.map((r) => (r.id === updated.id ? updated : r))
-            );
+            setMatrixRequirements((prev) => prev.map((r) => (r.id === updated.id ? updated : r)));
             loadMatrix();
           }}
         />
@@ -1086,8 +1103,8 @@ export default function TenderDetailPage({
                 }
                 className={`h-9 gap-2 px-4 text-xs font-semibold ${
                   canRunAgents
-                    ? "bg-[#7A1C2C] text-white hover:bg-[#631724] cursor-pointer"
-                    : "bg-slate-200 text-slate-400 cursor-not-allowed opacity-60 pointer-events-auto"
+                    ? "cursor-pointer bg-[#7A1C2C] text-white hover:bg-[#631724]"
+                    : "pointer-events-auto cursor-not-allowed bg-slate-200 text-slate-400 opacity-60"
                 }`}
               >
                 <Bot size={14} />
@@ -1105,8 +1122,8 @@ export default function TenderDetailPage({
                 }
                 className={`h-9 gap-2 px-4 text-xs font-bold ${
                   canRunAgents || canVerifyCompliance
-                    ? "border-none bg-gradient-to-r from-[#DDA625] to-[#B45309] text-white shadow-xs hover:opacity-90 cursor-pointer"
-                    : "bg-slate-200 text-slate-400 cursor-not-allowed opacity-60 pointer-events-auto"
+                    ? "cursor-pointer border-none bg-gradient-to-r from-[#DDA625] to-[#B45309] text-white shadow-xs hover:opacity-90"
+                    : "pointer-events-auto cursor-not-allowed bg-slate-200 text-slate-400 opacity-60"
                 }`}
               >
                 <Sparkles size={14} />
@@ -1124,8 +1141,8 @@ export default function TenderDetailPage({
                 }
                 className={`h-9 gap-2 px-4 text-xs font-bold ${
                   canRunAgents
-                    ? "border-none bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 text-white shadow-md shadow-indigo-500/20 hover:opacity-95 cursor-pointer"
-                    : "bg-slate-200 text-slate-400 cursor-not-allowed opacity-60 pointer-events-auto"
+                    ? "cursor-pointer border-none bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 text-white shadow-md shadow-indigo-500/20 hover:opacity-95"
+                    : "pointer-events-auto cursor-not-allowed bg-slate-200 text-slate-400 opacity-60"
                 }`}
               >
                 <Zap size={14} />
@@ -1157,8 +1174,8 @@ export default function TenderDetailPage({
                 }
                 className={`ml-auto h-9 gap-2 text-xs font-semibold ${
                   canDeleteTender
-                    ? "border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 cursor-pointer"
-                    : "border-slate-200 text-slate-300 cursor-not-allowed opacity-40 pointer-events-auto"
+                    ? "cursor-pointer border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+                    : "pointer-events-auto cursor-not-allowed border-slate-200 text-slate-300 opacity-40"
                 }`}
               >
                 <Trash2 size={14} />
@@ -1259,8 +1276,8 @@ export default function TenderDetailPage({
                       Run AI RFP Analysis First
                     </div>
                     <div className="mt-1 text-xs text-[#64748B]">
-                      Upload the RFP PDF and run the AI analysis to extract structured
-                      requirements, evaluation criteria, technologies, and certifications.
+                      Upload the RFP PDF and run the AI analysis to extract structured requirements,
+                      evaluation criteria, technologies, and certifications.
                     </div>
                   </div>
                   <Button
@@ -1273,8 +1290,8 @@ export default function TenderDetailPage({
                     }
                     className={`h-9 shrink-0 px-4 text-xs font-semibold ${
                       canRunAgents
-                        ? "bg-[#7A1C2C] text-white hover:bg-[#631724] cursor-pointer"
-                        : "bg-slate-200 text-slate-400 cursor-not-allowed opacity-60 pointer-events-auto"
+                        ? "cursor-pointer bg-[#7A1C2C] text-white hover:bg-[#631724]"
+                        : "pointer-events-auto cursor-not-allowed bg-slate-200 text-slate-400 opacity-60"
                     }`}
                   >
                     Start Analysis
@@ -1294,12 +1311,14 @@ export default function TenderDetailPage({
                     <span className="text-sm font-bold text-white">
                       Phase 8 — Autonomous Multi-Agent Proposal Generation
                     </span>
-                    <span className="rounded-full bg-indigo-500/30 px-2 py-0.5 text-[10px] font-semibold text-indigo-200 border border-indigo-500/40">
+                    <span className="rounded-full border border-indigo-500/40 bg-indigo-500/30 px-2 py-0.5 text-[10px] font-semibold text-indigo-200">
                       7 Specialized Agents
                     </span>
                   </div>
-                  <p className="text-xs text-slate-300 max-w-2xl leading-relaxed">
-                    Execute the end-to-end pipeline: Technical Agent (architecture &amp; cloud), Business Agent (case studies &amp; SLAs), Proposal Agent (10 markdown sections), Compliance Agent, and Review Agent (win probability scoring).
+                  <p className="max-w-2xl text-xs leading-relaxed text-slate-300">
+                    Execute the end-to-end pipeline: Technical Agent (architecture &amp; cloud),
+                    Business Agent (case studies &amp; SLAs), Proposal Agent (10 markdown sections),
+                    Compliance Agent, and Review Agent (win probability scoring).
                   </p>
                 </div>
                 <Button
@@ -1310,10 +1329,10 @@ export default function TenderDetailPage({
                       ? `Running multi-agent pipeline requires 'agents:run' permission (Disabled for ${roleDef.displayName})`
                       : undefined
                   }
-                  className={`h-9 shrink-0 gap-1.5 px-4 text-xs font-bold border ${
+                  className={`h-9 shrink-0 gap-1.5 border px-4 text-xs font-bold ${
                     canRunAgents
-                      ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-400 hover:to-purple-500 shadow-lg shadow-indigo-500/30 border-indigo-400/30 cursor-pointer"
-                      : "bg-slate-700 text-slate-400 border-slate-600 cursor-not-allowed opacity-60 pointer-events-auto"
+                      ? "cursor-pointer border-indigo-400/30 bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/30 hover:from-indigo-400 hover:to-purple-500"
+                      : "pointer-events-auto cursor-not-allowed border-slate-600 bg-slate-700 text-slate-400 opacity-60"
                   }`}
                 >
                   <Zap size={14} />
@@ -1335,7 +1354,8 @@ export default function TenderDetailPage({
                     Proposal Draft Ready for Review
                   </div>
                   <div className="mt-1 text-xs text-[#64748B]">
-                    Requirements traceability matrix verified with {coveragePercentage}% compliance coverage.
+                    Requirements traceability matrix verified with {coveragePercentage}% compliance
+                    coverage.
                   </div>
                 </div>
                 <Link href={`/proposals/${tender.id}`}>
@@ -1353,12 +1373,48 @@ export default function TenderDetailPage({
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#E2E8F0] bg-white p-3 shadow-xs">
               <div className="flex flex-wrap items-center gap-1.5">
                 {[
-                  { key: "all", label: "All", count: totalReqCount, bg: "#F1F5F9", text: "#475569" },
-                  { key: "covered", label: "Covered", count: coveredCount, bg: "#DCFCE7", text: "#15803D" },
-                  { key: "partially_covered", label: "Partial", count: partialCount, bg: "#FEF3C7", text: "#B45309" },
-                  { key: "evidence_required", label: "Evidence Req.", count: evidenceNeededCount, bg: "#EDE9FE", text: "#7C3AED" },
-                  { key: "missing", label: "Missing", count: missingCount, bg: "#FEE2E2", text: "#B91C1C" },
-                  { key: "unverified", label: "Unverified", count: unverifiedCount, bg: "#F8FAFC", text: "#64748B" },
+                  {
+                    key: "all",
+                    label: "All",
+                    count: totalReqCount,
+                    bg: "#F1F5F9",
+                    text: "#475569",
+                  },
+                  {
+                    key: "covered",
+                    label: "Covered",
+                    count: coveredCount,
+                    bg: "#DCFCE7",
+                    text: "#15803D",
+                  },
+                  {
+                    key: "partially_covered",
+                    label: "Partial",
+                    count: partialCount,
+                    bg: "#FEF3C7",
+                    text: "#B45309",
+                  },
+                  {
+                    key: "evidence_required",
+                    label: "Evidence Req.",
+                    count: evidenceNeededCount,
+                    bg: "#EDE9FE",
+                    text: "#7C3AED",
+                  },
+                  {
+                    key: "missing",
+                    label: "Missing",
+                    count: missingCount,
+                    bg: "#FEE2E2",
+                    text: "#B91C1C",
+                  },
+                  {
+                    key: "unverified",
+                    label: "Unverified",
+                    count: unverifiedCount,
+                    bg: "#F8FAFC",
+                    text: "#64748B",
+                  },
                 ].map((st) => {
                   const isActive = statusFilter === st.key;
                   return (
@@ -1373,7 +1429,7 @@ export default function TenderDetailPage({
                     >
                       <span>{st.label}</span>
                       <span
-                        className={`rounded-full px-1.5 py-0.2 text-[10px] font-extrabold ${
+                        className={`py-0.2 rounded-full px-1.5 text-[10px] font-extrabold ${
                           isActive ? "bg-white/20 text-white" : ""
                         }`}
                         style={!isActive ? { background: st.bg, color: st.text } : {}}
@@ -1398,8 +1454,8 @@ export default function TenderDetailPage({
                   size="sm"
                   className={`h-8 gap-1.5 px-3 text-xs font-semibold ${
                     canRunAgents || canVerifyCompliance
-                      ? "bg-[#7A1C2C] text-white hover:bg-[#631724] cursor-pointer"
-                      : "bg-slate-200 text-slate-400 cursor-not-allowed opacity-60 pointer-events-auto"
+                      ? "cursor-pointer bg-[#7A1C2C] text-white hover:bg-[#631724]"
+                      : "pointer-events-auto cursor-not-allowed bg-slate-200 text-slate-400 opacity-60"
                   }`}
                 >
                   <Bot size={13} /> Run AI Verification
@@ -1420,19 +1476,19 @@ export default function TenderDetailPage({
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-3">
               <div className="flex flex-1 flex-wrap items-center gap-3">
                 {/* Search */}
-                <div className="relative min-w-[220px] flex-1 max-w-sm">
-                  <Search size={14} className="absolute left-3 top-2.5 text-[#94A3B8]" />
+                <div className="relative max-w-sm min-w-[220px] flex-1">
+                  <Search size={14} className="absolute top-2.5 left-3 text-[#94A3B8]" />
                   <input
                     type="text"
                     placeholder="Filter requirements by keyword or ID…"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full rounded-lg border border-[#CBD5E1] bg-white py-1.5 pl-9 pr-3 text-xs text-[#1E252D] placeholder:text-[#94A3B8] focus:border-[#7A1C2C] focus:outline-none"
+                    className="w-full rounded-lg border border-[#CBD5E1] bg-white py-1.5 pr-3 pl-9 text-xs text-[#1E252D] placeholder:text-[#94A3B8] focus:border-[#7A1C2C] focus:outline-none"
                   />
                   {searchQuery && (
                     <button
                       onClick={() => setSearchQuery("")}
-                      className="absolute right-2.5 top-2 text-[#94A3B8] hover:text-[#1E252D]"
+                      className="absolute top-2 right-2.5 text-[#94A3B8] hover:text-[#1E252D]"
                     >
                       <X size={12} />
                     </button>
@@ -1500,7 +1556,7 @@ export default function TenderDetailPage({
                       filteredMatrix.map((req) => {
                         const isUpdating = updatingReqId === req.id;
                         return (
-                          <tr key={req.id} className="hover:bg-[#F8FAFC] transition-colors">
+                          <tr key={req.id} className="transition-colors hover:bg-[#F8FAFC]">
                             <td>
                               <span className="font-mono text-xs font-extrabold text-[#7A1C2C]">
                                 {req.req_code}
@@ -1536,7 +1592,7 @@ export default function TenderDetailPage({
                             <td className="font-mono text-xs text-[#64748B]">
                               {req.source_page ? `Page ${req.source_page}` : "—"}
                               {req.source_section && (
-                                <div className="text-[10px] text-[#94A3B8] truncate max-w-[100px]">
+                                <div className="max-w-[100px] truncate text-[10px] text-[#94A3B8]">
                                   §{req.source_section}
                                 </div>
                               )}
@@ -1548,7 +1604,10 @@ export default function TenderDetailPage({
                                 disabled={isUpdating || !canEditRequirements}
                                 onChange={(e) =>
                                   canEditRequirements &&
-                                  handleInlineStatusChange(req.id, e.target.value as RequirementStatus)
+                                  handleInlineStatusChange(
+                                    req.id,
+                                    e.target.value as RequirementStatus
+                                  )
                                 }
                                 title={
                                   !canEditRequirements
@@ -1558,7 +1617,7 @@ export default function TenderDetailPage({
                                 className={`rounded-lg border border-[#CBD5E1] bg-white px-2 py-1 text-[11px] font-bold text-[#1E252D] focus:border-[#7A1C2C] focus:outline-none ${
                                   canEditRequirements && !isUpdating
                                     ? "cursor-pointer"
-                                    : "cursor-not-allowed opacity-60 pointer-events-auto"
+                                    : "pointer-events-auto cursor-not-allowed opacity-60"
                                 }`}
                               >
                                 <option value="covered">✓ Covered</option>
@@ -1582,8 +1641,8 @@ export default function TenderDetailPage({
                                         (req.match_score || 0) >= 75
                                           ? "#15803D"
                                           : (req.match_score || 0) >= 40
-                                          ? "#B45309"
-                                          : "#B91C1C",
+                                            ? "#B45309"
+                                            : "#B91C1C",
                                     }}
                                   />
                                 </div>
@@ -1596,7 +1655,7 @@ export default function TenderDetailPage({
                                   onClick={() => setSelectedReqForEvidence(req)}
                                   size="sm"
                                   variant="outline"
-                                  className="h-7 gap-1 border-[#CBD5E1] px-2 text-[10px] font-bold text-[#7A1C2C] hover:bg-[#FDF2F4] cursor-pointer"
+                                  className="h-7 cursor-pointer gap-1 border-[#CBD5E1] px-2 text-[10px] font-bold text-[#7A1C2C] hover:bg-[#FDF2F4]"
                                   title="Signature Feature: Prove this claim with company evidence citations"
                                 >
                                   <Eye size={11} /> Evidence
@@ -1612,8 +1671,8 @@ export default function TenderDetailPage({
                                   size="sm"
                                   className={`h-7 w-7 p-0 transition-all ${
                                     (canRunAgents || canVerifyCompliance) && !isUpdating
-                                      ? "bg-[#F1F5F9] text-[#475569] hover:bg-[#7A1C2C] hover:text-white cursor-pointer"
-                                      : "bg-slate-100 text-slate-300 cursor-not-allowed opacity-50 pointer-events-auto"
+                                      ? "cursor-pointer bg-[#F1F5F9] text-[#475569] hover:bg-[#7A1C2C] hover:text-white"
+                                      : "pointer-events-auto cursor-not-allowed bg-slate-100 text-slate-300 opacity-50"
                                   }`}
                                   title={
                                     !canRunAgents && !canVerifyCompliance
@@ -1686,4 +1745,3 @@ export default function TenderDetailPage({
     </div>
   );
 }
-

@@ -33,9 +33,7 @@ export default function PermissionTooltip({
   const [visible, setVisible] = useState(false);
 
   const roleText = Array.isArray(requiredRole)
-    ? requiredRole
-        .map((r) => getRoleDefinition(r).displayName)
-        .join(" or ")
+    ? requiredRole.map((r) => getRoleDefinition(r).displayName).join(" or ")
     : requiredRole;
 
   const tooltipMsg =
@@ -43,8 +41,8 @@ export default function PermissionTooltip({
     (roleText
       ? `Requires the ${roleText} role.`
       : requiredPermission
-      ? `Requires permission: ${requiredPermission}`
-      : "You don't have permission for this action.");
+        ? `Requires permission: ${requiredPermission}`
+        : "You don't have permission for this action.");
 
   return (
     <div

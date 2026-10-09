@@ -5,7 +5,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div style={{ background: "#F7F9FB", minHeight: "100vh" }}>
       <Sidebar />
-      <div className="gov-main" style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+      <div
+        className="gov-main"
+        style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
+      >
         <GlobalRoleSwitcher />
         <div style={{ flex: 1 }}>{children}</div>
       </div>

@@ -77,9 +77,7 @@ export default function Topbar({ title, breadcrumb, action }: TopbarProps) {
   const handleMarkAsRead = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     await markNotificationRead(id).catch(() => {});
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
-    );
+    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, is_read: true } : n)));
     setUnreadCount((c) => Math.max(0, c - 1));
   };
 
@@ -107,14 +105,13 @@ export default function Topbar({ title, breadcrumb, action }: TopbarProps) {
   }
 
   const filteredNotifs =
-    activeTab === "unread"
-      ? notifications.filter((n) => !n.is_read)
-      : notifications;
+    activeTab === "unread" ? notifications.filter((n) => !n.is_read) : notifications;
 
   const getNotifIcon = (type: string, severity: string) => {
     if (type === "proposal_signed") return <ShieldCheck size={14} className="text-emerald-500" />;
     if (type === "secret_detected") return <Lock size={14} className="text-sky-500" />;
-    if (severity === "urgent" || severity === "warning") return <AlertTriangle size={14} className="text-amber-500" />;
+    if (severity === "urgent" || severity === "warning")
+      return <AlertTriangle size={14} className="text-amber-500" />;
     return <FileText size={14} className="text-slate-400" />;
   };
 
@@ -171,7 +168,7 @@ export default function Topbar({ title, breadcrumb, action }: TopbarProps) {
             <Button
               size="sm"
               variant="secondary"
-              className="gap-1.5 bg-[#DDA625] font-semibold text-[#1E252D] hover:bg-[#C8951E] cursor-pointer"
+              className="cursor-pointer gap-1.5 bg-[#DDA625] font-semibold text-[#1E252D] hover:bg-[#C8951E]"
             >
               <Plus size={13} />
               {action.label}
@@ -190,8 +187,8 @@ export default function Topbar({ title, breadcrumb, action }: TopbarProps) {
             }
             className={`gap-1.5 font-semibold text-[#1E252D] ${
               isActionAllowed
-                ? "bg-[#DDA625] hover:bg-[#C8951E] cursor-pointer"
-                : "bg-slate-200 text-slate-400 border border-slate-300 cursor-not-allowed opacity-50 pointer-events-auto"
+                ? "cursor-pointer bg-[#DDA625] hover:bg-[#C8951E]"
+                : "pointer-events-auto cursor-not-allowed border border-slate-300 bg-slate-200 text-slate-400 opacity-50"
             }`}
           >
             <Plus size={13} />
@@ -213,9 +210,7 @@ export default function Topbar({ title, breadcrumb, action }: TopbarProps) {
         >
           <Bell size={15} />
           {unreadCount > 0 && (
-            <span
-              className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 rounded-full bg-rose-600 text-white font-bold text-[9px] flex items-center justify-center border-2 border-white shadow"
-            >
+            <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full border-2 border-white bg-rose-600 px-1 text-[9px] font-bold text-white shadow">
               {unreadCount > 9 ? "9+" : unreadCount}
             </span>
           )}
@@ -223,13 +218,13 @@ export default function Topbar({ title, breadcrumb, action }: TopbarProps) {
 
         {/* Dropdown Card */}
         {isOpen && (
-          <div className="absolute right-0 mt-2 w-84 sm:w-96 bg-white border border-slate-200 rounded-xl shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-100">
+          <div className="animate-in fade-in zoom-in-95 absolute right-0 z-50 mt-2 w-84 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xl duration-100 sm:w-96">
             {/* Header */}
-            <div className="p-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+            <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 p-3">
               <div className="flex items-center gap-2">
-                <span className="font-bold text-xs text-slate-900">Notifications</span>
+                <span className="text-xs font-bold text-slate-900">Notifications</span>
                 {unreadCount > 0 && (
-                  <span className="bg-rose-100 text-rose-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                  <span className="rounded-full bg-rose-100 px-1.5 py-0.5 text-[10px] font-bold text-rose-700">
                     {unreadCount} new
                   </span>
                 )}
@@ -237,7 +232,7 @@ export default function Topbar({ title, breadcrumb, action }: TopbarProps) {
               <div className="flex items-center gap-2">
                 <button
                   onClick={handleMarkAllRead}
-                  className="text-[11px] text-slate-500 hover:text-slate-900 transition-colors flex items-center gap-1 font-medium"
+                  className="flex items-center gap-1 text-[11px] font-medium text-slate-500 transition-colors hover:text-slate-900"
                 >
                   <Check size={11} /> Mark all read
                 </button>
@@ -245,12 +240,12 @@ export default function Topbar({ title, breadcrumb, action }: TopbarProps) {
             </div>
 
             {/* Tabs */}
-            <div className="flex border-b border-slate-100 text-xs px-3 pt-2 bg-white">
+            <div className="flex border-b border-slate-100 bg-white px-3 pt-2 text-xs">
               <button
                 onClick={() => setActiveTab("all")}
-                className={`pb-1.5 px-2 font-medium border-b-2 transition-colors ${
+                className={`border-b-2 px-2 pb-1.5 font-medium transition-colors ${
                   activeTab === "all"
-                    ? "border-rose-700 text-rose-700 font-bold"
+                    ? "border-rose-700 font-bold text-rose-700"
                     : "border-transparent text-slate-500 hover:text-slate-800"
                 }`}
               >
@@ -258,9 +253,9 @@ export default function Topbar({ title, breadcrumb, action }: TopbarProps) {
               </button>
               <button
                 onClick={() => setActiveTab("unread")}
-                className={`pb-1.5 px-2 font-medium border-b-2 transition-colors ${
+                className={`border-b-2 px-2 pb-1.5 font-medium transition-colors ${
                   activeTab === "unread"
-                    ? "border-rose-700 text-rose-700 font-bold"
+                    ? "border-rose-700 font-bold text-rose-700"
                     : "border-transparent text-slate-500 hover:text-slate-800"
                 }`}
               >
@@ -269,7 +264,7 @@ export default function Topbar({ title, breadcrumb, action }: TopbarProps) {
             </div>
 
             {/* List */}
-            <div className="max-h-80 overflow-y-auto divide-y divide-slate-100">
+            <div className="max-h-80 divide-y divide-slate-100 overflow-y-auto">
               {filteredNotifs.length === 0 ? (
                 <div className="py-8 text-center text-xs text-slate-400">
                   <CheckCircle2 size={24} className="mx-auto mb-2 text-slate-300" />
@@ -279,14 +274,16 @@ export default function Topbar({ title, breadcrumb, action }: TopbarProps) {
                 filteredNotifs.map((n) => (
                   <div
                     key={n.id}
-                    className={`p-3 text-xs transition-colors hover:bg-slate-50 flex gap-2.5 items-start ${
+                    className={`flex items-start gap-2.5 p-3 text-xs transition-colors hover:bg-slate-50 ${
                       !n.is_read ? "bg-rose-50/40" : ""
                     }`}
                   >
                     <div className="mt-0.5 shrink-0">{getNotifIcon(n.type, n.severity)}</div>
-                    <div className="flex-1 min-w-0">
+                    <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between gap-1">
-                        <span className={`font-semibold text-slate-900 text-xs ${!n.is_read ? "font-bold text-rose-950" : ""}`}>
+                        <span
+                          className={`text-xs font-semibold text-slate-900 ${!n.is_read ? "font-bold text-rose-950" : ""}`}
+                        >
                           {n.title}
                         </span>
                         {!n.is_read && (
@@ -299,16 +296,21 @@ export default function Topbar({ title, breadcrumb, action }: TopbarProps) {
                           </button>
                         )}
                       </div>
-                      <p className="text-slate-600 text-[11px] mt-0.5 leading-tight line-clamp-2">
+                      <p className="mt-0.5 line-clamp-2 text-[11px] leading-tight text-slate-600">
                         {n.message}
                       </p>
-                      <div className="flex items-center justify-between mt-1.5 text-[10px] text-slate-400">
-                        <span>{new Date(n.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
+                      <div className="mt-1.5 flex items-center justify-between text-[10px] text-slate-400">
+                        <span>
+                          {new Date(n.created_at).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
                         {n.link && (
                           <Link
                             href={n.link}
                             onClick={() => setIsOpen(false)}
-                            className="text-rose-700 hover:text-rose-800 font-semibold flex items-center gap-0.5"
+                            className="flex items-center gap-0.5 font-semibold text-rose-700 hover:text-rose-800"
                           >
                             View details <ChevronRight size={10} />
                           </Link>
@@ -321,11 +323,11 @@ export default function Topbar({ title, breadcrumb, action }: TopbarProps) {
             </div>
 
             {/* Footer */}
-            <div className="p-2 bg-slate-50 border-t border-slate-100 text-center text-[10px] text-slate-500">
+            <div className="border-t border-slate-100 bg-slate-50 p-2 text-center text-[10px] text-slate-500">
               <Link
                 href="/settings"
                 onClick={() => setIsOpen(false)}
-                className="text-rose-800 hover:underline font-medium"
+                className="font-medium text-rose-800 hover:underline"
               >
                 Configure Webhooks & Notification Settings
               </Link>

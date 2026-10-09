@@ -796,5 +796,3 @@ export const mockDashboardStats = {
   knowledgeTrend: "+5 this month",
   complianceTrend: "+8% vs last month",
 };
-
-

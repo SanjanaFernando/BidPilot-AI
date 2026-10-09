@@ -123,7 +123,8 @@ export const ProjectsService = {
               challenges: d.challenges,
               solution: d.solution,
               outcomes: d.outcomes,
-              duration: d.start_date && d.end_date ? `${d.start_date} to ${d.end_date}` : "12 months",
+              duration:
+                d.start_date && d.end_date ? `${d.start_date} to ${d.end_date}` : "12 months",
               value: d.budget_range || "LKR 120M",
               teamSize: d.team_size || 12,
             }));
@@ -289,7 +290,9 @@ export const EmployeesService = {
               skills: newEmp.skills,
               certifications: newEmp.certifications,
               bio: newEmp.bio,
-              availability_status: newEmp.status?.toLowerCase().includes("avail") ? "available" : "allocated",
+              availability_status: newEmp.status?.toLowerCase().includes("avail")
+                ? "available"
+                : "allocated",
             },
           ])
           .select();
@@ -318,12 +321,15 @@ export const EmployeesService = {
         if (updates.email) payload.email = updates.email;
         if (updates.role) payload.role = updates.role;
         if (updates.department) payload.department = updates.department;
-        if (updates.experienceYears !== undefined) payload.experience_years = updates.experienceYears;
+        if (updates.experienceYears !== undefined)
+          payload.experience_years = updates.experienceYears;
         if (updates.skills) payload.skills = updates.skills;
         if (updates.certifications) payload.certifications = updates.certifications;
         if (updates.bio) payload.bio = updates.bio;
         if (updates.status) {
-          payload.availability_status = updates.status.toLowerCase().includes("avail") ? "available" : "allocated";
+          payload.availability_status = updates.status.toLowerCase().includes("avail")
+            ? "available"
+            : "allocated";
         }
 
         await supabase.from("employees").update(payload).eq("id", id);
@@ -438,7 +444,8 @@ export const TechnologiesService = {
         const payload: Record<string, unknown> = {};
         if (updates.name) payload.name = updates.name;
         if (updates.category) payload.category = updates.category;
-        if (updates.experienceLevel) payload.experience_level = updates.experienceLevel.toLowerCase();
+        if (updates.experienceLevel)
+          payload.experience_level = updates.experienceLevel.toLowerCase();
         if (updates.description) payload.description = updates.description;
         if (updates.relatedProjects) payload.related_projects = updates.relatedProjects;
 

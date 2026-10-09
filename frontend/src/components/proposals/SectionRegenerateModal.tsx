@@ -2,14 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Sparkles,
-  RefreshCw,
-  ShieldCheck,
-  CheckCircle2,
-  Loader2,
-  X,
-} from "lucide-react";
+import { Sparkles, RefreshCw, ShieldCheck, CheckCircle2, Loader2, X } from "lucide-react";
 import { pipelineService } from "@/lib/pipeline-service";
 import { DEFAULT_ORG_ID } from "@/lib/rag-service";
 
@@ -30,7 +23,9 @@ export function SectionRegenerateModal({
   tenderId,
   onRegenerateComplete,
 }: SectionRegenerateModalProps) {
-  const [tone, setTone] = useState<"executive" | "technical" | "persuasive" | "concise">("executive");
+  const [tone, setTone] = useState<"executive" | "technical" | "persuasive" | "concise">(
+    "executive"
+  );
   const [instructions, setInstructions] = useState("");
   const [loading, setLoading] = useState(false);
   const [generatedPreview, setGeneratedPreview] = useState<string | null>(null);
@@ -64,32 +59,30 @@ export function SectionRegenerateModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-      <div className="w-full max-w-3xl max-h-[85vh] flex flex-col rounded-xl overflow-hidden bg-white shadow-2xl border border-slate-200">
-        <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+    <div className="animate-in fade-in fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs duration-150">
+      <div className="flex max-h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xl">
+        <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-6 py-4">
           <div>
-            <div className="flex items-center gap-2 text-indigo-700 font-bold text-xs uppercase tracking-wider">
+            <div className="flex items-center gap-2 text-xs font-bold tracking-wider text-indigo-700 uppercase">
               <Sparkles size={14} /> AI Section Regeneration
             </div>
-            <div className="text-base font-bold text-slate-900 mt-0.5">
-              {sectionTitle}
-            </div>
+            <div className="mt-0.5 text-base font-bold text-slate-900">{sectionTitle}</div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-200 hover:text-slate-700 transition-colors"
+            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-200 hover:text-slate-700"
           >
             <X size={18} />
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6 space-y-5">
+        <div className="flex-1 space-y-5 overflow-y-auto p-6">
           {/* Tone Selector */}
           <div>
-            <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-2">
+            <label className="mb-2 block text-xs font-bold tracking-wider text-slate-700 uppercase">
               Select Tone &amp; Emphasis
             </label>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
               {[
                 { id: "executive", label: "Executive", desc: "Strategic & ROI" },
                 { id: "technical", label: "Technical", desc: "Deep Architecture" },
@@ -100,14 +93,14 @@ export function SectionRegenerateModal({
                   key={t.id}
                   type="button"
                   onClick={() => setTone(t.id as any)}
-                  className={`p-3 rounded-lg border text-left transition-all ${
+                  className={`rounded-lg border p-3 text-left transition-all ${
                     tone === t.id
                       ? "border-indigo-600 bg-indigo-50/70 text-indigo-950 ring-1 ring-indigo-600"
-                      : "border-slate-200 bg-white hover:border-slate-300 text-slate-700"
+                      : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
                   }`}
                 >
                   <div className="text-xs font-bold">{t.label}</div>
-                  <div className="text-[10px] text-slate-500 mt-0.5">{t.desc}</div>
+                  <div className="mt-0.5 text-[10px] text-slate-500">{t.desc}</div>
                 </button>
               ))}
             </div>
@@ -115,7 +108,7 @@ export function SectionRegenerateModal({
 
           {/* Prompt Instructions */}
           <div>
-            <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-2">
+            <label className="mb-2 block text-xs font-bold tracking-wider text-slate-700 uppercase">
               Custom Prompt Instructions (Optional)
             </label>
             <textarea
@@ -123,9 +116,9 @@ export function SectionRegenerateModal({
               value={instructions}
               onChange={(e) => setInstructions(e.target.value)}
               placeholder="e.g. Focus on high-availability cloud deployment, zero-trust RBAC authentication, and ISO 27001 data residency..."
-              className="w-full p-3 text-xs text-slate-900 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-600 focus:bg-white resize-none"
+              className="w-full resize-none rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs text-slate-900 focus:bg-white focus:ring-1 focus:ring-indigo-600 focus:outline-none"
             />
-            <div className="text-[11px] text-slate-500 mt-1 flex items-center gap-1.5">
+            <div className="mt-1 flex items-center gap-1.5 text-[11px] text-slate-500">
               <ShieldCheck size={13} className="text-emerald-600" />
               AI will ground claims using verified company projects, certifications, and RFP facts.
             </div>
@@ -134,18 +127,18 @@ export function SectionRegenerateModal({
           {/* Preview if generated */}
           {generatedPreview && (
             <div className="space-y-2">
-              <div className="text-xs font-bold text-emerald-800 uppercase tracking-wider flex items-center gap-1.5">
+              <div className="flex items-center gap-1.5 text-xs font-bold tracking-wider text-emerald-800 uppercase">
                 <CheckCircle2 size={14} className="text-emerald-600" />
                 Newly Synthesized Content Preview
               </div>
-              <div className="p-4 rounded-lg border border-emerald-200 bg-emerald-50/40 text-xs font-mono text-slate-900 max-h-56 overflow-y-auto whitespace-pre-line">
+              <div className="max-h-56 overflow-y-auto rounded-lg border border-emerald-200 bg-emerald-50/40 p-4 font-mono text-xs whitespace-pre-line text-slate-900">
                 {generatedPreview}
               </div>
             </div>
           )}
         </div>
 
-        <div className="px-6 py-3 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
+        <div className="flex items-center justify-between border-t border-slate-200 bg-slate-50 px-6 py-3">
           <Button variant="outline" size="sm" onClick={onClose} disabled={loading}>
             Cancel
           </Button>
@@ -156,7 +149,7 @@ export function SectionRegenerateModal({
                 size="sm"
                 onClick={handleRegenerate}
                 disabled={loading}
-                className="gap-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold"
+                className="gap-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 font-bold text-white hover:from-indigo-500 hover:to-purple-500"
               >
                 {loading ? (
                   <>
@@ -182,7 +175,7 @@ export function SectionRegenerateModal({
                 <Button
                   size="sm"
                   onClick={handleApply}
-                  className="gap-1.5 bg-[#15803D] hover:bg-[#166534] text-white font-bold"
+                  className="gap-1.5 bg-[#15803D] font-bold text-white hover:bg-[#166534]"
                 >
                   <CheckCircle2 size={13} /> Apply to Proposal
                 </Button>

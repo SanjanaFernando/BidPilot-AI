@@ -61,11 +61,7 @@ interface DisplaySection {
   status: "Draft" | "Generated" | "Reviewed" | "Approved" | "Pending";
 }
 
-export default function ProposalEditorPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default function ProposalEditorPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const [tender, setTender] = useState<TenderItem | null>(null);
   const [proposalData, setProposalData] = useState<ProposalDetail | null>(null);
@@ -85,7 +81,11 @@ export default function ProposalEditorPage({
   // Phase 9: Prove This Claim State
   const [selectedClaimForProof, setSelectedClaimForProof] = useState<string | null>(null);
   const [showProveDrawer, setShowProveDrawer] = useState<boolean>(false);
-  const [floatingTooltip, setFloatingTooltip] = useState<{ text: string; x: number; y: number } | null>(null);
+  const [floatingTooltip, setFloatingTooltip] = useState<{
+    text: string;
+    x: number;
+    y: number;
+  } | null>(null);
   const [activeSectionCitations, setActiveSectionCitations] = useState<CitationItem[]>([]);
 
   // Phase 10: Compliance & Human Review State
@@ -155,40 +155,47 @@ export default function ProposalEditorPage({
   }, [loadLiveProposal]);
 
   // Transform live or mock sections (ensures all 12 canonical sections)
-  const sections: DisplaySection[] = proposalData?.sections && proposalData.sections.length > 0
-    ? proposalData.sections.map((s, idx) => {
-        const words = s.content ? s.content.trim().split(/\s+/).length : 0;
-        return {
-          id: s.id,
-          section_number: s.section_number || idx + 1,
-          title: s.title,
-          content: s.content,
-          compliance_score: s.compliance_score,
-          wordCount: words,
-          citations: (s.content.match(/\[Ref\s*\d+\]|\[CIT-\w+\]/g) || []).length || (words > 100 ? 2 : 1),
-          status: (approvedSections.has(s.id) ? "Approved" : s.status === "approved" ? "Approved" : "Generated") as any,
-        };
-      })
-    : mockProposalSections.map((m, idx) => ({
-        id: m.id,
-        section_number: idx + 1,
-        title: m.title,
-        content: m.content,
-        compliance_score: 92,
-        wordCount: m.wordCount,
-        citations: m.citations,
-        status: m.status as any,
-      }));
+  const sections: DisplaySection[] =
+    proposalData?.sections && proposalData.sections.length > 0
+      ? proposalData.sections.map((s, idx) => {
+          const words = s.content ? s.content.trim().split(/\s+/).length : 0;
+          return {
+            id: s.id,
+            section_number: s.section_number || idx + 1,
+            title: s.title,
+            content: s.content,
+            compliance_score: s.compliance_score,
+            wordCount: words,
+            citations:
+              (s.content.match(/\[Ref\s*\d+\]|\[CIT-\w+\]/g) || []).length || (words > 100 ? 2 : 1),
+            status: (approvedSections.has(s.id)
+              ? "Approved"
+              : s.status === "approved"
+                ? "Approved"
+                : "Generated") as any,
+          };
+        })
+      : mockProposalSections.map((m, idx) => ({
+          id: m.id,
+          section_number: idx + 1,
+          title: m.title,
+          content: m.content,
+          compliance_score: 92,
+          wordCount: m.wordCount,
+          citations: m.citations,
+          status: m.status as any,
+        }));
 
-  const activeSection = sections.find((s) => s.id === activeSectionId) || sections[0] || {
-    id: "sec-default",
-    section_number: 1,
-    title: "Proposal Section",
-    content: "No content available.",
-    wordCount: 0,
-    citations: 0,
-    status: "Draft",
-  };
+  const activeSection = sections.find((s) => s.id === activeSectionId) ||
+    sections[0] || {
+      id: "sec-default",
+      section_number: 1,
+      title: "Proposal Section",
+      content: "No content available.",
+      wordCount: 0,
+      citations: 0,
+      status: "Draft",
+    };
 
   const tenderName = tender?.name || `Tender ${id}`;
   const totalWords = sections.reduce((acc, s) => acc + s.wordCount, 0);
@@ -211,7 +218,10 @@ export default function ProposalEditorPage({
 
   // Phase 11 Action: Request Revision
   const requestRevision = async (secId: string) => {
-    const comment = window.prompt("Enter revision instructions for this section:", "Please expand technical delivery details.");
+    const comment = window.prompt(
+      "Enter revision instructions for this section:",
+      "Please expand technical delivery details."
+    );
     if (!comment) return;
     setApprovedSections((prev) => {
       const next = new Set(prev);
@@ -219,8 +229,19 @@ export default function ProposalEditorPage({
       return next;
     });
     try {
-      await pipelineService.approveSection(secId, DEFAULT_ORG_ID, "needs_revision", "Proposal Lead", comment);
-      await complianceService.updateSectionReview(secId, "needs_revision", "Proposal Lead", comment);
+      await pipelineService.approveSection(
+        secId,
+        DEFAULT_ORG_ID,
+        "needs_revision",
+        "Proposal Lead",
+        comment
+      );
+      await complianceService.updateSectionReview(
+        secId,
+        "needs_revision",
+        "Proposal Lead",
+        comment
+      );
       const gov = await complianceService.getGovernanceStatus(proposalData?.id || id);
       if (gov) setGovernanceStatus(gov);
       alert("Revision request recorded for this section.");
@@ -239,9 +260,7 @@ export default function ProposalEditorPage({
       return {
         ...prev,
         sections: prev.sections.map((s) =>
-          s.id === activeSection.id
-            ? { ...s, content: newContent, title: newTitle || s.title }
-            : s
+          s.id === activeSection.id ? { ...s, content: newContent, title: newTitle || s.title } : s
         ),
       };
     });
@@ -268,7 +287,12 @@ export default function ProposalEditorPage({
 
   // Load section citations
   useEffect(() => {
-    if (!activeSection.id || activeSection.id.startsWith("sec-default") || activeSection.id.startsWith("SEC-")) return;
+    if (
+      !activeSection.id ||
+      activeSection.id.startsWith("sec-default") ||
+      activeSection.id.startsWith("SEC-")
+    )
+      return;
     claimsService
       .getSectionCitations(activeSection.id, DEFAULT_ORG_ID)
       .then((c) => setActiveSectionCitations(c))
@@ -459,12 +483,12 @@ export default function ProposalEditorPage({
             transform: "translateX(-50%)",
             zIndex: 9999,
           }}
-          className="animate-in fade-in zoom-in-95 duration-150 pointer-events-auto"
+          className="animate-in fade-in zoom-in-95 pointer-events-auto duration-150"
         >
           <Button
             size="sm"
             onClick={() => triggerProveClaim(floatingTooltip.text)}
-            className="h-8 gap-1.5 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 text-white shadow-xl shadow-indigo-600/30 text-xs font-bold border border-indigo-400/40 hover:scale-105 transition-transform"
+            className="h-8 gap-1.5 border border-indigo-400/40 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 text-xs font-bold text-white shadow-xl shadow-indigo-600/30 transition-transform hover:scale-105"
           >
             <ShieldCheck size={13} className="text-indigo-200" />
             Prove This Claim ✨
@@ -479,7 +503,7 @@ export default function ProposalEditorPage({
         <div className="flex items-center gap-3">
           <Link
             href={`/tenders/${id}`}
-            className="p-1 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+            className="rounded-md p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
           >
             <ArrowLeft size={16} />
           </Link>
@@ -490,23 +514,23 @@ export default function ProposalEditorPage({
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-[#1E252D]">{tenderName}</span>
               {proposalData && (
-                <span className="rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-bold text-indigo-700 border border-indigo-200">
+                <span className="rounded-full border border-indigo-200 bg-indigo-50 px-2 py-0.5 text-[10px] font-bold text-indigo-700">
                   AI Synthesized · 12 Sections · v{proposalData.version}
                 </span>
               )}
             </div>
-            <div className="text-[11px] text-[#64748B] flex items-center gap-3">
+            <div className="flex items-center gap-3 text-[11px] text-[#64748B]">
               <span>Ref: {id}</span>
               <span>•</span>
               <span>{totalWords.toLocaleString()} words</span>
               <span>•</span>
               <span>{totalCitations} citations</span>
               <span>•</span>
-              <span className="text-emerald-700 font-semibold flex items-center gap-1">
+              <span className="flex items-center gap-1 font-semibold text-emerald-700">
                 <ShieldCheck size={12} /> {Math.round(complianceScore)}% Compliance
               </span>
               <span>•</span>
-              <span className="text-purple-700 font-semibold flex items-center gap-1">
+              <span className="flex items-center gap-1 font-semibold text-purple-700">
                 <TrendingUp size={12} /> {Math.round(winProb)}% Win Probability
               </span>
             </div>
@@ -518,11 +542,11 @@ export default function ProposalEditorPage({
           <Button
             onClick={() => setShowComplianceMatrixModal(true)}
             variant="outline"
-            className="h-8 gap-1.5 border-emerald-300 bg-emerald-50 text-xs font-bold text-emerald-800 hover:bg-emerald-100 shadow-sm"
+            className="h-8 gap-1.5 border-emerald-300 bg-emerald-50 text-xs font-bold text-emerald-800 shadow-sm hover:bg-emerald-100"
           >
             <ShieldCheck size={13} className="text-emerald-600" />
             Compliance Matrix
-            <span className="ml-1 rounded bg-emerald-200/80 px-1.5 py-0.2 text-[10px] font-extrabold text-emerald-900">
+            <span className="py-0.2 ml-1 rounded bg-emerald-200/80 px-1.5 text-[10px] font-extrabold text-emerald-900">
               {Math.round(complianceScore)}%
             </span>
           </Button>
@@ -538,8 +562,8 @@ export default function ProposalEditorPage({
             }
             className={`h-8 gap-1.5 px-3 text-xs font-bold text-white shadow-sm transition-all ${
               canSynthesize
-                ? "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 cursor-pointer"
-                : "bg-slate-300 text-slate-500 cursor-not-allowed opacity-60 pointer-events-auto"
+                ? "cursor-pointer bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500"
+                : "pointer-events-auto cursor-not-allowed bg-slate-300 text-slate-500 opacity-60"
             }`}
           >
             <Zap size={13} />
@@ -557,8 +581,8 @@ export default function ProposalEditorPage({
             }
             className={`h-8 gap-1.5 border-[#CBD5E1] bg-white px-3 text-xs font-semibold text-[#1E252D] ${
               canExport
-                ? "hover:bg-[#F1F5F9] cursor-pointer"
-                : "cursor-not-allowed opacity-50 pointer-events-auto"
+                ? "cursor-pointer hover:bg-[#F1F5F9]"
+                : "pointer-events-auto cursor-not-allowed opacity-50"
             }`}
             onClick={() => canExport && handleExportDocx()}
           >
@@ -581,16 +605,12 @@ export default function ProposalEditorPage({
             }
             className={`h-8 gap-1.5 border-[#CBD5E1] bg-white px-3 text-xs font-semibold text-[#7A1C2C] ${
               canExport
-                ? "hover:bg-rose-50 cursor-pointer"
-                : "cursor-not-allowed opacity-50 pointer-events-auto"
+                ? "cursor-pointer hover:bg-rose-50"
+                : "pointer-events-auto cursor-not-allowed opacity-50"
             }`}
             onClick={() => canExport && handleExportPdf()}
           >
-            {exportingPdf ? (
-              <Loader2 size={13} className="animate-spin" />
-            ) : (
-              <Printer size={13} />
-            )}
+            {exportingPdf ? <Loader2 size={13} className="animate-spin" /> : <Printer size={13} />}
             Export PDF
           </Button>
 
@@ -605,8 +625,8 @@ export default function ProposalEditorPage({
             }
             className={`h-8 gap-1.5 border-[#E2E8F0] px-2.5 text-xs font-semibold text-[#64748B] ${
               canExport
-                ? "hover:bg-[#F1F5F9] cursor-pointer"
-                : "cursor-not-allowed opacity-50 pointer-events-auto"
+                ? "cursor-pointer hover:bg-[#F1F5F9]"
+                : "pointer-events-auto cursor-not-allowed opacity-50"
             }`}
             onClick={() => {
               if (!canExport) return;
@@ -640,8 +660,8 @@ export default function ProposalEditorPage({
               }
               className={`h-8 gap-1.5 px-3 text-xs font-bold text-white shadow-sm transition-all ${
                 canSignOff
-                  ? "bg-gradient-to-r from-[#7A1C2C] to-[#921E33] hover:bg-[#631724] cursor-pointer"
-                  : "bg-slate-300 text-slate-500 cursor-not-allowed opacity-60 pointer-events-auto"
+                  ? "cursor-pointer bg-gradient-to-r from-[#7A1C2C] to-[#921E33] hover:bg-[#631724]"
+                  : "pointer-events-auto cursor-not-allowed bg-slate-300 text-slate-500 opacity-60"
               }`}
             >
               <CheckCircle size={13} /> Human Sign-Off
@@ -654,7 +674,7 @@ export default function ProposalEditorPage({
         {/* Left Section List Panel (12 Canonical Sections) */}
         <aside className="flex w-80 flex-shrink-0 flex-col gap-4">
           <Card className="flex flex-1 flex-col overflow-hidden border-[#E2E8F0] bg-white shadow-xs">
-            <CardHeader className="border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 flex flex-row items-center justify-between">
+            <CardHeader className="flex flex-row items-center justify-between border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3">
               <CardTitle className="text-xs font-bold tracking-wider text-[#64748B] uppercase">
                 Proposal Sections ({sections.length})
               </CardTitle>
@@ -679,8 +699,8 @@ export default function ProposalEditorPage({
                         isApproved
                           ? "bg-[#15803D]"
                           : sec.status === "Generated" || sec.status === "Reviewed"
-                          ? "bg-[#DDA625]"
-                          : "bg-[#94A3B8]"
+                            ? "bg-[#DDA625]"
+                            : "bg-[#94A3B8]"
                       }`}
                     />
                     <span className="flex-1 truncate">
@@ -706,9 +726,7 @@ export default function ProposalEditorPage({
                 <div className="font-bold text-[#15803D] tabular-nums">
                   {approvedSections.size} / {sections.length}
                 </div>
-                <div className="text-[10px] font-semibold text-[#64748B] uppercase">
-                  Approved
-                </div>
+                <div className="text-[10px] font-semibold text-[#64748B] uppercase">Approved</div>
               </div>
               <div className="rounded border border-[#E2E8F0] bg-white p-2">
                 <div className="font-bold text-[#7A1C2C] tabular-nums">
@@ -736,12 +754,15 @@ export default function ProposalEditorPage({
                     className={`rounded px-2 py-0.5 text-xs font-semibold ${
                       approvedSections.has(activeSection.id) || activeSection.status === "Approved"
                         ? "bg-[#DCFCE7] text-[#15803D]"
-                        : activeSection.status === "Generated" || activeSection.status === "Reviewed"
-                        ? "bg-[#FDF3DA] text-[#92661A]"
-                        : "bg-[#F1F5F9] text-[#64748B]"
+                        : activeSection.status === "Generated" ||
+                            activeSection.status === "Reviewed"
+                          ? "bg-[#FDF3DA] text-[#92661A]"
+                          : "bg-[#F1F5F9] text-[#64748B]"
                     }`}
                   >
-                    {approvedSections.has(activeSection.id) ? "Approved & Locked" : activeSection.status}
+                    {approvedSections.has(activeSection.id)
+                      ? "Approved & Locked"
+                      : activeSection.status}
                   </span>
                 </div>
                 {activeSection.wordCount > 0 && (
@@ -750,11 +771,13 @@ export default function ProposalEditorPage({
                       <Hash size={12} /> {activeSection.wordCount} words
                     </span>
                     <span className="flex items-center gap-1">
-                      <Quote size={12} /> {activeSection.citations + activeSectionCitations.length} citations
+                      <Quote size={12} /> {activeSection.citations + activeSectionCitations.length}{" "}
+                      citations
                     </span>
                     {activeSection.compliance_score && (
-                      <span className="flex items-center gap-1 text-emerald-600 font-medium">
-                        <ShieldCheck size={12} /> {Math.round(activeSection.compliance_score)}% section coverage
+                      <span className="flex items-center gap-1 font-medium text-emerald-600">
+                        <ShieldCheck size={12} /> {Math.round(activeSection.compliance_score)}%
+                        section coverage
                       </span>
                     )}
                   </div>
@@ -767,7 +790,7 @@ export default function ProposalEditorPage({
                 <div className="flex items-center rounded-lg bg-slate-100 p-0.5 text-xs">
                   <button
                     onClick={() => setViewMode("document")}
-                    className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md font-semibold transition-all ${
+                    className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 font-semibold transition-all ${
                       viewMode === "document"
                         ? "bg-white text-slate-900 shadow-2xs"
                         : "text-slate-500 hover:text-slate-800"
@@ -778,7 +801,7 @@ export default function ProposalEditorPage({
                   </button>
                   <button
                     onClick={() => setViewMode("markdown")}
-                    className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md font-semibold transition-all ${
+                    className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 font-semibold transition-all ${
                       viewMode === "markdown"
                         ? "bg-white text-slate-900 shadow-2xs"
                         : "text-slate-500 hover:text-slate-800"
@@ -802,11 +825,15 @@ export default function ProposalEditorPage({
                   }
                   className={`h-8 gap-1 border-slate-300 text-xs font-bold ${
                     canEditSection
-                      ? "text-slate-800 hover:bg-slate-100 cursor-pointer"
-                      : "text-slate-400 border-slate-200 cursor-not-allowed opacity-50 pointer-events-auto"
+                      ? "cursor-pointer text-slate-800 hover:bg-slate-100"
+                      : "pointer-events-auto cursor-not-allowed border-slate-200 text-slate-400 opacity-50"
                   }`}
                 >
-                  <FileEdit size={12} className={canEditSection ? "text-[#7A1C2C]" : "text-slate-400"} /> Edit
+                  <FileEdit
+                    size={12}
+                    className={canEditSection ? "text-[#7A1C2C]" : "text-slate-400"}
+                  />{" "}
+                  Edit
                 </Button>
 
                 {/* Phase 11 Action 2: Regenerate Section with AI */}
@@ -822,8 +849,8 @@ export default function ProposalEditorPage({
                   }
                   className={`h-8 gap-1 text-xs font-bold ${
                     canEditSection
-                      ? "border-indigo-200 bg-indigo-50/50 text-indigo-700 hover:bg-indigo-100 cursor-pointer"
-                      : "border-slate-200 bg-slate-50 text-slate-400 cursor-not-allowed opacity-50 pointer-events-auto"
+                      ? "cursor-pointer border-indigo-200 bg-indigo-50/50 text-indigo-700 hover:bg-indigo-100"
+                      : "pointer-events-auto cursor-not-allowed border-slate-200 bg-slate-50 text-slate-400 opacity-50"
                   }`}
                 >
                   <RefreshCw size={12} /> Regenerate
@@ -834,7 +861,7 @@ export default function ProposalEditorPage({
                   variant="outline"
                   size="sm"
                   onClick={() => setShowFindEvidenceModal(true)}
-                  className="h-8 gap-1 border-emerald-200 bg-emerald-50/50 text-emerald-800 text-xs font-bold hover:bg-emerald-100 cursor-pointer"
+                  className="h-8 cursor-pointer gap-1 border-emerald-200 bg-emerald-50/50 text-xs font-bold text-emerald-800 hover:bg-emerald-100"
                 >
                   <Search size={12} /> Find Evidence
                 </Button>
@@ -844,7 +871,7 @@ export default function ProposalEditorPage({
                   variant="outline"
                   size="sm"
                   onClick={() => setShowSourcesDrawer(true)}
-                  className="h-8 gap-1 border-purple-200 bg-purple-50/50 text-purple-800 text-xs font-bold hover:bg-purple-100 cursor-pointer"
+                  className="h-8 cursor-pointer gap-1 border-purple-200 bg-purple-50/50 text-xs font-bold text-purple-800 hover:bg-purple-100"
                 >
                   <BookOpen size={12} /> Sources
                 </Button>
@@ -854,10 +881,12 @@ export default function ProposalEditorPage({
                   variant="outline"
                   size="sm"
                   onClick={() => {
-                    const firstClaim = activeSection.content.split("\n").find((l) => l.trim().length > 20) || activeSection.title;
+                    const firstClaim =
+                      activeSection.content.split("\n").find((l) => l.trim().length > 20) ||
+                      activeSection.title;
                     triggerProveClaim(firstClaim);
                   }}
-                  className="h-8 gap-1 border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-100 cursor-pointer"
+                  className="h-8 cursor-pointer gap-1 border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-100"
                 >
                   <Sparkles size={12} className="text-amber-500" /> Prove Claim
                 </Button>
@@ -877,11 +906,15 @@ export default function ProposalEditorPage({
                       }
                       className={`h-8 gap-1 text-xs font-semibold ${
                         canApproveSection
-                          ? "border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100 cursor-pointer"
-                          : "border-slate-200 bg-slate-50 text-slate-400 cursor-not-allowed opacity-50 pointer-events-auto"
+                          ? "cursor-pointer border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100"
+                          : "pointer-events-auto cursor-not-allowed border-slate-200 bg-slate-50 text-slate-400 opacity-50"
                       }`}
                     >
-                      <AlertCircle size={12} className={canApproveSection ? "text-amber-600" : "text-slate-400"} /> Revision
+                      <AlertCircle
+                        size={12}
+                        className={canApproveSection ? "text-amber-600" : "text-slate-400"}
+                      />{" "}
+                      Revision
                     </Button>
                     <Button
                       size="sm"
@@ -894,8 +927,8 @@ export default function ProposalEditorPage({
                       }
                       className={`h-8 gap-1 text-xs font-semibold text-white ${
                         canApproveSection
-                          ? "bg-[#15803D] hover:bg-[#166534] cursor-pointer"
-                          : "bg-slate-300 text-slate-500 cursor-not-allowed opacity-60 pointer-events-auto"
+                          ? "cursor-pointer bg-[#15803D] hover:bg-[#166534]"
+                          : "pointer-events-auto cursor-not-allowed bg-slate-300 text-slate-500 opacity-60"
                       }`}
                     >
                       <ThumbsUp size={12} /> Approve
@@ -918,8 +951,8 @@ export default function ProposalEditorPage({
                       }
                       className={`h-7 text-[11px] ${
                         canApproveSection
-                          ? "text-slate-500 hover:text-amber-700 cursor-pointer"
-                          : "text-slate-300 cursor-not-allowed pointer-events-auto"
+                          ? "cursor-pointer text-slate-500 hover:text-amber-700"
+                          : "pointer-events-auto cursor-not-allowed text-slate-300"
                       }`}
                     >
                       Reopen
@@ -934,7 +967,8 @@ export default function ProposalEditorPage({
               {approvedSections.has(activeSection.id) && (
                 <div className="flex items-center gap-2 rounded border border-[#BBF7D0] bg-[#DCFCE7] p-3 text-xs font-semibold text-[#15803D]">
                   <CheckCircle size={16} />
-                  Section verified against company project records and approved for final proposal export.
+                  Section verified against company project records and approved for final proposal
+                  export.
                 </div>
               )}
 
@@ -942,9 +976,10 @@ export default function ProposalEditorPage({
               <div className="flex items-center justify-between rounded-lg border border-indigo-100 bg-indigo-50/60 px-3.5 py-2 text-xs text-indigo-900">
                 <span className="flex items-center gap-1.5 font-medium">
                   <ShieldCheck size={14} className="text-indigo-600" />
-                  <strong>Evidence-First Verification:</strong> Highlight any sentence with your cursor to instantly prove the claim or click &apos;Find Evidence&apos; above.
+                  <strong>Evidence-First Verification:</strong> Highlight any sentence with your
+                  cursor to instantly prove the claim or click &apos;Find Evidence&apos; above.
                 </span>
-                <span className="text-[11px] text-indigo-600 font-bold">12 Canonical Sections</span>
+                <span className="text-[11px] font-bold text-indigo-600">12 Canonical Sections</span>
               </div>
 
               {/* Structured Word Document or Raw Markdown */}
@@ -957,7 +992,7 @@ export default function ProposalEditorPage({
               ) : (
                 <div
                   onMouseUp={handleMouseUp}
-                  className="rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-6 font-mono text-xs leading-relaxed whitespace-pre-line text-[#1E252D] select-text cursor-text"
+                  className="cursor-text rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-6 font-mono text-xs leading-relaxed whitespace-pre-line text-[#1E252D] select-text"
                 >
                   {activeSection.content}
                 </div>
@@ -966,14 +1001,15 @@ export default function ProposalEditorPage({
               {/* Verified Citations List */}
               {(activeSectionCitations.length > 0 || activeSection.citations > 0) && (
                 <div className="space-y-3 rounded-lg border border-[#E2E8F0] bg-white p-4">
-                  <div className="text-xs font-bold tracking-wider text-[#64748B] uppercase flex items-center justify-between">
+                  <div className="flex items-center justify-between text-xs font-bold tracking-wider text-[#64748B] uppercase">
                     <span className="flex items-center gap-1.5">
                       <Quote size={13} className="text-[#7A1C2C]" />
-                      Verified Evidence Traceability Citations ({activeSectionCitations.length || 1})
+                      Verified Evidence Traceability Citations ({activeSectionCitations.length || 1}
+                      )
                     </span>
                     <button
                       onClick={() => setShowSourcesDrawer(true)}
-                      className="text-[10px] text-indigo-600 font-bold hover:underline"
+                      className="text-[10px] font-bold text-indigo-600 hover:underline"
                     >
                       View All in Drawer →
                     </button>
@@ -984,24 +1020,24 @@ export default function ProposalEditorPage({
                         <div
                           key={c.id || i}
                           onClick={() => triggerProveClaim(c.claim_text || activeSection.title)}
-                          className="flex items-start gap-3 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-3 text-xs hover:border-indigo-300 transition-colors cursor-pointer"
+                          className="flex cursor-pointer items-start gap-3 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-3 text-xs transition-colors hover:border-indigo-300"
                         >
                           <span className="rounded bg-[#FDF3DA] px-2 py-0.5 font-mono font-bold text-[#7A1C2C]">
                             {c.citation_anchor || `[Ref ${i + 1}]`}
                           </span>
                           <div className="flex-1">
-                            <div className="font-bold text-[#1E252D] flex items-center gap-2">
+                            <div className="flex items-center gap-2 font-bold text-[#1E252D]">
                               <span>{c.source_name || "Company Verified Record"}</span>
                               {c.source_id && (
                                 <span className="font-mono text-[10px] text-slate-500">
                                   ({c.source_id})
                                 </span>
                               )}
-                              <span className="ml-auto text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+                              <span className="ml-auto rounded border border-emerald-200 bg-emerald-50 px-1.5 py-0.5 text-[10px] font-bold text-emerald-600">
                                 {Math.round((c.similarity_score || 0.94) * 100)}% Match
                               </span>
                             </div>
-                            <div className="mt-0.5 text-[11px] text-[#64748B] line-clamp-1 italic">
+                            <div className="mt-0.5 line-clamp-1 text-[11px] text-[#64748B] italic">
                               Claim: &quot;{c.claim_text}&quot;
                             </div>
                           </div>
@@ -1009,18 +1045,24 @@ export default function ProposalEditorPage({
                       ))
                     ) : (
                       <div
-                        onClick={() => triggerProveClaim("Enterprise Architecture Standards & Security Guidelines")}
-                        className="flex items-start gap-3 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-3 text-xs hover:border-indigo-300 transition-colors cursor-pointer"
+                        onClick={() =>
+                          triggerProveClaim(
+                            "Enterprise Architecture Standards & Security Guidelines"
+                          )
+                        }
+                        className="flex cursor-pointer items-start gap-3 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-3 text-xs transition-colors hover:border-indigo-300"
                       >
                         <span className="rounded bg-[#FDF3DA] px-2 py-0.5 font-mono font-bold text-[#7A1C2C]">
                           [Ref 1]
                         </span>
                         <div className="flex-1">
                           <div className="font-bold text-[#1E252D]">
-                            Enterprise Scalability &amp; Architecture Standards · Project ID: PRJ-001
+                            Enterprise Scalability &amp; Architecture Standards · Project ID:
+                            PRJ-001
                           </div>
                           <div className="mt-0.5 text-[11px] text-[#64748B]">
-                            Verified capability chunk · Match Similarity: 94.2% · Click to view evidence dossier
+                            Verified capability chunk · Match Similarity: 94.2% · Click to view
+                            evidence dossier
                           </div>
                         </div>
                       </div>

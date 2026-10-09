@@ -44,9 +44,7 @@ import {
 type SearchScope = "rfp" | "knowledge" | "both";
 type SourceTypeFilter = "all" | "project" | "employee" | "technology" | "certification";
 
-type UnifiedResult =
-  | ({ kind: "rfp" } & RAGChunkResult)
-  | ({ kind: "kb" } & KnowledgeChunkResult);
+type UnifiedResult = ({ kind: "rfp" } & RAGChunkResult) | ({ kind: "kb" } & KnowledgeChunkResult);
 
 // ---------------------------------------------------------------------------
 // Helper components
@@ -54,8 +52,7 @@ type UnifiedResult =
 
 function SimilarityBar({ score }: { score: number }) {
   const pct = Math.round(score * 100);
-  const color =
-    pct >= 80 ? "#15803D" : pct >= 60 ? "#D97706" : pct >= 40 ? "#B45309" : "#94A3B8";
+  const color = pct >= 80 ? "#15803D" : pct >= 60 ? "#D97706" : pct >= 40 ? "#B45309" : "#94A3B8";
   return (
     <div className="flex items-center gap-2">
       <div className="h-1.5 w-20 rounded-full bg-[#E2E8F0]">
@@ -76,7 +73,7 @@ function SourceBadge({ type }: { type: string }) {
   const color = SOURCE_TYPE_COLORS[type] ?? "#64748B";
   return (
     <span
-      className="rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white"
+      className="rounded-full px-2.5 py-0.5 text-[10px] font-bold tracking-wide text-white uppercase"
       style={{ background: color }}
     >
       {label}
@@ -107,15 +104,25 @@ function CopyButton({ text }: { text: string }) {
 // Stat card
 // ---------------------------------------------------------------------------
 
-function StatCard({ label, value, icon }: { label: string; value: string | number; icon: React.ReactNode }) {
+function StatCard({
+  label,
+  value,
+  icon,
+}: {
+  label: string;
+  value: string | number;
+  icon: React.ReactNode;
+}) {
   return (
     <div className="flex items-center gap-3 rounded-lg border border-[#E2E8F0] bg-white p-4">
       <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-[#F7F9FB] text-[#7A1C2C]">
         {icon}
       </div>
       <div>
-        <div className="text-xl font-extrabold tabular-nums text-[#1E252D]">{value}</div>
-        <div className="text-[11px] font-semibold uppercase tracking-wider text-[#64748B]">{label}</div>
+        <div className="text-xl font-extrabold text-[#1E252D] tabular-nums">{value}</div>
+        <div className="text-[11px] font-semibold tracking-wider text-[#64748B] uppercase">
+          {label}
+        </div>
       </div>
     </div>
   );
@@ -148,10 +155,7 @@ export default function RAGSearchPage() {
 
   // Load stats + health on mount
   const loadStats = useCallback(async () => {
-    const [s, h] = await Promise.all([
-      getRAGStats(DEFAULT_ORG_ID),
-      checkRAGHealth(),
-    ]);
+    const [s, h] = await Promise.all([getRAGStats(DEFAULT_ORG_ID), checkRAGHealth()]);
     setStats(s);
     setHealth(h);
   }, []);
@@ -220,9 +224,7 @@ export default function RAGSearchPage() {
       setLatencyMs(Math.round(performance.now() - t0));
     } catch (e: unknown) {
       setError(
-        e instanceof Error
-          ? e.message
-          : "Search failed. Make sure the AI service is running.",
+        e instanceof Error ? e.message : "Search failed. Make sure the AI service is running."
       );
     } finally {
       setLoading(false);
@@ -257,10 +259,7 @@ export default function RAGSearchPage() {
 
   return (
     <div className="space-y-6 pb-12">
-      <Topbar
-        title="RAG Search Lab"
-        breadcrumb={["Knowledge Base", "RAG Search"]}
-      />
+      <Topbar title="RAG Search Lab" breadcrumb={["Knowledge Base", "RAG Search"]} />
 
       <main className="space-y-6 px-7">
         {/* Header strip */}
@@ -296,7 +295,11 @@ export default function RAGSearchPage() {
         {stats && (
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
             <StatCard label="RFP Chunks" value={stats.rfp_chunks} icon={<FileText size={16} />} />
-            <StatCard label="KB Chunks" value={stats.knowledge_chunks} icon={<Database size={16} />} />
+            <StatCard
+              label="KB Chunks"
+              value={stats.knowledge_chunks}
+              icon={<Database size={16} />}
+            />
             <StatCard label="Total Vectors" value={stats.total_chunks} icon={<Zap size={16} />} />
             <div
               className="flex cursor-pointer items-center gap-3 rounded-lg border border-dashed border-[#7A1C2C] bg-white p-4 transition hover:bg-[#FDF5F6]"
@@ -333,7 +336,7 @@ export default function RAGSearchPage() {
             <div className="relative">
               <Search
                 size={16}
-                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#94A3B8]"
+                className="absolute top-1/2 left-3.5 -translate-y-1/2 text-[#94A3B8]"
               />
               <input
                 ref={inputRef}
@@ -343,13 +346,13 @@ export default function RAGSearchPage() {
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={handleKey}
                 placeholder='e.g. "Which previous project demonstrates healthcare cloud-platform experience?"'
-                className="w-full rounded-lg border border-[#E2E8F0] bg-[#F7F9FB] py-3 pl-10 pr-28 text-sm text-[#1E252D] outline-none placeholder:text-[#94A3B8] focus:border-[#7A1C2C] focus:ring-2 focus:ring-[#7A1C2C]/10"
+                className="w-full rounded-lg border border-[#E2E8F0] bg-[#F7F9FB] py-3 pr-28 pl-10 text-sm text-[#1E252D] outline-none placeholder:text-[#94A3B8] focus:border-[#7A1C2C] focus:ring-2 focus:ring-[#7A1C2C]/10"
               />
               <Button
                 id="rag-search-btn"
                 onClick={runSearch}
                 disabled={loading || query.trim().length < 3}
-                className="absolute right-2 top-1/2 h-8 -translate-y-1/2 bg-[#7A1C2C] px-4 text-xs font-bold text-white hover:bg-[#631724] disabled:opacity-50"
+                className="absolute top-1/2 right-2 h-8 -translate-y-1/2 bg-[#7A1C2C] px-4 text-xs font-bold text-white hover:bg-[#631724] disabled:opacity-50"
               >
                 {loading ? <Loader2 size={12} className="animate-spin" /> : "Search"}
               </Button>
@@ -376,7 +379,15 @@ export default function RAGSearchPage() {
               {(scope === "knowledge" || scope === "both") && (
                 <>
                   <span className="ml-2 text-xs font-bold text-[#64748B]">Type:</span>
-                  {(["all", "project", "employee", "technology", "certification"] as SourceTypeFilter[]).map((t) => (
+                  {(
+                    [
+                      "all",
+                      "project",
+                      "employee",
+                      "technology",
+                      "certification",
+                    ] as SourceTypeFilter[]
+                  ).map((t) => (
                     <button
                       key={t}
                       id={`type-${t}`}
@@ -426,7 +437,9 @@ export default function RAGSearchPage() {
                 <div className="space-y-1.5">
                   <label className="flex justify-between text-xs font-bold text-[#475569]">
                     <span>Min. similarity</span>
-                    <span className="font-mono text-[#7A1C2C]">{(threshold * 100).toFixed(0)}%</span>
+                    <span className="font-mono text-[#7A1C2C]">
+                      {(threshold * 100).toFixed(0)}%
+                    </span>
                   </label>
                   <input
                     type="range"
@@ -517,8 +530,8 @@ export default function RAGSearchPage() {
               <BookOpen size={40} className="mb-4 text-[#CBD5E1]" />
               <div className="text-base font-bold text-[#475569]">No results found</div>
               <div className="mt-1 max-w-sm text-sm text-[#94A3B8]">
-                Try lowering the minimum similarity threshold, broadening your query, or
-                clicking <strong>Embed KB</strong> to ingest your knowledge base first.
+                Try lowering the minimum similarity threshold, broadening your query, or clicking{" "}
+                <strong>Embed KB</strong> to ingest your knowledge base first.
               </div>
             </CardContent>
           </Card>
@@ -559,7 +572,7 @@ function ResultCard({ result, rank }: { result: UnifiedResult; rank: number }) {
             <div className="min-w-0 flex-1 space-y-2">
               {/* Meta row */}
               <div className="flex flex-wrap items-center gap-2">
-                <span className="rounded bg-[#EFF6FF] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-blue-700">
+                <span className="rounded bg-[#EFF6FF] px-2 py-0.5 text-[10px] font-bold tracking-wide text-blue-700 uppercase">
                   RFP
                 </span>
                 <span className="text-xs font-semibold text-[#1E252D]">

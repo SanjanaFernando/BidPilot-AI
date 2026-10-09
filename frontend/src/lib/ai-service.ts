@@ -3,9 +3,7 @@
  * Communicates with the FastAPI AI service (localhost:8000 in dev).
  */
 
-const AI_SERVICE_URL = (
-  process.env.NEXT_PUBLIC_AI_SERVICE_URL || "http://localhost:8000"
-)
+const AI_SERVICE_URL = (process.env.NEXT_PUBLIC_AI_SERVICE_URL || "http://localhost:8000")
   .trim()
   .replace(/^["']|["']$/g, "")
   .replace(/\/+$/, "");
@@ -100,7 +98,7 @@ export async function uploadRFP(
   file: File,
   tenderId: string,
   organizationId: string,
-  onProgress?: (progress: UploadProgress) => void,
+  onProgress?: (progress: UploadProgress) => void
 ): Promise<UploadResult> {
   const emit = (stage: UploadProgress["stage"], message: string, percent: number) => {
     onProgress?.({ stage, message, percent });
@@ -145,7 +143,7 @@ export async function searchRAG(
     tenderId?: string;
     topK?: number;
     similarityThreshold?: number;
-  },
+  }
 ): Promise<RAGSearchResponse> {
   const res = await fetch(`${AI_SERVICE_URL}/rag/search`, {
     method: "POST",
@@ -180,7 +178,8 @@ export interface ExtractedRequirement {
   is_mandatory: boolean;
   source_page: number | null;
   source_section: string | null;
-  status?: "covered" | "partially_covered" | "missing" | "evidence_required" | "unverified" | string;
+  status?:
+    "covered" | "partially_covered" | "missing" | "evidence_required" | "unverified" | string;
 }
 
 export interface RFPAnalysis {
@@ -227,7 +226,7 @@ export async function analyzeRFP(
   tenderId: string,
   organizationId: string,
   documentId?: string,
-  saveRequirements = true,
+  saveRequirements = true
 ): Promise<AnalyzeRFPResponse> {
   const res = await fetch(`${AI_SERVICE_URL}/agents/analyze`, {
     method: "POST",
@@ -256,11 +255,11 @@ export async function analyzeRFP(
  */
 export async function getTenderAnalysis(
   tenderId: string,
-  organizationId: string,
+  organizationId: string
 ): Promise<TenderAnalysisState> {
   const res = await fetch(
     `${AI_SERVICE_URL}/agents/analyze/${encodeURIComponent(tenderId)}?organization_id=${encodeURIComponent(organizationId)}`,
-    { signal: AbortSignal.timeout(15_000) },
+    { signal: AbortSignal.timeout(15_000) }
   );
 
   if (!res.ok) {
@@ -326,13 +325,17 @@ export interface ProposalVerificationResult {
 }
 
 export async function getAuditLogs(organizationId: string, limit = 50) {
-  const res = await fetch(`${AI_SERVICE_URL}/audit/logs?organization_id=${encodeURIComponent(organizationId)}&limit=${limit}`);
+  const res = await fetch(
+    `${AI_SERVICE_URL}/audit/logs?organization_id=${encodeURIComponent(organizationId)}&limit=${limit}`
+  );
   if (!res.ok) throw new Error("Failed to fetch audit logs");
   return res.json();
 }
 
 export async function verifyAuditChain(organizationId: string): Promise<VerifyChainResult> {
-  const res = await fetch(`${AI_SERVICE_URL}/audit/verify-chain?organization_id=${encodeURIComponent(organizationId)}`);
+  const res = await fetch(
+    `${AI_SERVICE_URL}/audit/verify-chain?organization_id=${encodeURIComponent(organizationId)}`
+  );
   if (!res.ok) throw new Error("Failed to verify audit chain");
   return res.json();
 }
@@ -357,7 +360,9 @@ export async function sealElectronicSignature(payload: {
   return res.json();
 }
 
-export async function verifyProposalHash(proposalHash: string): Promise<ProposalVerificationResult> {
+export async function verifyProposalHash(
+  proposalHash: string
+): Promise<ProposalVerificationResult> {
   const res = await fetch(`${AI_SERVICE_URL}/audit/verify/${encodeURIComponent(proposalHash)}`);
   if (!res.ok) {
     return {
@@ -393,25 +398,41 @@ export interface NotificationsResponse {
   notifications: NotificationItem[];
 }
 
-export async function getNotifications(organizationId: string, unreadOnly = false): Promise<NotificationsResponse> {
-  const res = await fetch(`${AI_SERVICE_URL}/notifications?organization_id=${encodeURIComponent(organizationId)}&unread_only=${unreadOnly}`);
+export async function getNotifications(
+  organizationId: string,
+  unreadOnly = false
+): Promise<NotificationsResponse> {
+  const res = await fetch(
+    `${AI_SERVICE_URL}/notifications?organization_id=${encodeURIComponent(organizationId)}&unread_only=${unreadOnly}`
+  );
   if (!res.ok) throw new Error("Failed to fetch notifications");
   return res.json();
 }
 
 export async function markNotificationRead(id: string) {
-  const res = await fetch(`${AI_SERVICE_URL}/notifications/${encodeURIComponent(id)}/read`, { method: "PUT" });
+  const res = await fetch(`${AI_SERVICE_URL}/notifications/${encodeURIComponent(id)}/read`, {
+    method: "PUT",
+  });
   if (!res.ok) throw new Error("Failed to mark notification as read");
   return res.json();
 }
 
 export async function markAllNotificationsRead(organizationId: string) {
-  const res = await fetch(`${AI_SERVICE_URL}/notifications/read-all?organization_id=${encodeURIComponent(organizationId)}`, { method: "PUT" });
+  const res = await fetch(
+    `${AI_SERVICE_URL}/notifications/read-all?organization_id=${encodeURIComponent(organizationId)}`,
+    { method: "PUT" }
+  );
   if (!res.ok) throw new Error("Failed to mark all as read");
   return res.json();
 }
 
-export async function testWebhookDispatch(payload: { webhook_url: string; service_type: string; title: string; message: string; link?: string }) {
+export async function testWebhookDispatch(payload: {
+  webhook_url: string;
+  service_type: string;
+  title: string;
+  message: string;
+  link?: string;
+}) {
   const res = await fetch(`${AI_SERVICE_URL}/notifications/test-webhook`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -420,4 +441,3 @@ export async function testWebhookDispatch(payload: { webhook_url: string; servic
   if (!res.ok) throw new Error("Failed to dispatch test webhook");
   return res.json();
 }
-

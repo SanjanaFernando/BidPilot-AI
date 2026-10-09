@@ -37,10 +37,10 @@ export function StructuredDocumentRenderer({
               e.stopPropagation();
               if (onSelectClaim) onSelectClaim(text);
             }}
-            className="inline-flex items-center gap-1 mx-1 px-2 py-0.5 rounded-full font-mono text-[11px] font-bold bg-[#FDF3DA] text-[#7A1C2C] border border-[#F1DCB1] hover:bg-[#FBE9C4] cursor-pointer shadow-2xs transition-transform active:scale-95 select-none"
+            className="mx-1 inline-flex cursor-pointer items-center gap-1 rounded-full border border-[#F1DCB1] bg-[#FDF3DA] px-2 py-0.5 font-mono text-[11px] font-bold text-[#7A1C2C] shadow-2xs transition-transform select-none hover:bg-[#FBE9C4] active:scale-95"
             title="Verified Evidence Citation · Click to inspect dossier"
           >
-            <Quote className="w-2.5 h-2.5 text-[#7A1C2C]" />
+            <Quote className="h-2.5 w-2.5 text-[#7A1C2C]" />
             {fullTag.replace(/^\[|\]$/g, "")}
           </span>
         );
@@ -87,15 +87,23 @@ export function StructuredDocumentRenderer({
   const flushTable = () => {
     if (currentTableRows.length > 0) {
       const headerRow = currentTableRows[0];
-      const bodyRows = currentTableRows.slice(1).filter((r) => !r.every((c) => c.match(/^:?-+:?$/)));
+      const bodyRows = currentTableRows
+        .slice(1)
+        .filter((r) => !r.every((c) => c.match(/^:?-+:?$/)));
 
       blocks.push(
-        <div key={`table-${blockIdx++}`} className="my-4 overflow-x-auto rounded-xl border border-slate-200 shadow-2xs">
-          <table className="w-full text-left text-xs border-collapse bg-white">
+        <div
+          key={`table-${blockIdx++}`}
+          className="my-4 overflow-x-auto rounded-xl border border-slate-200 shadow-2xs"
+        >
+          <table className="w-full border-collapse bg-white text-left text-xs">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-200">
+              <tr className="border-b border-slate-200 bg-slate-50">
                 {headerRow.map((cell, cIdx) => (
-                  <th key={`th-${cIdx}`} className="px-3.5 py-2.5 font-bold text-slate-700 tracking-wide">
+                  <th
+                    key={`th-${cIdx}`}
+                    className="px-3.5 py-2.5 font-bold tracking-wide text-slate-700"
+                  >
                     {parseInline(cell.trim())}
                   </th>
                 ))}
@@ -103,7 +111,7 @@ export function StructuredDocumentRenderer({
             </thead>
             <tbody className="divide-y divide-slate-100">
               {bodyRows.map((row, rIdx) => (
-                <tr key={`tr-${rIdx}`} className="hover:bg-slate-50/70 transition-colors">
+                <tr key={`tr-${rIdx}`} className="transition-colors hover:bg-slate-50/70">
                   {row.map((cell, cIdx) => (
                     <td key={`td-${rIdx}-${cIdx}`} className="px-3.5 py-2 text-slate-600">
                       {parseInline(cell.trim())}
@@ -147,9 +155,9 @@ export function StructuredDocumentRenderer({
       blocks.push(
         <h1
           key={`h1-${blockIdx++}`}
-          className="text-xl md:text-2xl font-extrabold text-slate-900 tracking-tight mt-6 mb-3 pb-2 border-b-2 border-slate-100 flex items-center gap-2"
+          className="mt-6 mb-3 flex items-center gap-2 border-b-2 border-slate-100 pb-2 text-xl font-extrabold tracking-tight text-slate-900 md:text-2xl"
         >
-          <FileText className="w-5 h-5 text-[#7A1C2C] inline-block" />
+          <FileText className="inline-block h-5 w-5 text-[#7A1C2C]" />
           {parseInline(trimmed.replace(/^#\s+/, ""))}
         </h1>
       );
@@ -161,9 +169,9 @@ export function StructuredDocumentRenderer({
       blocks.push(
         <h2
           key={`h2-${blockIdx++}`}
-          className="text-base md:text-lg font-bold text-slate-900 tracking-tight mt-5 mb-2.5 text-[#1E252D] flex items-center gap-1.5"
+          className="mt-5 mb-2.5 flex items-center gap-1.5 text-base font-bold tracking-tight text-[#1E252D] text-slate-900 md:text-lg"
         >
-          <span className="w-2 h-2 rounded-full bg-[#7A1C2C] inline-block" />
+          <span className="inline-block h-2 w-2 rounded-full bg-[#7A1C2C]" />
           {parseInline(trimmed.replace(/^##\s+/, ""))}
         </h2>
       );
@@ -175,7 +183,7 @@ export function StructuredDocumentRenderer({
       blocks.push(
         <h3
           key={`h3-${blockIdx++}`}
-          className="text-sm md:text-base font-semibold text-slate-800 mt-4 mb-1.5"
+          className="mt-4 mb-1.5 text-sm font-semibold text-slate-800 md:text-base"
         >
           {parseInline(trimmed.replace(/^###\s+/, ""))}
         </h3>
@@ -188,7 +196,7 @@ export function StructuredDocumentRenderer({
       blocks.push(
         <div
           key={`quote-${blockIdx++}`}
-          className="my-3.5 p-4 rounded-xl bg-indigo-50/70 border-l-4 border-indigo-600 text-xs md:text-sm text-indigo-950 leading-relaxed italic shadow-2xs"
+          className="my-3.5 rounded-xl border-l-4 border-indigo-600 bg-indigo-50/70 p-4 text-xs leading-relaxed text-indigo-950 italic shadow-2xs md:text-sm"
         >
           {parseInline(trimmed.replace(/^>\s+/, ""))}
         </div>
@@ -199,8 +207,11 @@ export function StructuredDocumentRenderer({
     // Bullet list item (- ... or * ...)
     if (trimmed.match(/^[-*]\s+/)) {
       blocks.push(
-        <div key={`bullet-${blockIdx++}`} className="flex items-start gap-2.5 my-1.5 pl-2 text-slate-700 text-sm leading-relaxed">
-          <div className="w-1.5 h-1.5 rounded-full bg-slate-400 mt-2 flex-shrink-0" />
+        <div
+          key={`bullet-${blockIdx++}`}
+          className="my-1.5 flex items-start gap-2.5 pl-2 text-sm leading-relaxed text-slate-700"
+        >
+          <div className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-slate-400" />
           <div className="flex-1">{parseInline(trimmed.replace(/^[-*]\s+/, ""))}</div>
         </div>
       );
@@ -211,8 +222,11 @@ export function StructuredDocumentRenderer({
     const numMatch = trimmed.match(/^(\d+)\.\s+(.*)$/);
     if (numMatch) {
       blocks.push(
-        <div key={`num-${blockIdx++}`} className="flex items-start gap-2.5 my-1.5 pl-2 text-slate-700 text-sm leading-relaxed">
-          <span className="font-mono text-xs font-bold text-[#7A1C2C] mt-0.5 flex-shrink-0 bg-slate-100 rounded px-1.5 py-0.5">
+        <div
+          key={`num-${blockIdx++}`}
+          className="my-1.5 flex items-start gap-2.5 pl-2 text-sm leading-relaxed text-slate-700"
+        >
+          <span className="mt-0.5 flex-shrink-0 rounded bg-slate-100 px-1.5 py-0.5 font-mono text-xs font-bold text-[#7A1C2C]">
             {numMatch[1]}
           </span>
           <div className="flex-1">{parseInline(numMatch[2])}</div>
@@ -225,7 +239,7 @@ export function StructuredDocumentRenderer({
     blocks.push(
       <p
         key={`p-${blockIdx++}`}
-        className="my-2.5 text-sm md:text-[14.5px] leading-relaxed text-slate-700 font-normal"
+        className="my-2.5 text-sm leading-relaxed font-normal text-slate-700 md:text-[14.5px]"
       >
         {parseInline(trimmed)}
       </p>
@@ -239,7 +253,7 @@ export function StructuredDocumentRenderer({
   return (
     <div
       onMouseUp={onMouseUp}
-      className="p-8 md:p-10 bg-white rounded-2xl border border-slate-200/80 shadow-xs max-w-4xl mx-auto selection:bg-indigo-100 selection:text-indigo-900 select-text cursor-text"
+      className="mx-auto max-w-4xl cursor-text rounded-2xl border border-slate-200/80 bg-white p-8 shadow-xs select-text selection:bg-indigo-100 selection:text-indigo-900 md:p-10"
       style={{
         fontFamily: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
       }}

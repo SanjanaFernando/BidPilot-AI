@@ -48,38 +48,43 @@ export function SectionSourcesDrawer({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-xs animate-in fade-in duration-150">
-      <div className="flex h-full w-full max-w-md flex-col bg-white shadow-2xl border-l border-slate-200">
+    <div className="animate-in fade-in fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-xs duration-150">
+      <div className="flex h-full w-full max-w-md flex-col border-l border-slate-200 bg-white shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4 bg-slate-50">
+        <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-6 py-4">
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50 text-indigo-700">
               <Quote size={16} />
             </div>
             <div>
-              <div className="text-xs font-bold text-slate-900">Verified Sources &amp; Citations</div>
-              <div className="text-[11px] text-slate-500 truncate max-w-[260px]">{sectionTitle}</div>
+              <div className="text-xs font-bold text-slate-900">
+                Verified Sources &amp; Citations
+              </div>
+              <div className="max-w-[260px] truncate text-[11px] text-slate-500">
+                {sectionTitle}
+              </div>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-200 hover:text-slate-700 transition-colors"
+            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-200 hover:text-slate-700"
           >
             <X size={16} />
           </button>
         </div>
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-4">
-          <div className="rounded-lg border border-emerald-200 bg-emerald-50/70 p-3 text-xs text-emerald-900 flex items-center gap-2">
-            <ShieldCheck size={16} className="text-emerald-600 flex-shrink-0" />
+        <div className="flex-1 space-y-4 overflow-y-auto p-6">
+          <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50/70 p-3 text-xs text-emerald-900">
+            <ShieldCheck size={16} className="flex-shrink-0 text-emerald-600" />
             <span>
-              All claims in this section are indexed and cross-checked against organizational documents.
+              All claims in this section are indexed and cross-checked against organizational
+              documents.
             </span>
           </div>
 
           {loading ? (
-            <div className="py-12 text-center text-xs text-slate-500 flex flex-col items-center gap-2">
+            <div className="flex flex-col items-center gap-2 py-12 text-center text-xs text-slate-500">
               <Loader2 size={20} className="animate-spin text-indigo-600" />
               <span>Loading citation records...</span>
             </div>
@@ -88,26 +93,28 @@ export function SectionSourcesDrawer({
               {sources.map((src, i) => (
                 <div
                   key={src.id || i}
-                  className="rounded-lg border border-slate-200 bg-slate-50 p-4 space-y-2 hover:border-indigo-300 transition-all"
+                  className="space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-4 transition-all hover:border-indigo-300"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="rounded bg-indigo-100 px-2 py-0.5 text-[10px] font-bold text-indigo-800 font-mono">
+                    <span className="rounded bg-indigo-100 px-2 py-0.5 font-mono text-[10px] font-bold text-indigo-800">
                       {src.citation_anchor || `[Ref ${i + 1}]`}
                     </span>
-                    <span className="rounded bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 border border-emerald-200">
+                    <span className="rounded border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
                       {Math.round((src.similarity_score || 0.94) * 100)}% Confidence
                     </span>
                   </div>
 
-                  <div className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900">
                     <BookOpen size={13} className="text-slate-500" />
                     <span>{src.source_name}</span>
                     {src.source_id && (
-                      <span className="font-mono text-[10px] text-slate-400">({src.source_id})</span>
+                      <span className="font-mono text-[10px] text-slate-400">
+                        ({src.source_id})
+                      </span>
                     )}
                   </div>
 
-                  <div className="text-xs text-slate-700 italic bg-white p-2.5 rounded border border-slate-200">
+                  <div className="rounded border border-slate-200 bg-white p-2.5 text-xs text-slate-700 italic">
                     &quot;{src.claim_text}&quot;
                   </div>
 
@@ -119,7 +126,7 @@ export function SectionSourcesDrawer({
                         onSelectClaim(src.claim_text);
                         onClose();
                       }}
-                      className="w-full text-indigo-600 hover:text-indigo-800 text-[11px] font-semibold h-7 mt-1 gap-1"
+                      className="mt-1 h-7 w-full gap-1 text-[11px] font-semibold text-indigo-600 hover:text-indigo-800"
                     >
                       <ShieldCheck size={12} /> Prove Claim Dossier
                     </Button>
@@ -135,8 +142,10 @@ export function SectionSourcesDrawer({
         </div>
 
         {/* Footer */}
-        <div className="border-t border-slate-200 p-4 bg-slate-50 flex items-center justify-between">
-          <span className="text-xs font-bold text-slate-600">{sources.length} citations verified</span>
+        <div className="flex items-center justify-between border-t border-slate-200 bg-slate-50 p-4">
+          <span className="text-xs font-bold text-slate-600">
+            {sources.length} citations verified
+          </span>
           <Button size="sm" variant="outline" onClick={onClose}>
             Close
           </Button>

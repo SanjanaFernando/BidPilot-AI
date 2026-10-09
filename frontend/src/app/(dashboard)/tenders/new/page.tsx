@@ -204,7 +204,12 @@ export default function NewTenderPage() {
             <div className="flex items-center gap-3 rounded-lg border border-amber-300 bg-amber-50 p-4 text-xs text-amber-900 shadow-xs">
               <AlertCircle size={18} className="shrink-0 text-amber-600" />
               <div>
-                <strong>Read-Only Mode:</strong> Your role ({roleDef.displayName}) does not have permission to register new tenders (requires <code className="bg-amber-100 px-1 py-0.5 rounded text-[11px] font-mono">tenders:create</code>). Actions are disabled.
+                <strong>Read-Only Mode:</strong> Your role ({roleDef.displayName}) does not have
+                permission to register new tenders (requires{" "}
+                <code className="rounded bg-amber-100 px-1 py-0.5 font-mono text-[11px]">
+                  tenders:create
+                </code>
+                ). Actions are disabled.
               </div>
             </div>
           )}
@@ -237,12 +242,12 @@ export default function NewTenderPage() {
                 <div
                   className={`flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 text-center transition-colors ${
                     !canCreate
-                      ? "border-slate-200 bg-slate-50 cursor-not-allowed opacity-60 pointer-events-auto"
+                      ? "pointer-events-auto cursor-not-allowed border-slate-200 bg-slate-50 opacity-60"
                       : dragOver
-                        ? "border-[#7A1C2C] bg-[#FDF3DA]/30 cursor-pointer"
+                        ? "cursor-pointer border-[#7A1C2C] bg-[#FDF3DA]/30"
                         : file
-                          ? "border-[#15803D] bg-[#DCFCE7]/20 cursor-pointer"
-                          : "border-[#CBD5E1] bg-[#F8FAFC] hover:bg-[#F1F5F9] cursor-pointer"
+                          ? "cursor-pointer border-[#15803D] bg-[#DCFCE7]/20"
+                          : "cursor-pointer border-[#CBD5E1] bg-[#F8FAFC] hover:bg-[#F1F5F9]"
                   }`}
                   onDragOver={(e) => {
                     if (!canCreate) return;
@@ -489,8 +494,8 @@ export default function NewTenderPage() {
                 }
                 className={`h-9 gap-2 px-6 text-xs font-semibold ${
                   canCreate && !isSubmitting
-                    ? "bg-[#7A1C2C] text-white hover:bg-[#631724] cursor-pointer"
-                    : "bg-slate-200 text-slate-400 cursor-not-allowed opacity-60 pointer-events-auto"
+                    ? "cursor-pointer bg-[#7A1C2C] text-white hover:bg-[#631724]"
+                    : "pointer-events-auto cursor-not-allowed bg-slate-200 text-slate-400 opacity-60"
                 }`}
               >
                 {isSubmitting ? (

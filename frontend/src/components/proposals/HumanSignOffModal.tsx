@@ -91,24 +91,24 @@ export function HumanSignOffModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div className="relative w-full max-w-2xl bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden text-slate-100">
+    <div className="animate-in fade-in fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm duration-200">
+      <div className="relative flex w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-slate-700 bg-slate-900 text-slate-100 shadow-2xl">
         {/* Header */}
-        <div className="px-6 py-5 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
+        <div className="flex items-center justify-between border-b border-slate-800 bg-slate-950/60 px-6 py-5">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-indigo-500/10 border border-indigo-500/20 rounded-xl text-indigo-400">
-              <FileCheck2 className="w-6 h-6" />
+            <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/10 p-2.5 text-indigo-400">
+              <FileCheck2 className="h-6 w-6" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-xl font-bold text-white tracking-tight">
+                <h2 className="text-xl font-bold tracking-tight text-white">
                   Authorized Human Proposal Sign-Off
                 </h2>
-                <span className="text-xs px-2 py-0.5 rounded-full font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-xs font-semibold text-emerald-400">
                   Governance Gate
                 </span>
               </div>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="mt-0.5 text-xs text-slate-400">
                 Phase 10: Human executive review required prior to tender submission
               </p>
             </div>
@@ -116,25 +116,25 @@ export function HumanSignOffModal({
 
           <button
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
+            className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white"
           >
-            <X className="w-5 h-5" />
+            <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-5 overflow-y-auto max-h-[75vh]">
+        <form onSubmit={handleSubmit} className="max-h-[75vh] space-y-5 overflow-y-auto p-6">
           {/* Proposal Summary Badge */}
-          <div className="p-4 bg-slate-950/70 border border-slate-800 rounded-xl space-y-2">
-            <div className="text-xs text-slate-400 font-medium">Proposal Target</div>
-            <div className="text-sm font-bold text-white line-clamp-1">{proposalTitle}</div>
-            <div className="flex items-center gap-3 text-xs pt-1">
-              <span className="text-emerald-400 font-semibold flex items-center gap-1">
-                <CheckCircle2 className="w-3.5 h-3.5" />
+          <div className="space-y-2 rounded-xl border border-slate-800 bg-slate-950/70 p-4">
+            <div className="text-xs font-medium text-slate-400">Proposal Target</div>
+            <div className="line-clamp-1 text-sm font-bold text-white">{proposalTitle}</div>
+            <div className="flex items-center gap-3 pt-1 text-xs">
+              <span className="flex items-center gap-1 font-semibold text-emerald-400">
+                <CheckCircle2 className="h-3.5 w-3.5" />
                 {complianceScore}% Compliance
               </span>
-              <span className="text-indigo-400 font-semibold flex items-center gap-1">
-                <Sparkles className="w-3.5 h-3.5" />
+              <span className="flex items-center gap-1 font-semibold text-indigo-400">
+                <Sparkles className="h-3.5 w-3.5" />
                 {winProbability}% Win Probability
               </span>
             </div>
@@ -142,73 +142,77 @@ export function HumanSignOffModal({
 
           {/* Submission Readiness Checklist */}
           <div>
-            <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2.5">
+            <label className="mb-2.5 block text-xs font-bold tracking-wider text-slate-300 uppercase">
               Submission Readiness Checklist
             </label>
             <div className="space-y-2.5">
-              <label className="flex items-start gap-3 p-3 bg-slate-950/40 border border-slate-800/80 hover:border-slate-700 rounded-xl cursor-pointer transition-colors">
+              <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-800/80 bg-slate-950/40 p-3 transition-colors hover:border-slate-700">
                 <input
                   type="checkbox"
                   checked={checklist.mandatory_clauses_met}
                   onChange={(e) =>
                     setChecklist({ ...checklist, mandatory_clauses_met: e.target.checked })
                   }
-                  className="mt-0.5 rounded border-slate-700 text-indigo-600 focus:ring-indigo-500 bg-slate-900"
+                  className="mt-0.5 rounded border-slate-700 bg-slate-900 text-indigo-600 focus:ring-indigo-500"
                 />
                 <div className="text-xs">
-                  <div className="font-semibold text-slate-200">100% Mandatory Clauses Addressed</div>
-                  <div className="text-slate-400 text-[11px]">
+                  <div className="font-semibold text-slate-200">
+                    100% Mandatory Clauses Addressed
+                  </div>
+                  <div className="text-[11px] text-slate-400">
                     All mandatory criteria verified by Compliance Agent and supported by citations.
                   </div>
                 </div>
               </label>
 
-              <label className="flex items-start gap-3 p-3 bg-slate-950/40 border border-slate-800/80 hover:border-slate-700 rounded-xl cursor-pointer transition-colors">
+              <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-800/80 bg-slate-950/40 p-3 transition-colors hover:border-slate-700">
                 <input
                   type="checkbox"
                   checked={checklist.sla_confirmed}
-                  onChange={(e) =>
-                    setChecklist({ ...checklist, sla_confirmed: e.target.checked })
-                  }
-                  className="mt-0.5 rounded border-slate-700 text-indigo-600 focus:ring-indigo-500 bg-slate-900"
+                  onChange={(e) => setChecklist({ ...checklist, sla_confirmed: e.target.checked })}
+                  className="mt-0.5 rounded border-slate-700 bg-slate-900 text-indigo-600 focus:ring-indigo-500"
                 />
                 <div className="text-xs">
-                  <div className="font-semibold text-slate-200">Technical Architecture & SLA Confirmed</div>
-                  <div className="text-slate-400 text-[11px]">
+                  <div className="font-semibold text-slate-200">
+                    Technical Architecture & SLA Confirmed
+                  </div>
+                  <div className="text-[11px] text-slate-400">
                     Delivery timeline, high availability, and 99.9% uptime SLA commitments approved.
                   </div>
                 </div>
               </label>
 
-              <label className="flex items-start gap-3 p-3 bg-slate-950/40 border border-slate-800/80 hover:border-slate-700 rounded-xl cursor-pointer transition-colors">
+              <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-800/80 bg-slate-950/40 p-3 transition-colors hover:border-slate-700">
                 <input
                   type="checkbox"
                   checked={checklist.pricing_approved}
                   onChange={(e) =>
                     setChecklist({ ...checklist, pricing_approved: e.target.checked })
                   }
-                  className="mt-0.5 rounded border-slate-700 text-indigo-600 focus:ring-indigo-500 bg-slate-900"
+                  className="mt-0.5 rounded border-slate-700 bg-slate-900 text-indigo-600 focus:ring-indigo-500"
                 />
                 <div className="text-xs">
-                  <div className="font-semibold text-slate-200">Commercial Pricing & Team Allocation Reviewed</div>
-                  <div className="text-slate-400 text-[11px]">
+                  <div className="font-semibold text-slate-200">
+                    Commercial Pricing & Team Allocation Reviewed
+                  </div>
+                  <div className="text-[11px] text-slate-400">
                     Senior key personnel and milestone deliverables validated against budget.
                   </div>
                 </div>
               </label>
 
-              <label className="flex items-start gap-3 p-3 bg-slate-950/40 border border-slate-800/80 hover:border-slate-700 rounded-xl cursor-pointer transition-colors">
+              <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-800/80 bg-slate-950/40 p-3 transition-colors hover:border-slate-700">
                 <input
                   type="checkbox"
                   checked={checklist.legal_sign_off}
-                  onChange={(e) =>
-                    setChecklist({ ...checklist, legal_sign_off: e.target.checked })
-                  }
-                  className="mt-0.5 rounded border-slate-700 text-indigo-600 focus:ring-indigo-500 bg-slate-900"
+                  onChange={(e) => setChecklist({ ...checklist, legal_sign_off: e.target.checked })}
+                  className="mt-0.5 rounded border-slate-700 bg-slate-900 text-indigo-600 focus:ring-indigo-500"
                 />
                 <div className="text-xs">
-                  <div className="font-semibold text-slate-200">ISO 27001 & Non-Disclosure Governance</div>
-                  <div className="text-slate-400 text-[11px]">
+                  <div className="font-semibold text-slate-200">
+                    ISO 27001 & Non-Disclosure Governance
+                  </div>
+                  <div className="text-[11px] text-slate-400">
                     Security claims verified without synthetic hallucinations.
                   </div>
                 </div>
@@ -217,9 +221,9 @@ export function HumanSignOffModal({
           </div>
 
           {/* Approver Details */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">
+              <label className="mb-1 block text-xs font-semibold text-slate-300">
                 Authorized Approver Name <span className="text-rose-400">*</span>
               </label>
               <input
@@ -228,11 +232,11 @@ export function HumanSignOffModal({
                 onChange={(e) => setApproverName(e.target.value)}
                 placeholder="e.g. John Doe"
                 required
-                className="w-full px-3 py-2 text-xs bg-slate-950 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-indigo-500"
+                className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white focus:border-indigo-500 focus:outline-none"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">
+              <label className="mb-1 block text-xs font-semibold text-slate-300">
                 Signer Role / Title <span className="text-rose-400">*</span>
               </label>
               <input
@@ -241,14 +245,14 @@ export function HumanSignOffModal({
                 onChange={(e) => setApproverRole(e.target.value)}
                 placeholder="e.g. VP of Enterprise Bids"
                 required
-                className="w-full px-3 py-2 text-xs bg-slate-950 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-indigo-500"
+                className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white focus:border-indigo-500 focus:outline-none"
               />
             </div>
           </div>
 
           {/* Executive Review Notes */}
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">
+            <label className="mb-1 block text-xs font-semibold text-slate-300">
               Executive Review Notes / Sign-Off Remarks
             </label>
             <textarea
@@ -256,56 +260,56 @@ export function HumanSignOffModal({
               value={reviewNotes}
               onChange={(e) => setReviewNotes(e.target.value)}
               placeholder="Add any formal notes or stipulations for the submission record..."
-              className="w-full px-3 py-2 text-xs bg-slate-950 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-indigo-500 resize-none"
+              className="w-full resize-none rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white focus:border-indigo-500 focus:outline-none"
             />
           </div>
 
           {/* Error / Success Feedback */}
           {error && (
-            <div className="p-3 bg-rose-500/10 border border-rose-500/30 text-rose-300 rounded-lg text-xs flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 flex-shrink-0" />
+            <div className="flex items-center gap-2 rounded-lg border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300">
+              <AlertCircle className="h-4 w-4 flex-shrink-0" />
               <span>{error}</span>
             </div>
           )}
 
           {success && (
-            <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 rounded-lg text-xs flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+            <div className="flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-3 text-xs text-emerald-300">
+              <CheckCircle2 className="h-4 w-4 flex-shrink-0" />
               <span>Proposal successfully signed off and marked ready for submission!</span>
             </div>
           )}
 
           {/* Action Buttons */}
-          <div className="pt-3 border-t border-slate-800 flex items-center justify-end gap-2.5">
+          <div className="flex items-center justify-end gap-2.5 border-t border-slate-800 pt-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium rounded-lg transition-colors"
+              className="rounded-lg bg-slate-800 px-4 py-2 text-xs font-medium text-slate-300 transition-colors hover:bg-slate-700"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={submitting || !allChecked || success}
-              className={`px-5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-2 ${
+              className={`flex items-center gap-2 rounded-lg px-5 py-2 text-xs font-bold transition-all ${
                 submitting || !allChecked || success
-                  ? "bg-slate-800 text-slate-500 cursor-not-allowed"
-                  : "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-lg shadow-emerald-950"
+                  ? "cursor-not-allowed bg-slate-800 text-slate-500"
+                  : "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-950 hover:from-emerald-500 hover:to-teal-500"
               }`}
             >
               {submitting ? (
                 <>
-                  <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
                   Recording Authorization...
                 </>
               ) : success ? (
                 <>
-                  <CheckCircle2 className="w-4 h-4" />
+                  <CheckCircle2 className="h-4 w-4" />
                   Authorized & Approved!
                 </>
               ) : (
                 <>
-                  <Lock className="w-4 h-4" />
+                  <Lock className="h-4 w-4" />
                   Authorize Tender Submission
                 </>
               )}

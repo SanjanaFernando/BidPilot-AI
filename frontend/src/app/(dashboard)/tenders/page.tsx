@@ -303,8 +303,8 @@ export default function TendersPage() {
                               }
                               className={`rounded p-1 transition-all ${
                                 canDelete
-                                  ? "text-[#64748B] hover:bg-[#FEE2E2] hover:text-[#DC2626] cursor-pointer"
-                                  : "text-slate-300 cursor-not-allowed opacity-40 pointer-events-auto"
+                                  ? "cursor-pointer text-[#64748B] hover:bg-[#FEE2E2] hover:text-[#DC2626]"
+                                  : "pointer-events-auto cursor-not-allowed text-slate-300 opacity-40"
                               }`}
                             >
                               <Trash2 size={13} />

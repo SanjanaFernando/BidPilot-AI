@@ -2,9 +2,7 @@
  * BidPilot AI — Phase 10: Compliance & Human Approval Client API
  */
 
-const AI_SERVICE_BASE_URL = (
-  process.env.NEXT_PUBLIC_AI_SERVICE_URL || "http://localhost:8000"
-)
+const AI_SERVICE_BASE_URL = (process.env.NEXT_PUBLIC_AI_SERVICE_URL || "http://localhost:8000")
   .trim()
   .replace(/^["']|["']$/g, "")
   .replace(/\/+$/, "");

@@ -144,7 +144,11 @@ const PERMISSION_GROUPS: { name: string; description: string; permissions: Permi
 ];
 
 export default function TeamRbacPage() {
-  const { role: activeUserRole, permissions: activeUserPermissions, switchDemoRole } = useUserPermissions();
+  const {
+    role: activeUserRole,
+    permissions: activeUserPermissions,
+    switchDemoRole,
+  } = useUserPermissions();
   const [members, setMembers] = useState<MockTeamMember[]>(mockTeamMembers);
   const [locks, setLocks] = useState<SectionLockItem[]>(INITIAL_LOCKS);
   const [searchQuery, setSearchQuery] = useState("");
@@ -239,11 +243,14 @@ export default function TeamRbacPage() {
 
   return (
     <div className="space-y-6 pb-16">
-      <Topbar title="Team & Access Control (RBAC)" breadcrumb={["BidPilot AI", "Settings", "Team & RBAC"]} />
+      <Topbar
+        title="Team & Access Control (RBAC)"
+        breadcrumb={["BidPilot AI", "Settings", "Team & RBAC"]}
+      />
 
       {/* Notification Toast */}
       {notification && (
-        <div className="fixed top-5 right-5 z-50 flex items-center gap-2 rounded-lg bg-[#1E252D] px-4 py-3 text-xs font-semibold text-white shadow-xl border border-emerald-500/30 animate-in fade-in slide-in-from-top-2">
+        <div className="animate-in fade-in slide-in-from-top-2 fixed top-5 right-5 z-50 flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-[#1E252D] px-4 py-3 text-xs font-semibold text-white shadow-xl">
           <Sparkles size={14} className="text-emerald-400" />
           <span>{notification}</span>
         </div>
@@ -258,14 +265,15 @@ export default function TeamRbacPage() {
                 <Shield size={20} />
               </div>
               <div>
-                <h1 className="text-lg font-bold text-[#1E252D] flex items-center gap-2">
+                <h1 className="flex items-center gap-2 text-lg font-bold text-[#1E252D]">
                   Enterprise Role-Based Access Control (RBAC)
                   <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800">
                     Phase 12 Active
                   </span>
                 </h1>
                 <p className="text-xs text-[#64748B]">
-                  Manage organization team members, role assignments, fine-grained permission matrices, and section locking concurrency.
+                  Manage organization team members, role assignments, fine-grained permission
+                  matrices, and section locking concurrency.
                 </p>
               </div>
             </div>
@@ -275,7 +283,7 @@ export default function TeamRbacPage() {
             <RbacGuard permission="team:manage">
               <Button
                 onClick={() => setShowInviteModal(true)}
-                className="bg-[#7A1C2C] hover:bg-[#621623] text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm"
+                className="flex items-center gap-1.5 bg-[#7A1C2C] text-xs font-semibold text-white shadow-sm hover:bg-[#621623]"
               >
                 <UserPlus size={14} />
                 Invite Team Member
@@ -285,25 +293,30 @@ export default function TeamRbacPage() {
         </div>
       </div>
 
-      <main className="px-7 space-y-6">
+      <main className="space-y-6 px-7">
         {/* Interactive Persona Switcher for Live Demo Testing */}
         <Card className="border-amber-200 bg-gradient-to-r from-amber-50/70 via-white to-amber-50/40 p-4 shadow-sm">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
             <div className="flex items-start gap-3">
               <div className="rounded-lg bg-amber-500/10 p-2 text-amber-700">
                 <KeyRound size={20} />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-amber-900">
+                  <h3 className="text-xs font-bold tracking-wider text-amber-900 uppercase">
                     Interactive Persona Switcher (RBAC Simulator)
                   </h3>
-                  <span className="text-[10px] rounded bg-amber-200/60 px-1.5 py-0.2 text-amber-800 font-medium">
+                  <span className="py-0.2 rounded bg-amber-200/60 px-1.5 text-[10px] font-medium text-amber-800">
                     Demo Mode
                   </span>
                 </div>
-                <p className="text-xs text-[#64748B] mt-0.5">
-                  Currently active persona: <strong className="text-[#1E252D]">{getRoleDefinition(activeUserRole).displayName}</strong> ({getRoleDefinition(activeUserRole).icon} {activeUserRole}). Switch roles below to see how BidPilot dynamically enforces access policies across the UI.
+                <p className="mt-0.5 text-xs text-[#64748B]">
+                  Currently active persona:{" "}
+                  <strong className="text-[#1E252D]">
+                    {getRoleDefinition(activeUserRole).displayName}
+                  </strong>{" "}
+                  ({getRoleDefinition(activeUserRole).icon} {activeUserRole}). Switch roles below to
+                  see how BidPilot dynamically enforces access policies across the UI.
                 </p>
               </div>
             </div>
@@ -321,7 +334,7 @@ export default function TeamRbacPage() {
                     className={`flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-all ${
                       isActive
                         ? "bg-[#7A1C2C] text-white shadow-sm ring-2 ring-[#7A1C2C]/30"
-                        : "bg-white border border-[#CBD5E1] text-[#334155] hover:bg-[#F8FAFC]"
+                        : "border border-[#CBD5E1] bg-white text-[#334155] hover:bg-[#F8FAFC]"
                     }`}
                   >
                     <span>{r.icon}</span>
@@ -340,8 +353,10 @@ export default function TeamRbacPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium text-[#64748B]">Organization Members</p>
-                <p className="text-2xl font-bold text-[#1E252D] mt-1">{members.length}</p>
-                <p className="text-[11px] text-emerald-600 font-medium mt-0.5">100% active in LankaTech</p>
+                <p className="mt-1 text-2xl font-bold text-[#1E252D]">{members.length}</p>
+                <p className="mt-0.5 text-[11px] font-medium text-emerald-600">
+                  100% active in LankaTech
+                </p>
               </div>
               <div className="rounded-xl bg-blue-50 p-2.5 text-blue-600">
                 <Users size={22} />
@@ -353,8 +368,8 @@ export default function TeamRbacPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium text-[#64748B]">Configured Roles</p>
-                <p className="text-2xl font-bold text-[#1E252D] mt-1">6</p>
-                <p className="text-[11px] text-[#64748B] mt-0.5">24 granular permission gates</p>
+                <p className="mt-1 text-2xl font-bold text-[#1E252D]">6</p>
+                <p className="mt-0.5 text-[11px] text-[#64748B]">24 granular permission gates</p>
               </div>
               <div className="rounded-xl bg-purple-50 p-2.5 text-purple-600">
                 <Shield size={22} />
@@ -366,8 +381,10 @@ export default function TeamRbacPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium text-[#64748B]">Active Section Locks</p>
-                <p className="text-2xl font-bold text-[#1E252D] mt-1">{locks.length}</p>
-                <p className="text-[11px] text-amber-600 font-medium mt-0.5">Optimistic concurrency</p>
+                <p className="mt-1 text-2xl font-bold text-[#1E252D]">{locks.length}</p>
+                <p className="mt-0.5 text-[11px] font-medium text-amber-600">
+                  Optimistic concurrency
+                </p>
               </div>
               <div className="rounded-xl bg-amber-50 p-2.5 text-amber-600">
                 <Lock size={22} />
@@ -379,11 +396,11 @@ export default function TeamRbacPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium text-[#64748B]">RBAC Policy Engine</p>
-                <p className="text-base font-bold text-emerald-700 mt-1 flex items-center gap-1.5">
-                  <span className="inline-block h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                <p className="mt-1 flex items-center gap-1.5 text-base font-bold text-emerald-700">
+                  <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
                   Enforcing
                 </p>
-                <p className="text-[11px] text-[#64748B] mt-0.5">PostgreSQL RLS + FastAPI JWT</p>
+                <p className="mt-0.5 text-[11px] text-[#64748B]">PostgreSQL RLS + FastAPI JWT</p>
               </div>
               <div className="rounded-xl bg-emerald-50 p-2.5 text-emerald-600">
                 <KeyRound size={22} />
@@ -394,26 +411,26 @@ export default function TeamRbacPage() {
 
         {/* Tabbed View */}
         <Tabs defaultValue="members" className="space-y-4">
-          <TabsList className="border-b border-[#E2E8F0] bg-transparent p-0 flex gap-4">
+          <TabsList className="flex gap-4 border-b border-[#E2E8F0] bg-transparent p-0">
             <TabsTrigger
               value="members"
-              className="rounded-none border-b-2 border-transparent px-4 py-2 text-xs font-semibold data-[state=active]:border-[#7A1C2C] data-[state=active]:text-[#7A1C2C] data-[state=active]:bg-transparent"
+              className="rounded-none border-b-2 border-transparent px-4 py-2 text-xs font-semibold data-[state=active]:border-[#7A1C2C] data-[state=active]:bg-transparent data-[state=active]:text-[#7A1C2C]"
             >
               Team Roster ({members.length})
             </TabsTrigger>
             <TabsTrigger
               value="matrix"
-              className="rounded-none border-b-2 border-transparent px-4 py-2 text-xs font-semibold data-[state=active]:border-[#7A1C2C] data-[state=active]:text-[#7A1C2C] data-[state=active]:bg-transparent"
+              className="rounded-none border-b-2 border-transparent px-4 py-2 text-xs font-semibold data-[state=active]:border-[#7A1C2C] data-[state=active]:bg-transparent data-[state=active]:text-[#7A1C2C]"
             >
               Permission Matrix (6 Roles × 24 Actions)
             </TabsTrigger>
             <TabsTrigger
               value="locks"
-              className="rounded-none border-b-2 border-transparent px-4 py-2 text-xs font-semibold data-[state=active]:border-[#7A1C2C] data-[state=active]:text-[#7A1C2C] data-[state=active]:bg-transparent flex items-center gap-1.5"
+              className="flex items-center gap-1.5 rounded-none border-b-2 border-transparent px-4 py-2 text-xs font-semibold data-[state=active]:border-[#7A1C2C] data-[state=active]:bg-transparent data-[state=active]:text-[#7A1C2C]"
             >
               Section Concurrency Locks
               {locks.length > 0 && (
-                <span className="rounded-full bg-amber-100 px-1.5 py-0.2 text-[10px] font-bold text-amber-800">
+                <span className="py-0.2 rounded-full bg-amber-100 px-1.5 text-[10px] font-bold text-amber-800">
                   {locks.length}
                 </span>
               )}
@@ -436,12 +453,12 @@ export default function TeamRbacPage() {
 
                   <div className="flex items-center gap-2">
                     <div className="relative">
-                      <Search size={13} className="absolute left-2.5 top-2.5 text-[#94A3B8]" />
+                      <Search size={13} className="absolute top-2.5 left-2.5 text-[#94A3B8]" />
                       <Input
                         placeholder="Search by name, email, dept..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="h-8 w-56 pl-8 text-xs border-[#CBD5E1]"
+                        className="h-8 w-56 border-[#CBD5E1] pl-8 text-xs"
                       />
                     </div>
                     <select
@@ -463,7 +480,7 @@ export default function TeamRbacPage() {
               <CardContent className="p-0">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
-                    <thead className="border-b border-[#E2E8F0] bg-[#F8FAFC] text-[11px] font-bold uppercase tracking-wider text-[#64748B]">
+                    <thead className="border-b border-[#E2E8F0] bg-[#F8FAFC] text-[11px] font-bold tracking-wider text-[#64748B] uppercase">
                       <tr>
                         <th className="px-6 py-3">Member</th>
                         <th className="px-4 py-3">Department</th>
@@ -476,28 +493,31 @@ export default function TeamRbacPage() {
                     </thead>
                     <tbody className="divide-y divide-[#E2E8F0]">
                       {filteredMembers.map((member) => {
-                        const memberRole = (member.role_name || (member as any).role || "domain_sme") as RoleName;
-                        const memberName = member.full_name || (member as any).name || "Team Member";
+                        const memberRole = (member.role_name ||
+                          (member as any).role ||
+                          "domain_sme") as RoleName;
+                        const memberName =
+                          member.full_name || (member as any).name || "Team Member";
                         const memberJob = member.job_title || (member as any).jobTitle || "";
                         const memberAvatar = member.avatar || getInitials(memberName);
                         const roleDef = getRoleDefinition(memberRole);
                         const isCurrentPersona = memberName.toLowerCase().includes("ashan");
 
                         return (
-                          <tr key={member.id} className="hover:bg-[#F8FAFC] transition-colors">
+                          <tr key={member.id} className="transition-colors hover:bg-[#F8FAFC]">
                             <td className="px-6 py-3.5">
                               <div className="flex items-center gap-3">
                                 <div
-                                  className="flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold text-white shadow-sm flex-shrink-0"
+                                  className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold text-white shadow-sm"
                                   style={{ backgroundColor: roleDef.color }}
                                 >
                                   {memberAvatar}
                                 </div>
                                 <div>
-                                  <div className="font-semibold text-[#1E252D] flex items-center gap-1.5">
+                                  <div className="flex items-center gap-1.5 font-semibold text-[#1E252D]">
                                     {memberName}
                                     {isCurrentPersona && (
-                                      <span className="rounded bg-slate-200 px-1 py-0.2 text-[9px] font-bold text-slate-700">
+                                      <span className="py-0.2 rounded bg-slate-200 px-1 text-[9px] font-bold text-slate-700">
                                         You
                                       </span>
                                     )}
@@ -544,8 +564,8 @@ export default function TeamRbacPage() {
                                   member.status === "active"
                                     ? "Active"
                                     : member.status === "invited"
-                                    ? "Review"
-                                    : "Draft"
+                                      ? "Review"
+                                      : "Draft"
                                 }
                               />
                             </td>
@@ -554,7 +574,9 @@ export default function TeamRbacPage() {
                               <RbacGuard
                                 permission="team:manage"
                                 fallback={
-                                  <span className="text-[11px] text-[#94A3B8] italic">Read-only</span>
+                                  <span className="text-[11px] text-[#94A3B8] italic">
+                                    Read-only
+                                  </span>
                                 }
                               >
                                 <div className="flex items-center justify-end gap-2">
@@ -575,7 +597,7 @@ export default function TeamRbacPage() {
                                   {!isCurrentPersona && (
                                     <button
                                       onClick={() => handleRemoveMember(member.id, memberName)}
-                                      className="rounded p-1 text-red-500 hover:bg-red-50 transition-colors"
+                                      className="rounded p-1 text-red-500 transition-colors hover:bg-red-50"
                                       title="Remove member"
                                     >
                                       <X size={14} />
@@ -609,7 +631,7 @@ export default function TeamRbacPage() {
                   </div>
                   <div className="flex items-center gap-3 text-[11px] text-[#64748B]">
                     <span className="flex items-center gap-1">
-                      <Check size={13} className="text-emerald-600 font-bold" /> Granted
+                      <Check size={13} className="font-bold text-emerald-600" /> Granted
                     </span>
                     <span className="flex items-center gap-1">
                       <X size={13} className="text-[#CBD5E1]" /> Denied
@@ -623,12 +645,12 @@ export default function TeamRbacPage() {
                   <table className="w-full text-left text-xs">
                     <thead className="border-b border-[#E2E8F0] bg-[#F8FAFC] text-[11px] font-bold text-[#64748B]">
                       <tr>
-                        <th className="px-6 py-3 w-1/3">Permission / Operation</th>
+                        <th className="w-1/3 px-6 py-3">Permission / Operation</th>
                         {ROLE_LIST.map((r) => (
                           <th key={r.name} className="px-3 py-3 text-center">
                             <div className="flex flex-col items-center">
                               <span>{r.icon}</span>
-                              <span className="text-[10px] text-[#1E252D] font-bold mt-0.5">
+                              <span className="mt-0.5 text-[10px] font-bold text-[#1E252D]">
                                 {r.displayName}
                               </span>
                             </div>
@@ -640,11 +662,11 @@ export default function TeamRbacPage() {
                       {PERMISSION_GROUPS.map((group) => (
                         <tr key={group.name} className="bg-white">
                           <td colSpan={7} className="p-0">
-                            <div className="bg-[#F1F5F9]/60 px-6 py-2 border-y border-[#E2E8F0]">
-                              <span className="font-bold text-[11px] uppercase tracking-wider text-[#334155]">
+                            <div className="border-y border-[#E2E8F0] bg-[#F1F5F9]/60 px-6 py-2">
+                              <span className="text-[11px] font-bold tracking-wider text-[#334155] uppercase">
                                 {group.name}
                               </span>
-                              <span className="text-[10px] text-[#64748B] ml-2 font-normal">
+                              <span className="ml-2 text-[10px] font-normal text-[#64748B]">
                                 — {group.description}
                               </span>
                             </div>
@@ -652,11 +674,12 @@ export default function TeamRbacPage() {
                               <tbody className="divide-y divide-[#E2E8F0]">
                                 {group.permissions.map((permCode) => (
                                   <tr key={permCode} className="hover:bg-[#F8FAFC]">
-                                    <td className="px-6 py-2.5 w-1/3 font-mono text-[11px] text-[#334155]">
+                                    <td className="w-1/3 px-6 py-2.5 font-mono text-[11px] text-[#334155]">
                                       {permCode}
                                     </td>
                                     {ROLE_LIST.map((r) => {
-                                      const hasAccess = ROLE_PERMISSIONS[r.name]?.includes(permCode);
+                                      const hasAccess =
+                                        ROLE_PERMISSIONS[r.name]?.includes(permCode);
                                       return (
                                         <td key={r.name} className="px-3 py-2.5 text-center">
                                           {hasAccess ? (
@@ -691,14 +714,15 @@ export default function TeamRbacPage() {
               <CardHeader className="border-b border-[#E2E8F0] px-6 py-4">
                 <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                   <div>
-                    <CardTitle className="text-sm font-bold text-[#1E252D] flex items-center gap-2">
+                    <CardTitle className="flex items-center gap-2 text-sm font-bold text-[#1E252D]">
                       Active Optimistic Section Locks
                       <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800">
                         Live Concurrency
                       </span>
                     </CardTitle>
                     <CardDescription className="text-xs text-[#64748B]">
-                      Prevents overwriting section edits when multiple collaborators work on proposal RFPs simultaneously.
+                      Prevents overwriting section edits when multiple collaborators work on
+                      proposal RFPs simultaneously.
                     </CardDescription>
                   </div>
 
@@ -709,7 +733,7 @@ export default function TeamRbacPage() {
                       setLocks(INITIAL_LOCKS);
                       showToast("Section lock registry refreshed.");
                     }}
-                    className="text-xs flex items-center gap-1"
+                    className="flex items-center gap-1 text-xs"
                   >
                     <RefreshCw size={12} />
                     Refresh Locks
@@ -722,12 +746,14 @@ export default function TeamRbacPage() {
                   <div className="py-12 text-center text-xs text-[#64748B]">
                     <Unlock size={28} className="mx-auto mb-2 text-[#94A3B8]" />
                     <p className="font-semibold text-[#1E252D]">No Active Section Locks</p>
-                    <p className="mt-0.5">All proposal sections are currently free for collaborative editing.</p>
+                    <p className="mt-0.5">
+                      All proposal sections are currently free for collaborative editing.
+                    </p>
                   </div>
                 ) : (
                   <div className="overflow-x-auto">
                     <table className="w-full text-left text-xs">
-                      <thead className="border-b border-[#E2E8F0] bg-[#F8FAFC] text-[11px] font-bold uppercase tracking-wider text-[#64748B]">
+                      <thead className="border-b border-[#E2E8F0] bg-[#F8FAFC] text-[11px] font-bold tracking-wider text-[#64748B] uppercase">
                         <tr>
                           <th className="px-6 py-3">Locked Section</th>
                           <th className="px-4 py-3">Tender RFP</th>
@@ -743,11 +769,11 @@ export default function TeamRbacPage() {
                           return (
                             <tr key={lock.id} className="hover:bg-[#F8FAFC]">
                               <td className="px-6 py-3.5">
-                                <div className="font-semibold text-[#1E252D] flex items-center gap-1.5">
-                                  <Lock size={13} className="text-amber-600 flex-shrink-0" />
+                                <div className="flex items-center gap-1.5 font-semibold text-[#1E252D]">
+                                  <Lock size={13} className="flex-shrink-0 text-amber-600" />
                                   <span>{lock.sectionTitle}</span>
                                 </div>
-                                <div className="text-[10px] font-mono text-[#64748B]">
+                                <div className="font-mono text-[10px] text-[#64748B]">
                                   ID: {lock.sectionId}
                                 </div>
                               </td>
@@ -776,7 +802,7 @@ export default function TeamRbacPage() {
                               </td>
 
                               <td className="px-4 py-3.5">
-                                <span className="font-semibold text-amber-700 bg-amber-50 border border-amber-200/60 rounded px-2 py-0.5 text-[11px]">
+                                <span className="rounded border border-amber-200/60 bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-700">
                                   {lock.expiresInMinutes} mins
                                 </span>
                               </td>
@@ -792,7 +818,7 @@ export default function TeamRbacPage() {
                                     variant="outline"
                                     size="sm"
                                     onClick={() => handleForceUnlock(lock.id, lock.sectionTitle)}
-                                    className="h-7 text-[11px] text-red-600 hover:bg-red-50 hover:border-red-200"
+                                    className="h-7 text-[11px] text-red-600 hover:border-red-200 hover:bg-red-50"
                                   >
                                     <Unlock size={12} className="mr-1" />
                                     Force Release
@@ -815,10 +841,10 @@ export default function TeamRbacPage() {
       {/* Invite Member Modal */}
       {showInviteModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <Card className="w-full max-w-md border-[#CBD5E1] bg-white shadow-2xl animate-in fade-in zoom-in-95">
+          <Card className="animate-in fade-in zoom-in-95 w-full max-w-md border-[#CBD5E1] bg-white shadow-2xl">
             <CardHeader className="border-b border-[#E2E8F0] px-6 py-4">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-bold text-[#1E252D] flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-sm font-bold text-[#1E252D]">
                   <UserPlus size={16} className="text-[#7A1C2C]" />
                   Invite New Team Member
                 </CardTitle>
@@ -843,7 +869,7 @@ export default function TeamRbacPage() {
                     placeholder="e.g. Sanjaya Ranasinghe"
                     value={inviteName}
                     onChange={(e) => setInviteName(e.target.value)}
-                    className="h-8 text-xs border-[#CBD5E1]"
+                    className="h-8 border-[#CBD5E1] text-xs"
                   />
                 </div>
 
@@ -855,7 +881,7 @@ export default function TeamRbacPage() {
                     placeholder="sanjaya@lankatech.lk"
                     value={inviteEmail}
                     onChange={(e) => setInviteEmail(e.target.value)}
-                    className="h-8 text-xs border-[#CBD5E1]"
+                    className="h-8 border-[#CBD5E1] text-xs"
                   />
                 </div>
 
@@ -881,23 +907,23 @@ export default function TeamRbacPage() {
                       placeholder="e.g. Solution Delivery"
                       value={inviteDept}
                       onChange={(e) => setInviteDept(e.target.value)}
-                      className="h-8 text-xs border-[#CBD5E1]"
+                      className="h-8 border-[#CBD5E1] text-xs"
                     />
                   </div>
                 </div>
 
-                <div className="rounded-lg bg-slate-50 p-3 border border-slate-200">
+                <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
                   <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-700">
                     <Info size={13} className="text-slate-500" />
                     Role Privileges:
                   </div>
-                  <p className="text-[11px] text-slate-600 mt-1">
+                  <p className="mt-1 text-[11px] text-slate-600">
                     {getRoleDefinition(inviteRole).description}
                   </p>
                 </div>
               </CardContent>
 
-              <div className="flex items-center justify-end gap-2 border-t border-[#E2E8F0] px-6 py-3 bg-[#F8FAFC]">
+              <div className="flex items-center justify-end gap-2 border-t border-[#E2E8F0] bg-[#F8FAFC] px-6 py-3">
                 <Button
                   type="button"
                   variant="outline"
@@ -910,7 +936,7 @@ export default function TeamRbacPage() {
                 <Button
                   type="submit"
                   size="sm"
-                  className="bg-[#7A1C2C] hover:bg-[#621623] text-white text-xs font-semibold"
+                  className="bg-[#7A1C2C] text-xs font-semibold text-white hover:bg-[#621623]"
                 >
                   Send Invitation
                 </Button>

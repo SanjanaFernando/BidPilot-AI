@@ -74,7 +74,10 @@ export function SectionEditModal({
     setContent(newText);
     setTimeout(() => {
       textarea.focus();
-      textarea.setSelectionRange(start + prefix.length, start + prefix.length + (selected.length || 4));
+      textarea.setSelectionRange(
+        start + prefix.length,
+        start + prefix.length + (selected.length || 4)
+      );
     }, 50);
   };
 
@@ -97,17 +100,17 @@ export function SectionEditModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-      <div className="w-full max-w-5xl h-[88vh] flex flex-col rounded-xl overflow-hidden bg-white shadow-2xl border border-slate-200">
+    <div className="animate-in fade-in fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs duration-150">
+      <div className="flex h-[88vh] w-full max-w-5xl flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xl">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
-          <div className="flex-1 mr-4">
+        <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-6 py-4">
+          <div className="mr-4 flex-1">
             <div className="flex items-center gap-2">
-              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+              <span className="text-[11px] font-bold tracking-wider text-slate-500 uppercase">
                 Proposal Section Editor
               </span>
               {!canEdit && (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-100 border border-amber-300 text-amber-900 text-[10px] font-bold">
+                <span className="inline-flex items-center gap-1 rounded border border-amber-300 bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-900">
                   <Lock size={10} /> Read-Only ({roleDef.displayName})
                 </span>
               )}
@@ -117,9 +120,9 @@ export function SectionEditModal({
               value={title}
               disabled={!canEdit}
               onChange={(e) => setTitle(e.target.value)}
-              className={`text-base font-bold text-slate-900 bg-transparent border-b border-transparent w-full py-0.5 ${
+              className={`w-full border-b border-transparent bg-transparent py-0.5 text-base font-bold text-slate-900 ${
                 canEdit
-                  ? "hover:border-slate-300 focus:border-[#7A1C2C] focus:outline-none cursor-text"
+                  ? "cursor-text hover:border-slate-300 focus:border-[#7A1C2C] focus:outline-none"
                   : "cursor-not-allowed opacity-75"
               }`}
             />
@@ -130,24 +133,30 @@ export function SectionEditModal({
             <div className="flex items-center rounded-lg bg-slate-200/70 p-0.5 text-xs font-semibold">
               <button
                 onClick={() => setTab("edit")}
-                className={`flex items-center gap-1 px-2.5 py-1 rounded-md transition-all ${
-                  tab === "edit" ? "bg-white text-slate-900 shadow-2xs" : "text-slate-600 hover:text-slate-900"
+                className={`flex items-center gap-1 rounded-md px-2.5 py-1 transition-all ${
+                  tab === "edit"
+                    ? "bg-white text-slate-900 shadow-2xs"
+                    : "text-slate-600 hover:text-slate-900"
                 }`}
               >
                 <Edit3 size={13} /> Edit
               </button>
               <button
                 onClick={() => setTab("split")}
-                className={`flex items-center gap-1 px-2.5 py-1 rounded-md transition-all ${
-                  tab === "split" ? "bg-white text-slate-900 shadow-2xs" : "text-slate-600 hover:text-slate-900"
+                className={`flex items-center gap-1 rounded-md px-2.5 py-1 transition-all ${
+                  tab === "split"
+                    ? "bg-white text-slate-900 shadow-2xs"
+                    : "text-slate-600 hover:text-slate-900"
                 }`}
               >
                 <Columns size={13} /> Split
               </button>
               <button
                 onClick={() => setTab("preview")}
-                className={`flex items-center gap-1 px-2.5 py-1 rounded-md transition-all ${
-                  tab === "preview" ? "bg-white text-slate-900 shadow-2xs" : "text-slate-600 hover:text-slate-900"
+                className={`flex items-center gap-1 rounded-md px-2.5 py-1 transition-all ${
+                  tab === "preview"
+                    ? "bg-white text-slate-900 shadow-2xs"
+                    : "text-slate-600 hover:text-slate-900"
                 }`}
               >
                 <Eye size={13} /> Preview
@@ -156,7 +165,7 @@ export function SectionEditModal({
 
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-200 hover:text-slate-700 transition-colors"
+              className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-200 hover:text-slate-700"
             >
               <X size={18} />
             </button>
@@ -165,10 +174,11 @@ export function SectionEditModal({
 
         {/* Read-only Alert Banner */}
         {!canEdit && (
-          <div className="px-6 py-2 bg-amber-50 border-b border-amber-200 flex items-center justify-between text-xs text-amber-900 font-medium">
+          <div className="flex items-center justify-between border-b border-amber-200 bg-amber-50 px-6 py-2 text-xs font-medium text-amber-900">
             <span className="flex items-center gap-1.5">
               <Lock size={12} className="text-amber-700" />
-              Viewing in <strong>Read-Only</strong> mode as <strong>{roleDef.displayName}</strong>. You cannot modify section markdown or save changes.
+              Viewing in <strong>Read-Only</strong> mode as <strong>{roleDef.displayName}</strong>.
+              You cannot modify section markdown or save changes.
             </span>
             <span className="text-[11px] text-amber-700">Requires 'proposals:edit_own'</span>
           </div>
@@ -176,12 +186,12 @@ export function SectionEditModal({
 
         {/* Toolbar */}
         {(tab === "edit" || tab === "split") && (
-          <div className="flex items-center gap-1 px-6 py-2 border-b border-slate-200 bg-white text-slate-700">
+          <div className="flex items-center gap-1 border-b border-slate-200 bg-white px-6 py-2 text-slate-700">
             <button
               type="button"
               disabled={!canEdit}
               onClick={() => insertSnippet("**", "**")}
-              className={`p-1.5 rounded ${canEdit ? "hover:bg-slate-100 hover:text-slate-900 cursor-pointer" : "cursor-not-allowed opacity-40"}`}
+              className={`rounded p-1.5 ${canEdit ? "cursor-pointer hover:bg-slate-100 hover:text-slate-900" : "cursor-not-allowed opacity-40"}`}
               title="Bold"
             >
               <Bold size={15} />
@@ -190,17 +200,17 @@ export function SectionEditModal({
               type="button"
               disabled={!canEdit}
               onClick={() => insertSnippet("*", "*")}
-              className={`p-1.5 rounded ${canEdit ? "hover:bg-slate-100 hover:text-slate-900 cursor-pointer" : "cursor-not-allowed opacity-40"}`}
+              className={`rounded p-1.5 ${canEdit ? "cursor-pointer hover:bg-slate-100 hover:text-slate-900" : "cursor-not-allowed opacity-40"}`}
               title="Italic"
             >
               <Italic size={15} />
             </button>
-            <span className="h-4 w-px bg-slate-200 mx-1" />
+            <span className="mx-1 h-4 w-px bg-slate-200" />
             <button
               type="button"
               disabled={!canEdit}
               onClick={() => insertSnippet("## ")}
-              className={`p-1.5 rounded ${canEdit ? "hover:bg-slate-100 hover:text-slate-900 cursor-pointer" : "cursor-not-allowed opacity-40"}`}
+              className={`rounded p-1.5 ${canEdit ? "cursor-pointer hover:bg-slate-100 hover:text-slate-900" : "cursor-not-allowed opacity-40"}`}
               title="Heading 2"
             >
               <Heading2 size={15} />
@@ -209,17 +219,17 @@ export function SectionEditModal({
               type="button"
               disabled={!canEdit}
               onClick={() => insertSnippet("### ")}
-              className={`p-1.5 rounded ${canEdit ? "hover:bg-slate-100 hover:text-slate-900 cursor-pointer" : "cursor-not-allowed opacity-40"}`}
+              className={`rounded p-1.5 ${canEdit ? "cursor-pointer hover:bg-slate-100 hover:text-slate-900" : "cursor-not-allowed opacity-40"}`}
               title="Heading 3"
             >
               <Heading3 size={15} />
             </button>
-            <span className="h-4 w-px bg-slate-200 mx-1" />
+            <span className="mx-1 h-4 w-px bg-slate-200" />
             <button
               type="button"
               disabled={!canEdit}
               onClick={() => insertSnippet("- ")}
-              className={`p-1.5 rounded ${canEdit ? "hover:bg-slate-100 hover:text-slate-900 cursor-pointer" : "cursor-not-allowed opacity-40"}`}
+              className={`rounded p-1.5 ${canEdit ? "cursor-pointer hover:bg-slate-100 hover:text-slate-900" : "cursor-not-allowed opacity-40"}`}
               title="Bullet list"
             >
               <List size={15} />
@@ -232,7 +242,7 @@ export function SectionEditModal({
                   "\n| Milestone / Module | Deliverable | Duration | Target Output |\n| --- | --- | --- | --- |\n| Phase 1 | Core Specifications | 3 Weeks | Architecture SRS |\n"
                 )
               }
-              className={`p-1.5 rounded ${canEdit ? "hover:bg-slate-100 hover:text-slate-900 cursor-pointer" : "cursor-not-allowed opacity-40"}`}
+              className={`rounded p-1.5 ${canEdit ? "cursor-pointer hover:bg-slate-100 hover:text-slate-900" : "cursor-not-allowed opacity-40"}`}
               title="Insert Table"
             >
               <TableIcon size={15} />
@@ -240,8 +250,10 @@ export function SectionEditModal({
             <button
               type="button"
               disabled={!canEdit}
-              onClick={() => insertSnippet("\n*Evidence Reference: [CIT-001: Verified Company Portfolio]*\n")}
-              className={`p-1.5 rounded text-xs flex items-center gap-1 px-2 font-medium ${canEdit ? "hover:bg-indigo-50 hover:text-indigo-700 text-indigo-600 cursor-pointer" : "cursor-not-allowed opacity-40 text-slate-400"}`}
+              onClick={() =>
+                insertSnippet("\n*Evidence Reference: [CIT-001: Verified Company Portfolio]*\n")
+              }
+              className={`flex items-center gap-1 rounded p-1.5 px-2 text-xs font-medium ${canEdit ? "cursor-pointer text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700" : "cursor-not-allowed text-slate-400 opacity-40"}`}
               title="Insert Evidence Citation"
             >
               <Quote size={13} /> + Citation Anchor
@@ -250,27 +262,29 @@ export function SectionEditModal({
         )}
 
         {/* Content Area */}
-        <div className="flex-1 flex overflow-hidden">
+        <div className="flex flex-1 overflow-hidden">
           {(tab === "edit" || tab === "split") && (
-            <div className={`flex-1 flex flex-col p-4 ${tab === "split" ? "border-r border-slate-200" : ""}`}>
+            <div
+              className={`flex flex-1 flex-col p-4 ${tab === "split" ? "border-r border-slate-200" : ""}`}
+            >
               <textarea
                 id="section-editor-textarea"
                 value={content}
                 readOnly={!canEdit}
                 onChange={(e) => canEdit && setContent(e.target.value)}
                 placeholder="Write proposal section markdown here..."
-                className={`w-full flex-1 p-4 font-mono text-xs leading-relaxed border rounded-lg focus:outline-none resize-none ${
+                className={`w-full flex-1 resize-none rounded-lg border p-4 font-mono text-xs leading-relaxed focus:outline-none ${
                   canEdit
-                    ? "text-slate-900 bg-slate-50 border-slate-200 focus:ring-1 focus:ring-[#7A1C2C] focus:bg-white"
-                    : "text-slate-600 bg-slate-100 border-slate-200 cursor-not-allowed opacity-80"
+                    ? "border-slate-200 bg-slate-50 text-slate-900 focus:bg-white focus:ring-1 focus:ring-[#7A1C2C]"
+                    : "cursor-not-allowed border-slate-200 bg-slate-100 text-slate-600 opacity-80"
                 }`}
               />
             </div>
           )}
 
           {(tab === "preview" || tab === "split") && (
-            <div className="flex-1 overflow-y-auto p-6 bg-white">
-              <div className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
+            <div className="flex-1 overflow-y-auto bg-white p-6">
+              <div className="mb-3 text-xs font-bold tracking-wider text-slate-400 uppercase">
                 Live Document Render
               </div>
               <StructuredDocumentRenderer content={content} />
@@ -279,8 +293,8 @@ export function SectionEditModal({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
-          <div className="text-xs text-slate-500 font-mono flex items-center gap-4">
+        <div className="flex items-center justify-between border-t border-slate-200 bg-slate-50 px-6 py-3">
+          <div className="flex items-center gap-4 font-mono text-xs text-slate-500">
             <span>{wordCount.toLocaleString()} words</span>
             <span>•</span>
             <span>{charCount.toLocaleString()} characters</span>
@@ -297,8 +311,8 @@ export function SectionEditModal({
               title={!canEdit ? `Saving disabled for role ${roleDef.displayName}` : "Save Changes"}
               className={`gap-1.5 font-bold ${
                 canEdit
-                  ? "bg-[#7A1C2C] hover:bg-[#621623] text-white cursor-pointer"
-                  : "bg-slate-300 text-slate-500 cursor-not-allowed opacity-60 pointer-events-auto"
+                  ? "cursor-pointer bg-[#7A1C2C] text-white hover:bg-[#621623]"
+                  : "pointer-events-auto cursor-not-allowed bg-slate-300 text-slate-500 opacity-60"
               }`}
             >
               {saving ? (

@@ -5,9 +5,7 @@
  * source citations inspection, and dual DOCX / PDF exports.
  */
 
-const AI_SERVICE_URL = (
-  process.env.NEXT_PUBLIC_AI_SERVICE_URL || "http://localhost:8000"
-)
+const AI_SERVICE_URL = (process.env.NEXT_PUBLIC_AI_SERVICE_URL || "http://localhost:8000")
   .trim()
   .replace(/^["']|["']$/g, "")
   .replace(/\/+$/, "");
@@ -185,10 +183,7 @@ export const pipelineService = {
   /**
    * Retrieve the generated proposal and all 12 markdown sections for a tender.
    */
-  async getProposal(
-    tenderId: string,
-    organizationId: string
-  ): Promise<ProposalDetail> {
+  async getProposal(tenderId: string, organizationId: string): Promise<ProposalDetail> {
     const params = new URLSearchParams({ organization_id: organizationId });
 
     const res = await fetch(
@@ -239,15 +234,18 @@ export const pipelineService = {
     title?: string,
     organizationId?: string
   ): Promise<{ status: string; word_count: number; message: string }> {
-    const res = await fetch(`${AI_SERVICE_URL}/agents/proposals/sections/${encodeURIComponent(sectionId)}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        content_markdown: contentMarkdown,
-        title: title || undefined,
-        organization_id: organizationId || undefined,
-      }),
-    });
+    const res = await fetch(
+      `${AI_SERVICE_URL}/agents/proposals/sections/${encodeURIComponent(sectionId)}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          content_markdown: contentMarkdown,
+          title: title || undefined,
+          organization_id: organizationId || undefined,
+        }),
+      }
+    );
 
     if (!res.ok) {
       let errMsg = `Failed to update section with HTTP ${res.status}`;
@@ -412,10 +410,7 @@ export const pipelineService = {
   /**
    * Get orchestration status and recent agent runs for a tender.
    */
-  async getPipelineStatus(
-    tenderId: string,
-    organizationId: string
-  ): Promise<PipelineStatusData> {
+  async getPipelineStatus(tenderId: string, organizationId: string): Promise<PipelineStatusData> {
     const params = new URLSearchParams({
       organization_id: organizationId,
       limit: "5",
@@ -438,7 +433,7 @@ export const pipelineService = {
   ): Promise<void> {
     const params = new URLSearchParams({ organization_id: organizationId });
     const url = `${AI_SERVICE_URL}/agents/proposals/${encodeURIComponent(tenderId)}/export-docx?${params.toString()}`;
-    
+
     const res = await fetch(url);
     if (!res.ok) {
       throw new Error(`Failed to export DOCX with HTTP ${res.status}`);
@@ -465,7 +460,7 @@ export const pipelineService = {
   ): Promise<void> {
     const params = new URLSearchParams({ organization_id: organizationId });
     const url = `${AI_SERVICE_URL}/agents/proposals/${encodeURIComponent(tenderId)}/export-pdf?${params.toString()}`;
-    
+
     const res = await fetch(url);
     if (!res.ok) {
       throw new Error(`Failed to export PDF with HTTP ${res.status}`);

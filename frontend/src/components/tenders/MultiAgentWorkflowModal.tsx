@@ -2,11 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  pipelineService,
-  PipelineRunResponse,
-  PipelineStageResult,
-} from "@/lib/pipeline-service";
+import { pipelineService, PipelineRunResponse, PipelineStageResult } from "@/lib/pipeline-service";
 import {
   X,
   Bot,
@@ -127,9 +123,7 @@ export default function MultiAgentWorkflowModal({
 
     // Realistic UI progression timer
     const interval = setInterval(() => {
-      setActiveStageIndex((prev) =>
-        prev < AGENT_STAGES.length - 1 ? prev + 1 : prev
-      );
+      setActiveStageIndex((prev) => (prev < AGENT_STAGES.length - 1 ? prev + 1 : prev));
     }, 2800);
 
     try {
@@ -157,9 +151,7 @@ export default function MultiAgentWorkflowModal({
     }
     if (result) {
       const allStages = result.stages || result.stages_executed || [];
-      const stageObj =
-        allStages[stageIdx] ||
-        allStages.find((s) => s.stage_name === stageKey);
+      const stageObj = allStages[stageIdx] || allStages.find((s) => s.stage_name === stageKey);
       if (!stageObj) return "completed";
       return stageObj.status || "completed";
     }
@@ -167,43 +159,44 @@ export default function MultiAgentWorkflowModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-slate-900 border border-slate-700/60 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[92vh] flex flex-col overflow-hidden text-slate-100">
+    <div className="animate-in fade-in fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm duration-200">
+      <div className="flex max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-slate-700/60 bg-slate-900 text-slate-100 shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-800 bg-slate-950/40">
+        <div className="flex items-center justify-between border-b border-slate-800 bg-slate-950/40 px-6 py-5">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 text-indigo-400">
+            <div className="rounded-xl border border-indigo-500/30 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 p-2.5 text-indigo-400">
               <Zap className="h-5 w-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-lg font-bold text-white tracking-tight">
+                <h2 className="text-lg font-bold tracking-tight text-white">
                   Multi-Agent Proposal Orchestrator
                 </h2>
-                <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                <span className="rounded-full border border-indigo-500/30 bg-indigo-500/20 px-2 py-0.5 text-xs font-semibold text-indigo-300">
                   Phase 8
                 </span>
               </div>
-              <p className="text-xs text-slate-400 truncate max-w-md">
-                Tender: <span className="text-slate-200 font-medium">{tenderTitle}</span> ({tenderId})
+              <p className="max-w-md truncate text-xs text-slate-400">
+                Tender: <span className="font-medium text-slate-200">{tenderTitle}</span> (
+                {tenderId})
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
             disabled={running}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800/80 transition-colors disabled:opacity-50"
+            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-800/80 hover:text-slate-200 disabled:opacity-50"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 overflow-y-auto space-y-6 flex-1">
+        <div className="flex-1 space-y-6 overflow-y-auto p-6">
           {/* Instructions Input (Before Run) */}
           {!result && (
-            <div className="p-4 rounded-xl bg-slate-800/50 border border-slate-700/50 space-y-2">
-              <label className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+            <div className="space-y-2 rounded-xl border border-slate-700/50 bg-slate-800/50 p-4">
+              <label className="flex items-center gap-1.5 text-xs font-semibold text-slate-300">
                 <Terminal className="h-3.5 w-3.5 text-indigo-400" />
                 Special Strategic Instructions (Optional)
               </label>
@@ -213,52 +206,63 @@ export default function MultiAgentWorkflowModal({
                 disabled={running}
                 placeholder="E.g., Emphasize our ISO 27001 security compliance, propose AWS serverless architecture, and highlight financial services case studies..."
                 rows={2}
-                className="w-full text-xs bg-slate-950/60 border border-slate-700 rounded-lg p-2.5 text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 disabled:opacity-60 resize-none"
+                className="w-full resize-none rounded-lg border border-slate-700 bg-slate-950/60 p-2.5 text-xs text-slate-200 placeholder:text-slate-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none disabled:opacity-60"
               />
             </div>
           )}
 
           {/* Results KPI Summary Card (After Run) */}
           {result && (
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-              <div className="p-3.5 rounded-xl bg-gradient-to-br from-emerald-950/40 to-slate-900 border border-emerald-500/30">
-                <div className="text-xs text-emerald-400 font-medium flex items-center gap-1">
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-4">
+              <div className="rounded-xl border border-emerald-500/30 bg-gradient-to-br from-emerald-950/40 to-slate-900 p-3.5">
+                <div className="flex items-center gap-1 text-xs font-medium text-emerald-400">
                   <ShieldCheck className="h-3.5 w-3.5" /> Compliance Score
                 </div>
-                <div className="text-2xl font-bold text-emerald-300 mt-1">
-                  {Math.round(result.compliance_score ?? result.proposal_summary?.compliance_score ?? 97)}%
+                <div className="mt-1 text-2xl font-bold text-emerald-300">
+                  {Math.round(
+                    result.compliance_score ?? result.proposal_summary?.compliance_score ?? 97
+                  )}
+                  %
                 </div>
-                <div className="text-[10px] text-emerald-500/80 mt-0.5">Automated coverage audit</div>
+                <div className="mt-0.5 text-[10px] text-emerald-500/80">
+                  Automated coverage audit
+                </div>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-gradient-to-br from-purple-950/40 to-slate-900 border border-purple-500/30">
-                <div className="text-xs text-purple-400 font-medium flex items-center gap-1">
+              <div className="rounded-xl border border-purple-500/30 bg-gradient-to-br from-purple-950/40 to-slate-900 p-3.5">
+                <div className="flex items-center gap-1 text-xs font-medium text-purple-400">
                   <TrendingUp className="h-3.5 w-3.5" /> Win Probability
                 </div>
-                <div className="text-2xl font-bold text-purple-300 mt-1">
-                  {Math.round(result.win_probability ?? result.proposal_summary?.win_probability ?? 92)}%
+                <div className="mt-1 text-2xl font-bold text-purple-300">
+                  {Math.round(
+                    result.win_probability ?? result.proposal_summary?.win_probability ?? 92
+                  )}
+                  %
                 </div>
-                <div className="text-[10px] text-purple-500/80 mt-0.5">Competitive win model</div>
+                <div className="mt-0.5 text-[10px] text-purple-500/80">Competitive win model</div>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-gradient-to-br from-blue-950/40 to-slate-900 border border-blue-500/30">
-                <div className="text-xs text-blue-400 font-medium flex items-center gap-1">
+              <div className="rounded-xl border border-blue-500/30 bg-gradient-to-br from-blue-950/40 to-slate-900 p-3.5">
+                <div className="flex items-center gap-1 text-xs font-medium text-blue-400">
                   <Layers className="h-3.5 w-3.5" /> Proposal Sections
                 </div>
-                <div className="text-2xl font-bold text-blue-300 mt-1">
+                <div className="mt-1 text-2xl font-bold text-blue-300">
                   {result.proposal_summary?.total_sections ?? 10} / 10
                 </div>
-                <div className="text-[10px] text-blue-500/80 mt-0.5">Synthesized & persisted</div>
+                <div className="mt-0.5 text-[10px] text-blue-500/80">Synthesized & persisted</div>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-gradient-to-br from-slate-950/60 to-slate-900 border border-slate-700">
-                <div className="text-xs text-slate-400 font-medium flex items-center gap-1">
+              <div className="rounded-xl border border-slate-700 bg-gradient-to-br from-slate-950/60 to-slate-900 p-3.5">
+                <div className="flex items-center gap-1 text-xs font-medium text-slate-400">
                   <Clock className="h-3.5 w-3.5" /> Total Latency
                 </div>
-                <div className="text-2xl font-bold text-slate-200 mt-1">
-                  {(((result.total_duration_ms || result.total_latency_ms || 12000)) / 1000).toFixed(1)}s
+                <div className="mt-1 text-2xl font-bold text-slate-200">
+                  {((result.total_duration_ms || result.total_latency_ms || 12000) / 1000).toFixed(
+                    1
+                  )}
+                  s
                 </div>
-                <div className="text-[10px] text-slate-400 mt-0.5">
+                <div className="mt-0.5 text-[10px] text-slate-400">
                   {(result.total_tokens ?? 3450).toLocaleString()} tokens
                 </div>
               </div>
@@ -268,11 +272,11 @@ export default function MultiAgentWorkflowModal({
           {/* Pipeline Stage Tracker */}
           <div className="space-y-2.5">
             <div className="flex items-center justify-between">
-              <h3 className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+              <h3 className="text-xs font-semibold tracking-wider text-slate-300 uppercase">
                 Autonomous Agent Execution Pipeline
               </h3>
               {running && (
-                <div className="flex items-center gap-1.5 text-xs text-indigo-400 animate-pulse">
+                <div className="flex animate-pulse items-center gap-1.5 text-xs text-indigo-400">
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
                   Orchestrating agents...
                 </div>
@@ -291,36 +295,34 @@ export default function MultiAgentWorkflowModal({
                 return (
                   <div
                     key={stg.key}
-                    className={`flex items-center justify-between p-3 rounded-xl border transition-all ${
+                    className={`flex items-center justify-between rounded-xl border p-3 transition-all ${
                       status === "running"
-                        ? "bg-indigo-950/30 border-indigo-500/50 shadow-md shadow-indigo-500/10"
+                        ? "border-indigo-500/50 bg-indigo-950/30 shadow-md shadow-indigo-500/10"
                         : status === "completed"
-                        ? "bg-slate-800/40 border-slate-700/50"
-                        : "bg-slate-900/30 border-slate-800/40 opacity-60"
+                          ? "border-slate-700/50 bg-slate-800/40"
+                          : "border-slate-800/40 bg-slate-900/30 opacity-60"
                     }`}
                   >
                     <div className="flex items-center gap-3">
                       <div
-                        className={`p-2 rounded-lg border ${
+                        className={`rounded-lg border p-2 ${
                           status === "completed"
-                            ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
+                            ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
                             : status === "running"
-                            ? "bg-indigo-500/20 border-indigo-500/40 text-indigo-300 animate-pulse"
-                            : stg.color
+                              ? "animate-pulse border-indigo-500/40 bg-indigo-500/20 text-indigo-300"
+                              : stg.color
                         }`}
                       >
                         <IconComponent className="h-4 w-4" />
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-semibold text-slate-200">
-                            {stg.title}
-                          </span>
-                          <span className="text-[10px] px-2 py-0.5 rounded-md bg-slate-800 text-slate-400 border border-slate-700">
+                          <span className="text-sm font-semibold text-slate-200">{stg.title}</span>
+                          <span className="rounded-md border border-slate-700 bg-slate-800 px-2 py-0.5 text-[10px] text-slate-400">
                             {stg.agentName}
                           </span>
                         </div>
-                        <p className="text-xs text-slate-400 mt-0.5">
+                        <p className="mt-0.5 text-xs text-slate-400">
                           {stageResult?.summary || stg.desc}
                         </p>
                       </div>
@@ -328,8 +330,13 @@ export default function MultiAgentWorkflowModal({
 
                     <div className="flex items-center gap-3">
                       {stageResult && (
-                        <div className="text-right text-[11px] text-slate-400 hidden sm:block">
-                          <div>{(((stageResult.duration_ms || stageResult.latency_ms || 1200)) / 1000).toFixed(1)}s</div>
+                        <div className="hidden text-right text-[11px] text-slate-400 sm:block">
+                          <div>
+                            {(
+                              (stageResult.duration_ms || stageResult.latency_ms || 1200) / 1000
+                            ).toFixed(1)}
+                            s
+                          </div>
                           <div className="text-[9px] text-slate-500">
                             {stageResult.tokens_used ?? 450} tok
                           </div>
@@ -337,24 +344,20 @@ export default function MultiAgentWorkflowModal({
                       )}
 
                       {status === "running" && (
-                        <span className="flex items-center gap-1 text-xs text-indigo-400 font-medium px-2.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20">
+                        <span className="flex items-center gap-1 rounded-full border border-indigo-500/20 bg-indigo-500/10 px-2.5 py-1 text-xs font-medium text-indigo-400">
                           <Loader2 className="h-3 w-3 animate-spin" /> Active
                         </span>
                       )}
                       {status === "completed" && (
-                        <span className="flex items-center gap-1 text-xs text-emerald-400 font-medium px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                        <span className="flex items-center gap-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-400">
                           <CheckCircle2 className="h-3 w-3" /> Ready
                         </span>
                       )}
                       {status === "pending" && (
-                        <span className="text-xs text-slate-500 px-2.5 py-1">
-                          Queued
-                        </span>
+                        <span className="px-2.5 py-1 text-xs text-slate-500">Queued</span>
                       )}
                       {status === "idle" && (
-                        <span className="text-xs text-slate-600 px-2.5 py-1">
-                          Standby
-                        </span>
+                        <span className="px-2.5 py-1 text-xs text-slate-600">Standby</span>
                       )}
                     </div>
                   </div>
@@ -365,19 +368,19 @@ export default function MultiAgentWorkflowModal({
 
           {/* Error Message */}
           {errorMsg && (
-            <div className="p-3.5 rounded-xl bg-red-950/40 border border-red-500/30 text-red-300 text-xs flex items-start gap-2.5">
-              <AlertTriangle className="h-4 w-4 text-red-400 shrink-0 mt-0.5" />
+            <div className="flex items-start gap-2.5 rounded-xl border border-red-500/30 bg-red-950/40 p-3.5 text-xs text-red-300">
+              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />
               <div>
                 <p className="font-semibold text-red-200">Execution Error</p>
-                <p className="text-red-300/90 mt-0.5">{errorMsg}</p>
+                <p className="mt-0.5 text-red-300/90">{errorMsg}</p>
               </div>
             </div>
           )}
         </div>
 
         {/* Modal Footer */}
-        <div className="px-6 py-4 border-t border-slate-800 bg-slate-950/60 flex items-center justify-between">
-          <div className="text-xs text-slate-400 flex items-center gap-1.5">
+        <div className="flex items-center justify-between border-t border-slate-800 bg-slate-950/60 px-6 py-4">
+          <div className="flex items-center gap-1.5 text-xs text-slate-400">
             <Bot className="h-4 w-4 text-indigo-400" />
             <span>Coordinated by PipelineOrchestrator state machine</span>
           </div>
@@ -388,7 +391,7 @@ export default function MultiAgentWorkflowModal({
               size="sm"
               onClick={onClose}
               disabled={running}
-              className="border-slate-700 hover:bg-slate-800 text-slate-300"
+              className="border-slate-700 text-slate-300 hover:bg-slate-800"
             >
               {result ? "Close" : "Cancel"}
             </Button>
@@ -398,7 +401,7 @@ export default function MultiAgentWorkflowModal({
                 size="sm"
                 onClick={handleStartPipeline}
                 disabled={running}
-                className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-lg shadow-indigo-600/20 gap-1.5"
+                className="gap-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-600/20 hover:from-indigo-500 hover:to-purple-500"
               >
                 {running ? (
                   <>
@@ -420,7 +423,7 @@ export default function MultiAgentWorkflowModal({
                   // Trigger navigation or switch to proposal tab
                   router.push(`/tenders/${encodeURIComponent(tenderId)}?tab=proposal`);
                 }}
-                className="bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/20 gap-1.5"
+                className="gap-1.5 bg-emerald-600 text-white shadow-lg shadow-emerald-600/20 hover:bg-emerald-500"
               >
                 <ExternalLink className="h-4 w-4" />
                 View Proposal Draft

@@ -1,10 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  evaluateTenderRequirements,
-  BatchEvaluateResponse,
-} from "@/lib/requirements-service";
+import { evaluateTenderRequirements, BatchEvaluateResponse } from "@/lib/requirements-service";
 import {
   X,
   Bot,
@@ -48,9 +45,18 @@ export default function RequirementVerifyModal({
   const STEPS = [
     { title: "Querying Requirements", desc: "Loading traceable objects from database" },
     { title: "Generating Embeddings", desc: "Vectorizing requirement specifications" },
-    { title: "RAG Semantic Retrieval", desc: "Matching company projects, employees & certifications" },
-    { title: "AI Compliance Assessment", desc: "Gemini evaluating capability coverage & gap analysis" },
-    { title: "Persisting Matrix & Coverage", desc: "Saving citations and recalculating compliance scores" },
+    {
+      title: "RAG Semantic Retrieval",
+      desc: "Matching company projects, employees & certifications",
+    },
+    {
+      title: "AI Compliance Assessment",
+      desc: "Gemini evaluating capability coverage & gap analysis",
+    },
+    {
+      title: "Persisting Matrix & Coverage",
+      desc: "Saving citations and recalculating compliance scores",
+    },
   ];
 
   const handleStartEvaluation = async () => {
@@ -78,7 +84,7 @@ export default function RequirementVerifyModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="animate-in fade-in fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm duration-200">
       <div className="flex max-h-[90vh] w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[#E2E8F0] bg-[#F8FAFC] px-6 py-4">
@@ -87,14 +93,18 @@ export default function RequirementVerifyModal({
               <Bot size={20} />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-[#1E252D]">AI Requirement Verification Agent</h3>
-              <p className="text-xs text-[#64748B]">Multi-Source Capability Matching &amp; Compliance Audit</p>
+              <h3 className="text-sm font-bold text-[#1E252D]">
+                AI Requirement Verification Agent
+              </h3>
+              <p className="text-xs text-[#64748B]">
+                Multi-Source Capability Matching &amp; Compliance Audit
+              </p>
             </div>
           </div>
           {!running && (
             <button
               onClick={onClose}
-              className="rounded-full p-2 text-[#64748B] hover:bg-[#E2E8F0] transition-colors"
+              className="rounded-full p-2 text-[#64748B] transition-colors hover:bg-[#E2E8F0]"
             >
               <X size={18} />
             </button>
@@ -102,26 +112,27 @@ export default function RequirementVerifyModal({
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        <div className="flex-1 space-y-6 overflow-y-auto p-6">
           {!result && !running && (
             <div className="space-y-4">
               <div className="rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-4">
-                <div className="text-[10px] font-bold uppercase tracking-wider text-[#64748B] mb-1">
+                <div className="mb-1 text-[10px] font-bold tracking-wider text-[#64748B] uppercase">
                   Target Tender
                 </div>
                 <div className="text-sm font-bold text-[#1E252D]">{tenderName}</div>
-                <div className="text-xs text-[#64748B] mt-0.5">
-                  Total Requirements to audit: <strong className="text-[#1E252D]">{totalRequirements}</strong>
+                <div className="mt-0.5 text-xs text-[#64748B]">
+                  Total Requirements to audit:{" "}
+                  <strong className="text-[#1E252D]">{totalRequirements}</strong>
                 </div>
               </div>
 
               {/* Scope Selection */}
               <div>
-                <label className="block text-xs font-semibold text-[#475569] mb-2">
+                <label className="mb-2 block text-xs font-semibold text-[#475569]">
                   Evaluation Scope
                 </label>
                 <div className="space-y-2">
-                  <label className="flex items-center gap-3 p-3 rounded-xl border border-[#E2E8F0] hover:bg-[#F8FAFC] cursor-pointer transition-colors">
+                  <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-[#E2E8F0] p-3 transition-colors hover:bg-[#F8FAFC]">
                     <input
                       type="radio"
                       name="eval_mode"
@@ -131,14 +142,17 @@ export default function RequirementVerifyModal({
                       className="accent-[#7A1C2C]"
                     />
                     <div>
-                      <div className="text-xs font-bold text-[#1E252D]">Evaluate All Requirements</div>
+                      <div className="text-xs font-bold text-[#1E252D]">
+                        Evaluate All Requirements
+                      </div>
                       <div className="text-[11px] text-[#64748B]">
-                        Run full semantic RAG &amp; Gemini capability assessment on every requirement.
+                        Run full semantic RAG &amp; Gemini capability assessment on every
+                        requirement.
                       </div>
                     </div>
                   </label>
 
-                  <label className="flex items-center gap-3 p-3 rounded-xl border border-[#E2E8F0] hover:bg-[#F8FAFC] cursor-pointer transition-colors">
+                  <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-[#E2E8F0] p-3 transition-colors hover:bg-[#F8FAFC]">
                     <input
                       type="radio"
                       name="eval_mode"
@@ -148,7 +162,9 @@ export default function RequirementVerifyModal({
                       className="accent-[#7A1C2C]"
                     />
                     <div>
-                      <div className="text-xs font-bold text-[#1E252D]">Evaluate Unverified Only</div>
+                      <div className="text-xs font-bold text-[#1E252D]">
+                        Evaluate Unverified Only
+                      </div>
                       <div className="text-[11px] text-[#64748B]">
                         Skip requirements that have already been evaluated or manually approved.
                       </div>
@@ -161,8 +177,10 @@ export default function RequirementVerifyModal({
               <div className="flex items-start gap-2.5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs text-amber-900">
                 <Sparkles size={16} className="mt-0.5 shrink-0 text-[#DDA625]" />
                 <div className="leading-relaxed">
-                  The agent scans company project portfolios, employee certifications, and verified technologies
-                  to automatically classify requirements as <strong>Covered</strong>, <strong>Partially Covered</strong>, <strong>Missing</strong>, or <strong>Evidence Required</strong>.
+                  The agent scans company project portfolios, employee certifications, and verified
+                  technologies to automatically classify requirements as <strong>Covered</strong>,{" "}
+                  <strong>Partially Covered</strong>, <strong>Missing</strong>, or{" "}
+                  <strong>Evidence Required</strong>.
                 </div>
               </div>
 
@@ -177,12 +195,16 @@ export default function RequirementVerifyModal({
           {/* Running Progress State */}
           {running && (
             <div className="space-y-6 py-4">
-              <div className="text-center space-y-1">
-                <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#FDF2F4] text-[#7A1C2C] animate-pulse">
+              <div className="space-y-1 text-center">
+                <div className="inline-flex h-12 w-12 animate-pulse items-center justify-center rounded-2xl bg-[#FDF2F4] text-[#7A1C2C]">
                   <Bot size={24} />
                 </div>
-                <h4 className="text-sm font-bold text-[#1E252D]">Running Requirement Verification Agent…</h4>
-                <p className="text-xs text-[#64748B]">Analyzing {totalRequirements} requirements against company knowledge</p>
+                <h4 className="text-sm font-bold text-[#1E252D]">
+                  Running Requirement Verification Agent…
+                </h4>
+                <p className="text-xs text-[#64748B]">
+                  Analyzing {totalRequirements} requirements against company knowledge
+                </p>
               </div>
 
               {/* Step Tracker */}
@@ -193,14 +215,16 @@ export default function RequirementVerifyModal({
                   return (
                     <div key={idx} className="flex items-center gap-3 text-xs">
                       {isDone ? (
-                        <CheckCircle2 size={16} className="text-[#15803D] shrink-0" />
+                        <CheckCircle2 size={16} className="shrink-0 text-[#15803D]" />
                       ) : isCurrent ? (
-                        <Loader2 size={16} className="animate-spin text-[#7A1C2C] shrink-0" />
+                        <Loader2 size={16} className="shrink-0 animate-spin text-[#7A1C2C]" />
                       ) : (
-                        <div className="h-4 w-4 rounded-full border border-[#CBD5E1] bg-white shrink-0" />
+                        <div className="h-4 w-4 shrink-0 rounded-full border border-[#CBD5E1] bg-white" />
                       )}
                       <div>
-                        <div className={`font-bold ${isCurrent ? "text-[#7A1C2C]" : isDone ? "text-[#1E252D]" : "text-[#94A3B8]"}`}>
+                        <div
+                          className={`font-bold ${isCurrent ? "text-[#7A1C2C]" : isDone ? "text-[#1E252D]" : "text-[#94A3B8]"}`}
+                        >
                           {s.title}
                         </div>
                         <div className="text-[11px] text-[#64748B]">{s.desc}</div>
@@ -216,46 +240,64 @@ export default function RequirementVerifyModal({
           {result && !running && (
             <div className="space-y-5">
               <div className="flex items-center gap-3 rounded-xl border border-green-200 bg-green-50 p-4 text-green-900">
-                <CheckCircle2 size={24} className="text-[#15803D] shrink-0" />
+                <CheckCircle2 size={24} className="shrink-0 text-[#15803D]" />
                 <div>
                   <h4 className="text-sm font-bold">Requirement Verification Complete!</h4>
-                  <p className="text-xs text-green-800 mt-0.5">{result.message}</p>
+                  <p className="mt-0.5 text-xs text-green-800">{result.message}</p>
                 </div>
               </div>
 
               {/* Stats Summary Grid */}
               <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
                 <div className="rounded-xl border border-[#E2E8F0] bg-white p-3 text-center">
-                  <div className="text-xl font-extrabold text-[#15803D]">{Number(result.stats?.covered ?? 0)}</div>
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-[#64748B]">Covered</div>
+                  <div className="text-xl font-extrabold text-[#15803D]">
+                    {Number(result.stats?.covered ?? 0)}
+                  </div>
+                  <div className="text-[10px] font-bold tracking-wider text-[#64748B] uppercase">
+                    Covered
+                  </div>
                 </div>
 
                 <div className="rounded-xl border border-[#E2E8F0] bg-white p-3 text-center">
-                  <div className="text-xl font-extrabold text-[#B45309]">{Number(result.stats?.partially_covered ?? 0)}</div>
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-[#64748B]">Partial</div>
+                  <div className="text-xl font-extrabold text-[#B45309]">
+                    {Number(result.stats?.partially_covered ?? 0)}
+                  </div>
+                  <div className="text-[10px] font-bold tracking-wider text-[#64748B] uppercase">
+                    Partial
+                  </div>
                 </div>
 
                 <div className="rounded-xl border border-[#E2E8F0] bg-white p-3 text-center">
-                  <div className="text-xl font-extrabold text-[#7C3AED]">{Number(result.stats?.evidence_required ?? 0)}</div>
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-[#64748B]">Evidence Req.</div>
+                  <div className="text-xl font-extrabold text-[#7C3AED]">
+                    {Number(result.stats?.evidence_required ?? 0)}
+                  </div>
+                  <div className="text-[10px] font-bold tracking-wider text-[#64748B] uppercase">
+                    Evidence Req.
+                  </div>
                 </div>
 
                 <div className="rounded-xl border border-[#E2E8F0] bg-white p-3 text-center">
-                  <div className="text-xl font-extrabold text-[#B91C1C]">{Number(result.stats?.missing ?? 0)}</div>
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-[#64748B]">Missing</div>
+                  <div className="text-xl font-extrabold text-[#B91C1C]">
+                    {Number(result.stats?.missing ?? 0)}
+                  </div>
+                  <div className="text-[10px] font-bold tracking-wider text-[#64748B] uppercase">
+                    Missing
+                  </div>
                 </div>
               </div>
 
-              <div className="rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-4 flex items-center justify-between">
+              <div className="flex items-center justify-between rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-4">
                 <div>
-                  <div className="text-xs font-semibold text-[#64748B]">Overall Compliance Coverage</div>
+                  <div className="text-xs font-semibold text-[#64748B]">
+                    Overall Compliance Coverage
+                  </div>
                   <div className="text-lg font-bold text-[#1E252D]">
                     {Number(result.stats?.coverage_percentage ?? 0)}%
                   </div>
                 </div>
                 <div className="text-right">
                   <div className="text-xs font-semibold text-[#64748B]">Execution Latency</div>
-                  <div className="text-sm font-mono text-[#64748B]">{result.latency_ms} ms</div>
+                  <div className="font-mono text-sm text-[#64748B]">{result.latency_ms} ms</div>
                 </div>
               </div>
             </div>

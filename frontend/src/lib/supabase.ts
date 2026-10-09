@@ -16,11 +16,9 @@ const supabaseAnonKey = (
 
 export const isSupabaseConfigured = Boolean(
   supabaseUrl &&
-    supabaseAnonKey &&
-    !supabaseUrl.includes("your-project-ref") &&
-    supabaseUrl.startsWith("https://")
+  supabaseAnonKey &&
+  !supabaseUrl.includes("your-project-ref") &&
+  supabaseUrl.startsWith("https://")
 );
 
-export const supabase = isSupabaseConfigured
-  ? createClient(supabaseUrl, supabaseAnonKey)
-  : null;
+export const supabase = isSupabaseConfigured ? createClient(supabaseUrl, supabaseAnonKey) : null;

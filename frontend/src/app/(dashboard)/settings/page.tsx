@@ -173,8 +173,8 @@ export default function SettingsPage() {
 
                 <div className="rounded border border-[#E2E8F0] p-3 text-xs text-[#64748B]">
                   <strong className="text-[#1E252D]">Schema Status:</strong> 22 tables defined in{" "}
-                  <code>database/schema.sql</code> + <code>phase12_rbac_migration.sql</code> · Row Level Security configured in{" "}
-                  <code>database/rls_policies.sql</code>.
+                  <code>database/schema.sql</code> + <code>phase12_rbac_migration.sql</code> · Row
+                  Level Security configured in <code>database/rls_policies.sql</code>.
                 </div>
               </CardContent>
             </Card>
@@ -183,12 +183,13 @@ export default function SettingsPage() {
             <Card className="border-[#E2E8F0] bg-white" id="rbac">
               <CardHeader className="flex flex-row items-center justify-between border-b border-[#E2E8F0] px-6 py-4">
                 <div>
-                  <CardTitle className="text-sm font-bold text-[#1E252D] flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-sm font-bold text-[#1E252D]">
                     <ShieldCheck size={16} className="text-[#7A1C2C]" />
                     Team &amp; Access Control (Phase 12 RBAC)
                   </CardTitle>
                   <CardDescription className="text-xs text-[#64748B]">
-                    Enterprise 6-role hierarchy, granular permissions, live persona switcher, and section locking
+                    Enterprise 6-role hierarchy, granular permissions, live persona switcher, and
+                    section locking
                   </CardDescription>
                 </div>
                 <a
@@ -201,31 +202,33 @@ export default function SettingsPage() {
               <CardContent className="space-y-4 p-6">
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                   <div className="rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-3">
-                    <div className="text-[11px] font-semibold text-[#64748B] uppercase tracking-wider">
+                    <div className="text-[11px] font-semibold tracking-wider text-[#64748B] uppercase">
                       Configured Roles
                     </div>
-                    <div className="text-lg font-bold text-[#1E252D] mt-1">6 Enterprise Roles</div>
-                    <p className="text-[11px] text-[#64748B] mt-0.5">
+                    <div className="mt-1 text-lg font-bold text-[#1E252D]">6 Enterprise Roles</div>
+                    <p className="mt-0.5 text-[11px] text-[#64748B]">
                       Admin, Bid Manager, Solution Architect, Compliance, SME, Executive
                     </p>
                   </div>
 
                   <div className="rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-3">
-                    <div className="text-[11px] font-semibold text-[#64748B] uppercase tracking-wider">
+                    <div className="text-[11px] font-semibold tracking-wider text-[#64748B] uppercase">
                       Granular Gates
                     </div>
-                    <div className="text-lg font-bold text-[#1E252D] mt-1">24 Action Codes</div>
-                    <p className="text-[11px] text-[#64748B] mt-0.5">
+                    <div className="mt-1 text-lg font-bold text-[#1E252D]">24 Action Codes</div>
+                    <p className="mt-0.5 text-[11px] text-[#64748B]">
                       Tenders, AI pipeline, sign-off, knowledge RAG, audit
                     </p>
                   </div>
 
                   <div className="rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-3">
-                    <div className="text-[11px] font-semibold text-[#64748B] uppercase tracking-wider">
+                    <div className="text-[11px] font-semibold tracking-wider text-[#64748B] uppercase">
                       Concurrency Engine
                     </div>
-                    <div className="text-lg font-bold text-emerald-700 mt-1">Optimistic Locking</div>
-                    <p className="text-[11px] text-[#64748B] mt-0.5">
+                    <div className="mt-1 text-lg font-bold text-emerald-700">
+                      Optimistic Locking
+                    </div>
+                    <p className="mt-0.5 text-[11px] text-[#64748B]">
                       Section-level lock expiration &amp; collaborator tracking
                     </p>
                   </div>
@@ -233,7 +236,8 @@ export default function SettingsPage() {
 
                 <div className="flex items-center justify-between rounded-md border border-amber-200 bg-amber-50/60 p-3.5">
                   <div className="text-xs text-amber-900">
-                    <strong>Phase 12 Live Simulation:</strong> Switch between simulated user personas or manage team rosters in the full control center.
+                    <strong>Phase 12 Live Simulation:</strong> Switch between simulated user
+                    personas or manage team rosters in the full control center.
                   </div>
                   <a
                     href="/settings/team"
@@ -367,50 +371,59 @@ export default function SettingsPage() {
             <Card className="border-[#E2E8F0] bg-white" id="governance">
               <CardHeader className="flex flex-row items-center justify-between border-b border-[#E2E8F0] px-6 py-4">
                 <div>
-                  <CardTitle className="text-sm font-bold text-[#1E252D] flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-sm font-bold text-[#1E252D]">
                     <ShieldCheck size={16} className="text-rose-700" />
                     Knowledge Governance & Secret Scrubber (Phase 13)
                   </CardTitle>
                   <CardDescription className="text-xs text-[#64748B]">
-                    Automated pre-embedding PII redaction, salary confidentiality, and clearance tiers
+                    Automated pre-embedding PII redaction, salary confidentiality, and clearance
+                    tiers
                   </CardDescription>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4 p-6">
                 <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                  <div className="text-xs font-bold text-slate-800 mb-2">Live Secret & PII Detection Engine Tester</div>
+                  <div className="mb-2 text-xs font-bold text-slate-800">
+                    Live Secret & PII Detection Engine Tester
+                  </div>
                   <div className="space-y-3">
                     <textarea
                       id="scanner-input"
                       rows={3}
                       placeholder="Paste test text containing API keys (e.g. sk-proj...), passwords, internal salary ($120k/yr), or NIC numbers..."
                       defaultValue="Internal lead salary: $150,000/yr. Secret AWS access key: AKIAIOSFODNN7EXAMPLE. Sri Lankan NIC: 199012345678."
-                      className="w-full text-xs font-mono p-2.5 rounded-lg border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-rose-700"
+                      className="w-full rounded-lg border border-slate-300 bg-white p-2.5 font-mono text-xs text-slate-900 focus:ring-1 focus:ring-rose-700 focus:outline-none"
                     />
                     <div className="flex gap-2">
                       <Button
                         type="button"
                         size="sm"
                         onClick={async () => {
-                          const el = document.getElementById("scanner-input") as HTMLTextAreaElement;
+                          const el = document.getElementById(
+                            "scanner-input"
+                          ) as HTMLTextAreaElement;
                           const resEl = document.getElementById("scanner-result");
                           if (!el || !resEl) return;
                           resEl.innerText = "Scanning text...";
                           try {
                             const { scanSecrets } = await import("@/lib/ai-service");
                             const res = await scanSecrets(el.value);
-                            resEl.innerHTML = `<strong>Findings (${res.findings_count}):</strong> ${res.findings.map(f => `<span class="bg-rose-100 text-rose-800 px-1.5 py-0.5 rounded text-[11px]">${f.type}</span>`).join(" ")}<br/><br/><strong>Sanitized Preview:</strong><div class="mt-1 p-2 bg-slate-900 text-emerald-300 font-mono text-[11px] rounded">${res.scrubbed_preview}</div>`;
+                            resEl.innerHTML = `<strong>Findings (${res.findings_count}):</strong> ${res.findings.map((f) => `<span class="bg-rose-100 text-rose-800 px-1.5 py-0.5 rounded text-[11px]">${f.type}</span>`).join(" ")}<br/><br/><strong>Sanitized Preview:</strong><div class="mt-1 p-2 bg-slate-900 text-emerald-300 font-mono text-[11px] rounded">${res.scrubbed_preview}</div>`;
                           } catch (e: any) {
                             resEl.innerText = "Scan failed: " + e.message;
                           }
                         }}
-                        className="bg-rose-700 hover:bg-rose-800 text-white text-xs font-semibold"
+                        className="bg-rose-700 text-xs font-semibold text-white hover:bg-rose-800"
                       >
                         Run Scrubbing Scan
                       </Button>
                     </div>
-                    <div id="scanner-result" className="text-xs text-slate-700 mt-2 p-3 bg-white border border-slate-200 rounded-lg min-h-[40px]">
-                      Click &quot;Run Scrubbing Scan&quot; to test the automated regex redaction engine.
+                    <div
+                      id="scanner-result"
+                      className="mt-2 min-h-[40px] rounded-lg border border-slate-200 bg-white p-3 text-xs text-slate-700"
+                    >
+                      Click &quot;Run Scrubbing Scan&quot; to test the automated regex redaction
+                      engine.
                     </div>
                   </div>
                 </div>
@@ -421,7 +434,7 @@ export default function SettingsPage() {
             <Card className="border-[#E2E8F0] bg-white" id="audit">
               <CardHeader className="flex flex-row items-center justify-between border-b border-[#E2E8F0] px-6 py-4">
                 <div>
-                  <CardTitle className="text-sm font-bold text-[#1E252D] flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-sm font-bold text-[#1E252D]">
                     <Database size={16} className="text-emerald-700" />
                     Cryptographic Audit Trail & E-Signatures (Phase 14)
                   </CardTitle>
@@ -430,19 +443,25 @@ export default function SettingsPage() {
                   </CardDescription>
                 </div>
                 <Link href="/verify" target="_blank">
-                  <Button size="sm" variant="outline" className="text-xs font-semibold gap-1.5 border-slate-300 text-slate-700">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="gap-1.5 border-slate-300 text-xs font-semibold text-slate-700"
+                  >
                     Open Public Verify Portal ↗
                   </Button>
                 </Link>
               </CardHeader>
               <CardContent className="space-y-4 p-6">
-                <div className="p-4 rounded-xl border border-emerald-200 bg-emerald-50/60 flex items-center justify-between gap-4">
+                <div className="flex items-center justify-between gap-4 rounded-xl border border-emerald-200 bg-emerald-50/60 p-4">
                   <div>
-                    <div className="text-xs font-bold text-emerald-950 flex items-center gap-1.5">
-                      <CheckCircle2 size={14} className="text-emerald-600" /> SHA-256 Audit Chain Verification
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-950">
+                      <CheckCircle2 size={14} className="text-emerald-600" /> SHA-256 Audit Chain
+                      Verification
                     </div>
-                    <p className="text-[11px] text-emerald-800 mt-0.5">
-                      Cryptographically validates that no log events or proposal sign-offs were modified or deleted.
+                    <p className="mt-0.5 text-[11px] text-emerald-800">
+                      Cryptographically validates that no log events or proposal sign-offs were
+                      modified or deleted.
                     </p>
                   </div>
                   <Button
@@ -459,13 +478,17 @@ export default function SettingsPage() {
                         resEl.innerText = "Verification failed: " + e.message;
                       }
                     }}
-                    className="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold shrink-0"
+                    className="shrink-0 bg-emerald-700 text-xs font-semibold text-white hover:bg-emerald-800"
                   >
                     Verify Chain Integrity
                   </Button>
                 </div>
-                <div id="chain-result" className="text-xs text-slate-700 p-3 bg-slate-50 border border-slate-200 rounded-lg">
-                  Click &quot;Verify Chain Integrity&quot; to compute live sequential hashes across all audit events.
+                <div
+                  id="chain-result"
+                  className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs text-slate-700"
+                >
+                  Click &quot;Verify Chain Integrity&quot; to compute live sequential hashes across
+                  all audit events.
                 </div>
               </CardContent>
             </Card>
@@ -474,7 +497,7 @@ export default function SettingsPage() {
             <Card className="border-[#E2E8F0] bg-white" id="webhooks">
               <CardHeader className="flex flex-row items-center justify-between border-b border-[#E2E8F0] px-6 py-4">
                 <div>
-                  <CardTitle className="text-sm font-bold text-[#1E252D] flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-sm font-bold text-[#1E252D]">
                     <Server size={16} className="text-sky-700" />
                     Webhooks & External RFP Intake (Phase 15)
                   </CardTitle>
@@ -486,18 +509,22 @@ export default function SettingsPage() {
               <CardContent className="space-y-4 p-6">
                 {/* Outbound Webhook Test */}
                 <div className="space-y-3 border-b border-slate-200 pb-4">
-                  <Label className="text-xs font-semibold text-slate-800">Slack / Teams Outbound Webhook URL</Label>
+                  <Label className="text-xs font-semibold text-slate-800">
+                    Slack / Teams Outbound Webhook URL
+                  </Label>
                   <div className="flex gap-2">
                     <Input
                       id="webhook-url-input"
                       placeholder="https://hooks.slack.com/services/..."
                       defaultValue="https://hooks.slack.com/services/T00000000/B00000000/XXXXX"
-                      className="text-xs font-mono bg-white"
+                      className="bg-white font-mono text-xs"
                     />
                     <Button
                       size="sm"
                       onClick={async () => {
-                        const input = document.getElementById("webhook-url-input") as HTMLInputElement;
+                        const input = document.getElementById(
+                          "webhook-url-input"
+                        ) as HTMLInputElement;
                         const statusEl = document.getElementById("webhook-status");
                         if (!statusEl) return;
                         statusEl.innerText = "Dispatching test notification payload...";
@@ -507,14 +534,18 @@ export default function SettingsPage() {
                             webhook_url: input?.value || "",
                             service_type: "slack",
                             title: "BidPilot Test Alert",
-                            message: "Test webhook broadcast from BidPilot AI Multi-Agent RFP System.",
+                            message:
+                              "Test webhook broadcast from BidPilot AI Multi-Agent RFP System.",
                           });
                           statusEl.innerText = "✓ Test alert dispatched successfully to webhook.";
                         } catch (e: any) {
-                          statusEl.innerText = "Notice: Test payload generated. (Live webhook requires valid external URL: " + e.message + ")";
+                          statusEl.innerText =
+                            "Notice: Test payload generated. (Live webhook requires valid external URL: " +
+                            e.message +
+                            ")";
                         }
                       }}
-                      className="bg-sky-700 hover:bg-sky-800 text-white text-xs font-semibold shrink-0"
+                      className="shrink-0 bg-sky-700 text-xs font-semibold text-white hover:bg-sky-800"
                     >
                       Test Dispatch
                     </Button>
@@ -523,13 +554,18 @@ export default function SettingsPage() {
                 </div>
 
                 {/* Inbound Webhook Endpoint */}
-                <div className="p-3.5 bg-slate-900 text-slate-100 rounded-xl space-y-1.5">
-                  <div className="text-xs font-bold text-sky-400">External RFP Intake API Endpoint (Inbound)</div>
-                  <div className="font-mono text-xs text-amber-300 bg-slate-950 p-2 rounded border border-slate-800">
+                <div className="space-y-1.5 rounded-xl bg-slate-900 p-3.5 text-slate-100">
+                  <div className="text-xs font-bold text-sky-400">
+                    External RFP Intake API Endpoint (Inbound)
+                  </div>
+                  <div className="rounded border border-slate-800 bg-slate-950 p-2 font-mono text-xs text-amber-300">
                     POST http://localhost:8000/webhooks/tenders/ingest
                   </div>
                   <div className="text-[11px] text-slate-400">
-                    Header: <code className="text-emerald-400 font-mono">X-BidPilot-Webhook-Key: bidpilot_secret_ingest_key_2026</code>
+                    Header:{" "}
+                    <code className="font-mono text-emerald-400">
+                      X-BidPilot-Webhook-Key: bidpilot_secret_ingest_key_2026
+                    </code>
                   </div>
                 </div>
               </CardContent>
@@ -588,8 +624,8 @@ export default function SettingsPage() {
                 <div className="flex items-center gap-2.5 rounded-md border border-[#BBF7D0] bg-[#DCFCE7] p-3.5">
                   <CheckCircle2 size={16} className="flex-shrink-0 text-[#15803D]" />
                   <span className="text-xs font-semibold text-[#15803D]">
-                    AI backend operational · Free-Tier local & governed RAG pipeline active with zero external API
-                    fees
+                    AI backend operational · Free-Tier local & governed RAG pipeline active with
+                    zero external API fees
                   </span>
                 </div>
               </CardContent>
@@ -600,4 +636,3 @@ export default function SettingsPage() {
     </div>
   );
 }
-

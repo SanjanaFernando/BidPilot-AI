@@ -175,17 +175,13 @@ export function useUserPermissions(): UserPermissionsState {
         const userMeta = session.user.user_metadata ?? {};
 
         // If user manually switched demo role during dev, honor it if appMeta.role is not present
-        const resolvedRole: RoleName =
-          (appMeta.role as RoleName) ?? getStoredDemoRole();
+        const resolvedRole: RoleName = (appMeta.role as RoleName) ?? getStoredDemoRole();
         const resolvedPermissions: PermissionCode[] =
-          (appMeta.permissions as PermissionCode[]) ??
-          ROLE_PERMISSIONS[resolvedRole] ??
-          [];
+          (appMeta.permissions as PermissionCode[]) ?? ROLE_PERMISSIONS[resolvedRole] ?? [];
         const resolvedOrgId: string =
           appMeta.org_id ?? appMeta.organization_id ?? DEMO_PERSONAS.org_admin.org_id;
 
-        const resolvedName: string =
-          userMeta.full_name ?? session.user.email ?? "User";
+        const resolvedName: string = userMeta.full_name ?? session.user.email ?? "User";
         const initials = resolvedName
           .split(" ")
           .map((n: string) => n[0])
@@ -249,10 +245,7 @@ export function useUserPermissions(): UserPermissionsState {
     [permissions]
   );
 
-  const hasRole = useCallback(
-    (roles: RoleName[]) => roles.includes(role),
-    [role]
-  );
+  const hasRole = useCallback((roles: RoleName[]) => roles.includes(role), [role]);
 
   const switchDemoRole = useCallback(
     (newRole: RoleName) => {
@@ -264,9 +257,7 @@ export function useUserPermissions(): UserPermissionsState {
       applyRole(newRole);
       // Broadcast to all other mounted hooks / components
       if (typeof window !== "undefined") {
-        window.dispatchEvent(
-          new CustomEvent("bidpilot:role_changed", { detail: newRole })
-        );
+        window.dispatchEvent(new CustomEvent("bidpilot:role_changed", { detail: newRole }));
       }
     },
     [applyRole]

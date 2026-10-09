@@ -3,16 +3,13 @@
  * Typed wrappers for all RAG and Knowledge Ingest API endpoints.
  */
 
-const AI_SERVICE_URL = (
-  process.env.NEXT_PUBLIC_AI_SERVICE_URL || "http://localhost:8000"
-)
+const AI_SERVICE_URL = (process.env.NEXT_PUBLIC_AI_SERVICE_URL || "http://localhost:8000")
   .trim()
   .replace(/^["']|["']$/g, "")
   .replace(/\/+$/, "");
 
 const DEFAULT_ORG_ID =
-  process.env.NEXT_PUBLIC_DEFAULT_ORG_ID ||
-  "a0000000-0000-0000-0001-000000000001";
+  process.env.NEXT_PUBLIC_DEFAULT_ORG_ID || "a0000000-0000-0000-0001-000000000001";
 
 export { DEFAULT_ORG_ID };
 
@@ -102,7 +99,7 @@ export async function searchRAG(
     tenderId?: string;
     topK?: number;
     similarityThreshold?: number;
-  },
+  }
 ): Promise<RAGSearchResponse> {
   const res = await fetch(`${AI_SERVICE_URL}/rag/search`, {
     method: "POST",
@@ -136,7 +133,7 @@ export async function searchKnowledge(
     sourceType?: "project" | "employee" | "technology" | "certification";
     topK?: number;
     similarityThreshold?: number;
-  },
+  }
 ): Promise<KnowledgeSearchResponse> {
   const res = await fetch(`${AI_SERVICE_URL}/rag/knowledge-search`, {
     method: "POST",
@@ -164,12 +161,12 @@ export async function searchKnowledge(
 // ---------------------------------------------------------------------------
 
 export async function getRAGStats(
-  organizationId: string = DEFAULT_ORG_ID,
+  organizationId: string = DEFAULT_ORG_ID
 ): Promise<RAGStatsResponse | null> {
   try {
     const res = await fetch(
       `${AI_SERVICE_URL}/rag/stats?organization_id=${encodeURIComponent(organizationId)}`,
-      { signal: AbortSignal.timeout(8000) },
+      { signal: AbortSignal.timeout(8000) }
     );
     if (!res.ok) return null;
     return res.json();
@@ -184,7 +181,7 @@ export async function getRAGStats(
 
 export async function ingestKnowledge(
   organizationId: string = DEFAULT_ORG_ID,
-  overwrite = false,
+  overwrite = false
 ): Promise<IngestResponse> {
   const res = await fetch(`${AI_SERVICE_URL}/rag/ingest-knowledge`, {
     method: "POST",
@@ -206,12 +203,12 @@ export async function ingestKnowledge(
 // ---------------------------------------------------------------------------
 
 export async function getIngestStatus(
-  organizationId: string = DEFAULT_ORG_ID,
+  organizationId: string = DEFAULT_ORG_ID
 ): Promise<IngestStatusResponse | null> {
   try {
     const res = await fetch(
       `${AI_SERVICE_URL}/rag/ingest-knowledge/status?organization_id=${encodeURIComponent(organizationId)}`,
-      { signal: AbortSignal.timeout(8000) },
+      { signal: AbortSignal.timeout(8000) }
     );
     if (!res.ok) return null;
     return res.json();
