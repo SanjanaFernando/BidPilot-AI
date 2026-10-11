@@ -196,7 +196,7 @@ export function StructuredDocumentRenderer({
       blocks.push(
         <div
           key={`quote-${blockIdx++}`}
-          className="my-3.5 rounded-xl border-l-4 border-indigo-600 bg-indigo-50/70 p-4 text-xs leading-relaxed text-indigo-950 italic shadow-2xs md:text-sm"
+          className="my-3.5 rounded-xl border-l-4 border-[#7A1C2C] bg-[#FDF2F4] p-4 text-xs leading-relaxed text-[#1E252D] italic shadow-2xs md:text-sm"
         >
           {parseInline(trimmed.replace(/^>\s+/, ""))}
         </div>
@@ -253,7 +253,7 @@ export function StructuredDocumentRenderer({
   return (
     <div
       onMouseUp={onMouseUp}
-      className="mx-auto max-w-4xl cursor-text rounded-2xl border border-slate-200/80 bg-white p-8 shadow-xs select-text selection:bg-indigo-100 selection:text-indigo-900 md:p-10"
+      className="mx-auto max-w-4xl cursor-text rounded-2xl border border-slate-200/80 bg-white p-8 shadow-xs select-text selection:bg-[#FDF2F4] selection:text-[#7A1C2C] md:p-10"
       style={{
         fontFamily: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
       }}

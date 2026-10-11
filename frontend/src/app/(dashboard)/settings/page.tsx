@@ -29,16 +29,16 @@ export default function SettingsPage() {
   const [dbStatus, setDbStatus] = useState(
     isSupabaseConfigured
       ? "Connected to Supabase PostgreSQL & pgvector"
-      : "Operating in Persistent Local Knowledge Base Mode (Phase 3 Active)"
+      : "Operating in Persistent Local Knowledge Base Mode"
   );
   const [savedNotice, setSavedNotice] = useState(false);
 
   const sections = [
-    { id: "database", label: "Database & Cloud (Phase 2)", icon: <Database size={14} /> },
-    { id: "rbac", label: "Team & RBAC (Phase 12)", icon: <ShieldCheck size={14} /> },
-    { id: "governance", label: "Knowledge Governance (Phase 13)", icon: <ShieldCheck size={14} /> },
-    { id: "audit", label: "Cryptographic Audit (Phase 14)", icon: <Database size={14} /> },
-    { id: "webhooks", label: "Webhooks & Alerts (Phase 15)", icon: <Server size={14} /> },
+    { id: "database", label: "Database & Cloud Infrastructure", icon: <Database size={14} /> },
+    { id: "rbac", label: "Team & Role-Based Access (RBAC)", icon: <ShieldCheck size={14} /> },
+    { id: "governance", label: "Knowledge Governance & Security", icon: <ShieldCheck size={14} /> },
+    { id: "audit", label: "Cryptographic Audit Trail", icon: <Database size={14} /> },
+    { id: "webhooks", label: "Webhooks & Alerts", icon: <Server size={14} /> },
     { id: "organization", label: "Organisation Profile", icon: <Building2 size={14} /> },
     { id: "profile", label: "User Account", icon: <User size={14} /> },
     { id: "ai", label: "AI Engine Configuration", icon: <Cpu size={14} /> },
@@ -105,7 +105,7 @@ export default function SettingsPage() {
               <CardHeader className="flex flex-row items-center justify-between border-b border-[#E2E8F0] px-6 py-4">
                 <div>
                   <CardTitle className="text-sm font-bold text-[#1E252D]">
-                    Database &amp; Multi-Tenant Cloud Architecture (Phase 2 &amp; 3)
+                    Database &amp; Multi-Tenant Cloud Architecture
                   </CardTitle>
                   <CardDescription className="text-xs text-[#64748B]">
                     PostgreSQL, Supabase RLS, and pgvector embedding storage
@@ -185,7 +185,7 @@ export default function SettingsPage() {
                 <div>
                   <CardTitle className="flex items-center gap-2 text-sm font-bold text-[#1E252D]">
                     <ShieldCheck size={16} className="text-[#7A1C2C]" />
-                    Team &amp; Access Control (Phase 12 RBAC)
+                    Team &amp; Access Control (Enterprise RBAC)
                   </CardTitle>
                   <CardDescription className="text-xs text-[#64748B]">
                     Enterprise 6-role hierarchy, granular permissions, live persona switcher, and
@@ -236,7 +236,7 @@ export default function SettingsPage() {
 
                 <div className="flex items-center justify-between rounded-md border border-amber-200 bg-amber-50/60 p-3.5">
                   <div className="text-xs text-amber-900">
-                    <strong>Phase 12 Live Simulation:</strong> Switch between simulated user
+                    <strong>Live Simulation:</strong> Switch between simulated user
                     personas or manage team rosters in the full control center.
                   </div>
                   <a
@@ -373,7 +373,7 @@ export default function SettingsPage() {
                 <div>
                   <CardTitle className="flex items-center gap-2 text-sm font-bold text-[#1E252D]">
                     <ShieldCheck size={16} className="text-rose-700" />
-                    Knowledge Governance & Secret Scrubber (Phase 13)
+                    Knowledge Governance &amp; Secret Scrubber
                   </CardTitle>
                   <CardDescription className="text-xs text-[#64748B]">
                     Automated pre-embedding PII redaction, salary confidentiality, and clearance
@@ -436,7 +436,7 @@ export default function SettingsPage() {
                 <div>
                   <CardTitle className="flex items-center gap-2 text-sm font-bold text-[#1E252D]">
                     <Database size={16} className="text-emerald-700" />
-                    Cryptographic Audit Trail & E-Signatures (Phase 14)
+                    Cryptographic Audit Trail &amp; E-Signatures
                   </CardTitle>
                   <CardDescription className="text-xs text-[#64748B]">
                     Immutable SHA-256 hash chaining and official proposal signature ledger
@@ -499,7 +499,7 @@ export default function SettingsPage() {
                 <div>
                   <CardTitle className="flex items-center gap-2 text-sm font-bold text-[#1E252D]">
                     <Server size={16} className="text-sky-700" />
-                    Webhooks & External RFP Intake (Phase 15)
+                    Webhooks &amp; External RFP Intake
                   </CardTitle>
                   <CardDescription className="text-xs text-[#64748B]">
                     Slack/Teams outbound alerts and secure inbound ERP/CRM tender intake webhook

@@ -37,7 +37,6 @@ import {
   HelpCircle,
   Loader2,
   X,
-  Sparkles,
   ExternalLink,
   Search,
   RefreshCw,
@@ -250,7 +249,7 @@ function AnalysisProgressModal({
               {/* Automated Extraction Highlights */}
               <div className="space-y-3 rounded-xl border border-[#E2E8F0] bg-white p-4">
                 <div className="flex items-center gap-1.5 text-xs font-bold text-[#1E252D]">
-                  <Sparkles size={14} className="text-[#DDA625]" /> What the AI Agent will extract:
+                  <Bot size={14} className="text-[#DDA625]" /> What the AI Agent will extract:
                 </div>
                 <div className="grid grid-cols-1 gap-2.5 text-xs text-[#475569]">
                   <div className="flex items-start gap-2.5">
@@ -505,7 +504,7 @@ function RAGResultModal({ tender, onClose }: { tender: TenderItem; onClose: () =
         <div className="flex items-center justify-between border-b border-[#E2E8F0] px-6 py-4">
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#7A1C2C]/10">
-              <Sparkles size={15} className="text-[#7A1C2C]" />
+              <Search size={15} className="text-[#7A1C2C]" />
             </div>
             <div>
               <div className="text-sm font-bold text-[#1E252D]">AI Evidence Retrieval</div>
@@ -624,7 +623,7 @@ function RAGResultModal({ tender, onClose }: { tender: TenderItem; onClose: () =
             href="/knowledge/search"
             className="flex items-center gap-1 text-xs font-semibold text-[#7A1C2C] hover:underline"
           >
-            <Sparkles size={11} /> Open full RAG Search Lab <ExternalLink size={10} />
+            <Search size={11} /> Open full RAG Search Lab <ExternalLink size={10} />
           </Link>
           <Button
             onClick={onClose}
@@ -1126,7 +1125,7 @@ export default function TenderDetailPage({ params }: { params: Promise<{ id: str
                     : "pointer-events-auto cursor-not-allowed bg-slate-200 text-slate-400 opacity-60"
                 }`}
               >
-                <Sparkles size={14} />
+                <ShieldCheck size={14} />
                 Run Requirement Verification Agent
               </Button>
 
@@ -1141,7 +1140,7 @@ export default function TenderDetailPage({ params }: { params: Promise<{ id: str
                 }
                 className={`h-9 gap-2 px-4 text-xs font-bold ${
                   canRunAgents
-                    ? "cursor-pointer border-none bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 text-white shadow-md shadow-indigo-500/20 hover:opacity-95"
+                    ? "cursor-pointer border-none bg-[#7A1C2C] text-white shadow-xs hover:bg-[#631724]"
                     : "pointer-events-auto cursor-not-allowed bg-slate-200 text-slate-400 opacity-60"
                 }`}
               >
@@ -1301,21 +1300,21 @@ export default function TenderDetailPage({ params }: { params: Promise<{ id: str
             )}
 
             {/* Multi-Agent Orchestration Card */}
-            <Card className="border-indigo-200 bg-gradient-to-r from-indigo-950/90 via-slate-900 to-purple-950/90 text-white shadow-md">
+            <Card className="border border-[#E2E8F0] bg-white text-[#1E252D] shadow-sm">
               <CardContent className="flex flex-col items-start justify-between gap-4 p-5 md:flex-row md:items-center">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-500/20 text-indigo-300">
-                      <Zap size={14} />
+                    <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#FDF2F4] text-[#7A1C2C]">
+                      <Zap size={15} />
                     </span>
-                    <span className="text-sm font-bold text-white">
-                      Phase 8 — Autonomous Multi-Agent Proposal Generation
+                    <span className="text-sm font-bold text-[#1E252D]">
+                      Autonomous Multi-Agent Proposal Generation
                     </span>
-                    <span className="rounded-full border border-indigo-500/40 bg-indigo-500/30 px-2 py-0.5 text-[10px] font-semibold text-indigo-200">
+                    <span className="rounded-full border border-[#E2E8F0] bg-[#F8FAFC] px-2 py-0.5 text-[10px] font-semibold text-[#64748B]">
                       7 Specialized Agents
                     </span>
                   </div>
-                  <p className="max-w-2xl text-xs leading-relaxed text-slate-300">
+                  <p className="max-w-2xl text-xs leading-relaxed text-[#64748B]">
                     Execute the end-to-end pipeline: Technical Agent (architecture &amp; cloud),
                     Business Agent (case studies &amp; SLAs), Proposal Agent (10 markdown sections),
                     Compliance Agent, and Review Agent (win probability scoring).
@@ -1329,10 +1328,10 @@ export default function TenderDetailPage({ params }: { params: Promise<{ id: str
                       ? `Running multi-agent pipeline requires 'agents:run' permission (Disabled for ${roleDef.displayName})`
                       : undefined
                   }
-                  className={`h-9 shrink-0 gap-1.5 border px-4 text-xs font-bold ${
+                  className={`h-9 shrink-0 gap-1.5 px-4 text-xs font-bold ${
                     canRunAgents
-                      ? "cursor-pointer border-indigo-400/30 bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/30 hover:from-indigo-400 hover:to-purple-500"
-                      : "pointer-events-auto cursor-not-allowed border-slate-600 bg-slate-700 text-slate-400 opacity-60"
+                      ? "cursor-pointer bg-[#7A1C2C] text-white shadow-xs hover:bg-[#631724]"
+                      : "pointer-events-auto cursor-not-allowed border-slate-200 bg-slate-200 text-slate-400 opacity-60"
                   }`}
                 >
                   <Zap size={14} />
@@ -1683,7 +1682,7 @@ export default function TenderDetailPage({ params }: { params: Promise<{ id: str
                                   {isUpdating ? (
                                     <Loader2 size={11} className="animate-spin" />
                                   ) : (
-                                    <Sparkles size={11} />
+                                    <RefreshCw size={11} />
                                   )}
                                 </Button>
                               </div>

@@ -23,7 +23,7 @@ import {
   HelpCircle,
   XCircle,
   FileText,
-  Sparkles,
+  RefreshCw,
   Bot,
   Save,
   Loader2,
@@ -255,7 +255,7 @@ export default function RequirementEvidenceDrawer({
                     </>
                   ) : (
                     <>
-                      <Sparkles size={12} className="text-[#DDA625]" /> Re-Evaluate AI
+                      <RefreshCw size={12} className="text-[#DDA625]" /> Re-Evaluate AI
                     </>
                   )}
                 </Button>

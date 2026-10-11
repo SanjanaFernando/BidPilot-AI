@@ -15,7 +15,7 @@ import {
   Settings,
   ChevronRight,
   ShieldCheck,
-  Sparkles,
+  Search,
 } from "lucide-react";
 
 const NAV = [
@@ -33,7 +33,7 @@ const NAV = [
       { href: "/knowledge/employees", label: "Personnel", icon: Users },
       { href: "/knowledge/technologies", label: "Technologies", icon: Cpu },
       { href: "/knowledge/certifications", label: "Certifications", icon: Award },
-      { href: "/knowledge/search", label: "RAG Search Lab", icon: Sparkles },
+      { href: "/knowledge/search", label: "RAG Search Lab", icon: Search },
     ],
   },
   {
@@ -157,7 +157,7 @@ export default function Sidebar() {
                 background: "#22C55E",
               }}
             />
-            Phase 12 — RBAC Active
+            Enterprise RBAC Active
           </span>
           <span style={{ fontSize: "9.5px", opacity: 0.6 }}>v0.12</span>
         </Link>

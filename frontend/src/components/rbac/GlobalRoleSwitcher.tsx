@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useUserPermissions } from "@/hooks/useUserPermissions";
 import { ROLES, ROLE_LIST, RoleName } from "@/lib/rbac";
-import { Shield, ChevronDown, ChevronUp, Users, ExternalLink, Check, Sparkles } from "lucide-react";
+import { Shield, ChevronDown, ChevronUp, Users, ExternalLink, Check } from "lucide-react";
 
 export default function GlobalRoleSwitcher() {
   const { role, roleDef, permissions, fullName, switchDemoRole, isDemo } = useUserPermissions();
@@ -52,7 +52,7 @@ export default function GlobalRoleSwitcher() {
               textTransform: "uppercase",
             }}
           >
-            <Sparkles size={11} />
+            <Shield size={11} />
             <span>RBAC Persona Simulator</span>
           </div>
 

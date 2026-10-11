@@ -154,7 +154,7 @@ export function FindEvidenceModal({
               return (
                 <div
                   key={item.id || idx}
-                  className="space-y-2.5 rounded-lg border border-slate-200 bg-slate-50/60 p-4 transition-all hover:border-indigo-300 hover:bg-white"
+                  className="space-y-2.5 rounded-lg border border-slate-200 bg-slate-50/60 p-4 transition-all hover:border-[#7A1C2C]/40 hover:bg-white"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -180,7 +180,7 @@ export function FindEvidenceModal({
                         className={`h-7 gap-1 px-2.5 text-xs font-semibold ${
                           isInserted
                             ? "border-emerald-300 bg-emerald-50 text-emerald-700"
-                            : "bg-indigo-600 text-white hover:bg-indigo-500"
+                            : "bg-[#7A1C2C] text-white hover:bg-[#631724]"
                         }`}
                       >
                         {isInserted ? (

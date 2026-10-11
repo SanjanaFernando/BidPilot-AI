@@ -11,7 +11,6 @@ import {
   Loader2,
   Brain,
   Database,
-  Sparkles,
   FileSearch,
 } from "lucide-react";
 import Link from "next/link";
@@ -36,7 +35,7 @@ const PIPELINE_STEPS = [
   { stage: "chunking", icon: FileText, label: "Chunking into semantic segments", color: "#7C3AED" },
   { stage: "embedding", icon: Brain, label: "Generating Gemini embeddings", color: "#0F766E" },
   { stage: "storing", icon: Database, label: "Storing vectors in pgvector", color: "#B45309" },
-  { stage: "done", icon: Sparkles, label: "Ready for AI analysis", color: "#15803D" },
+  { stage: "done", icon: CheckCircle2, label: "Ready for analysis", color: "#15803D" },
 ];
 
 export default function NewTenderPage() {

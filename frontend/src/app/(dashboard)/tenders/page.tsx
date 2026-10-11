@@ -331,7 +331,7 @@ export default function TendersPage() {
               Showing {filteredTenders.length} of {tenders.length} records
             </span>
             <span style={{ fontSize: "12px", color: "var(--gov-text-muted)" }}>
-              Phase 1-3 Connected Pipeline
+              Connected Tender Pipeline
             </span>
           </div>
         </Card>

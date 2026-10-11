@@ -239,7 +239,7 @@ export function SectionEditModal({
               disabled={!canEdit}
               onClick={() =>
                 insertSnippet(
-                  "\n| Milestone / Module | Deliverable | Duration | Target Output |\n| --- | --- | --- | --- |\n| Phase 1 | Core Specifications | 3 Weeks | Architecture SRS |\n"
+                  "\n| Milestone / Module | Deliverable | Duration | Target Output |\n| --- | --- | --- | --- |\n| Milestone 1 | Core Specifications | 3 Weeks | Architecture SRS |\n"
                 )
               }
               className={`rounded p-1.5 ${canEdit ? "cursor-pointer hover:bg-slate-100 hover:text-slate-900" : "cursor-not-allowed opacity-40"}`}
@@ -253,7 +253,7 @@ export function SectionEditModal({
               onClick={() =>
                 insertSnippet("\n*Evidence Reference: [CIT-001: Verified Company Portfolio]*\n")
               }
-              className={`flex items-center gap-1 rounded p-1.5 px-2 text-xs font-medium ${canEdit ? "cursor-pointer text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700" : "cursor-not-allowed text-slate-400 opacity-40"}`}
+              className={`flex items-center gap-1 rounded p-1.5 px-2 text-xs font-medium ${canEdit ? "cursor-pointer text-[#7A1C2C] hover:bg-[#FDF2F4] hover:text-[#631724]" : "cursor-not-allowed text-slate-400 opacity-40"}`}
               title="Insert Evidence Citation"
             >
               <Quote size={13} /> + Citation Anchor

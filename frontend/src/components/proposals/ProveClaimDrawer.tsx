@@ -12,7 +12,6 @@ import {
   CheckCircle2,
   AlertTriangle,
   XCircle,
-  Sparkles,
   Quote,
   Layers,
   FileText,
@@ -44,11 +43,11 @@ const SOURCE_ICONS: Record<string, any> = {
 };
 
 const SOURCE_COLORS: Record<string, string> = {
-  project: "bg-blue-500/10 text-blue-400 border-blue-500/20",
-  employee: "bg-purple-500/10 text-purple-400 border-purple-500/20",
-  certification: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-  technology: "bg-amber-500/10 text-amber-400 border-amber-500/20",
-  document: "bg-slate-500/10 text-slate-400 border-slate-500/20",
+  project: "bg-blue-50 text-blue-700 border-blue-200",
+  employee: "bg-purple-50 text-purple-700 border-purple-200",
+  certification: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  technology: "bg-amber-50 text-amber-700 border-amber-200",
+  document: "bg-slate-100 text-slate-700 border-slate-200",
 };
 
 export default function ProveClaimDrawer({
@@ -108,30 +107,30 @@ export default function ProveClaimDrawer({
   };
 
   return (
-    <div className="animate-in slide-in-from-right fixed inset-y-0 right-0 z-50 flex w-full max-w-xl flex-col border-l border-slate-700/80 bg-slate-900 text-slate-100 shadow-2xl duration-200">
+    <div className="animate-in slide-in-from-right fixed inset-y-0 right-0 z-50 flex w-full max-w-xl flex-col border-l border-[#E2E8F0] bg-white text-[#1E252D] shadow-2xl duration-200">
       {/* Drawer Header */}
-      <div className="flex items-center justify-between border-b border-slate-800 bg-slate-950/60 px-6 py-4">
+      <div className="flex items-center justify-between border-b border-[#E2E8F0] bg-[#F8FAFC] px-6 py-4">
         <div className="flex items-center gap-2.5">
-          <div className="rounded-xl border border-indigo-500/30 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 p-2 text-indigo-400">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#7A1C2C] to-[#991B1B] text-white shadow-sm">
             <ShieldCheck className="h-5 w-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-sm font-bold tracking-tight text-white">
+              <h2 className="text-sm font-bold tracking-tight text-[#1E252D]">
                 Prove This Claim Dossier
               </h2>
-              <span className="rounded-full border border-indigo-500/30 bg-indigo-500/20 px-2 py-0.5 text-[10px] font-bold text-indigo-300">
-                Phase 9 Signature
+              <span className="rounded-full border border-[#F5D0D6] bg-[#FDF2F4] px-2 py-0.5 text-[10px] font-bold text-[#7A1C2C]">
+                Verified Evidence
               </span>
             </div>
-            <p className="text-[11px] text-slate-400">
+            <p className="text-[11px] text-[#64748B]">
               Traceable ground truth validation against company knowledge chunks
             </p>
           </div>
         </div>
         <button
           onClick={onClose}
-          className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-800 hover:text-slate-200"
+          className="rounded-lg p-1.5 text-[#64748B] transition-colors hover:bg-[#F1F5F9] hover:text-[#1E252D]"
         >
           <X className="h-5 w-5" />
         </button>
@@ -140,19 +139,19 @@ export default function ProveClaimDrawer({
       {/* Drawer Body */}
       <div className="flex-1 space-y-5 overflow-y-auto p-6">
         {/* Selected Claim Quote Card */}
-        <div className="space-y-2 rounded-xl border border-slate-800 bg-slate-950/70 p-4">
-          <div className="flex items-center gap-1.5 text-[11px] font-semibold tracking-wider text-slate-400 uppercase">
-            <Quote className="h-3.5 w-3.5 text-indigo-400" />
+        <div className="space-y-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-4">
+          <div className="flex items-center gap-1.5 text-[11px] font-semibold tracking-wider text-[#64748B] uppercase">
+            <Quote className="h-3.5 w-3.5 text-[#7A1C2C]" />
             Selected Proposal Claim
           </div>
-          <p className="font-sans text-xs leading-relaxed text-slate-200 italic">"{claimText}"</p>
+          <p className="font-sans text-xs leading-relaxed text-[#1E252D] italic">&ldquo;{claimText}&rdquo;</p>
         </div>
 
         {/* Loading State */}
         {loading && (
           <div className="flex flex-col items-center justify-center space-y-3 p-10">
-            <Loader2 className="h-8 w-8 animate-spin text-indigo-400" />
-            <p className="text-xs font-medium text-slate-400">
+            <Loader2 className="h-8 w-8 animate-spin text-[#7A1C2C]" />
+            <p className="text-xs font-medium text-[#64748B]">
               Searching company projects, employees, and certifications...
             </p>
           </div>
@@ -160,42 +159,40 @@ export default function ProveClaimDrawer({
 
         {/* Error State */}
         {errorMsg && (
-          <div className="flex items-start gap-2.5 rounded-xl border border-red-500/30 bg-red-950/40 p-4 text-xs text-red-300">
-            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />
+          <div className="flex items-start gap-2.5 rounded-xl border border-red-200 bg-red-50 p-4 text-xs text-red-700">
+            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-red-600" />
             <div>
-              <p className="font-semibold text-red-200">Evaluation Error</p>
-              <p className="mt-0.5 text-red-300/90">{errorMsg}</p>
+              <span className="font-bold text-red-800">Verification Engine Notice:</span>
+              <p className="mt-0.5">{errorMsg}</p>
             </div>
           </div>
         )}
 
-        {/* Evaluation Summary Card */}
-        {result && !loading && (
+        {/* Verification Result */}
+        {result && (
           <div className="space-y-4">
-            {/* Status Banner */}
+            {/* Status Strip */}
             <div
               className={`flex items-center justify-between rounded-xl border p-4 ${
                 result.verification_status === "verified"
-                  ? "border-emerald-500/40 bg-emerald-950/40 text-emerald-300"
+                  ? "border-[#BBF7D0] bg-[#DCFCE7] text-[#15803D]"
                   : result.verification_status === "partially_supported"
-                    ? "border-amber-500/40 bg-amber-950/40 text-amber-300"
-                    : "border-rose-500/40 bg-rose-950/40 text-rose-300"
+                    ? "border-amber-200 bg-amber-50 text-[#B45309]"
+                    : "border-red-200 bg-red-50 text-red-700"
               }`}
             >
               <div className="flex items-center gap-3">
-                {result.verification_status === "verified" && (
-                  <CheckCircle2 className="h-6 w-6 text-emerald-400" />
-                )}
-                {result.verification_status === "partially_supported" && (
-                  <AlertTriangle className="h-6 w-6 text-amber-400" />
-                )}
-                {result.verification_status === "unsupported" && (
-                  <XCircle className="h-6 w-6 text-rose-400" />
+                {result.verification_status === "verified" ? (
+                  <CheckCircle2 className="h-6 w-6" />
+                ) : result.verification_status === "partially_supported" ? (
+                  <AlertTriangle className="h-6 w-6" />
+                ) : (
+                  <XCircle className="h-6 w-6" />
                 )}
                 <div>
-                  <div className="text-xs font-bold tracking-wider uppercase">
+                  <div className="text-xs font-bold uppercase">
                     {result.verification_status === "verified"
-                      ? "Verified Claim (High Confidence)"
+                      ? "Fully Grounded & Verified Claim"
                       : result.verification_status === "partially_supported"
                         ? "Partially Supported Claim"
                         : "Unsupported Claim (Flagged)"}
@@ -219,12 +216,12 @@ export default function ProveClaimDrawer({
             </div>
 
             {/* Assessment Rationale */}
-            <div className="space-y-1 rounded-xl border border-slate-700/50 bg-slate-800/40 p-3.5">
-              <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-300">
-                <Sparkles className="h-3.5 w-3.5 text-indigo-400" />
+            <div className="space-y-1 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-3.5">
+              <div className="flex items-center gap-1.5 text-[11px] font-semibold text-[#1E252D]">
+                <ShieldCheck className="h-3.5 w-3.5 text-[#7A1C2C]" />
                 Evidence Grounding Rationale
               </div>
-              <p className="text-xs leading-relaxed text-slate-300">
+              <p className="text-xs leading-relaxed text-[#475569]">
                 {result.assessment_rationale}
               </p>
             </div>
@@ -232,15 +229,15 @@ export default function ProveClaimDrawer({
             {/* Supporting Evidence Chunks */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-xs font-bold tracking-wider text-slate-200 uppercase">
-                  <Layers className="h-3.5 w-3.5 text-indigo-400" />
+                <div className="flex items-center gap-1.5 text-xs font-bold tracking-wider text-[#64748B] uppercase">
+                  <Layers className="h-3.5 w-3.5 text-[#7A1C2C]" />
                   Supporting Evidence ({result.supporting_evidence.length})
                 </div>
-                <span className="text-[10px] text-slate-400">Cosine vector similarity</span>
+                <span className="text-[10px] text-[#94A3B8]">Cosine vector similarity</span>
               </div>
 
               {result.supporting_evidence.length === 0 ? (
-                <div className="rounded-xl border border-slate-800 bg-slate-950/40 p-6 text-center text-xs text-slate-400">
+                <div className="rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-6 text-center text-xs text-[#64748B]">
                   No supporting knowledge chunks found matching this query threshold.
                 </div>
               ) : (
@@ -248,7 +245,7 @@ export default function ProveClaimDrawer({
                   {result.supporting_evidence.map((ev, idx) => {
                     const IconComp = SOURCE_ICONS[ev.source_type.toLowerCase()] || FileText;
                     const colorClass =
-                      SOURCE_COLORS[ev.source_type.toLowerCase()] || "bg-slate-800 text-slate-300";
+                      SOURCE_COLORS[ev.source_type.toLowerCase()] || "bg-slate-100 text-slate-700 border-slate-200";
                     const isTopMatch = idx === 0;
 
                     return (
@@ -256,8 +253,8 @@ export default function ProveClaimDrawer({
                         key={idx}
                         className={`space-y-2 rounded-xl border p-3.5 transition-all ${
                           isTopMatch
-                            ? "border-indigo-500/40 bg-slate-800/60 shadow-sm"
-                            : "border-slate-800 bg-slate-900/50"
+                            ? "border-[#CBD5E1] bg-white shadow-xs"
+                            : "border-[#E2E8F0] bg-[#F8FAFC]"
                         }`}
                       >
                         <div className="flex items-center justify-between gap-2">
@@ -268,24 +265,24 @@ export default function ProveClaimDrawer({
                               <IconComp className="h-3 w-3" />
                               {ev.source_type.toUpperCase()}
                             </span>
-                            <span className="truncate text-xs font-bold text-slate-200">
+                            <span className="truncate text-xs font-bold text-[#1E252D]">
                               {ev.source_name}
                             </span>
                           </div>
 
                           <div className="flex shrink-0 items-center gap-1.5">
-                            <span className="rounded-md border border-indigo-500/30 bg-indigo-500/10 px-2 py-0.5 text-[10px] font-bold text-indigo-300">
+                            <span className="rounded-md border border-[#BBF7D0] bg-[#DCFCE7] px-2 py-0.5 text-[10px] font-bold text-[#15803D]">
                               {Math.round(ev.similarity_score * 100)}% Match
                             </span>
                           </div>
                         </div>
 
-                        <p className="line-clamp-3 rounded-lg border border-slate-800/80 bg-slate-950/50 p-2.5 font-sans text-xs leading-relaxed text-slate-300">
-                          {ev.content_snippet}
+                        <p className="line-clamp-3 rounded-lg border border-[#E2E8F0] bg-white p-2.5 font-sans text-xs leading-relaxed text-[#475569]">
+                          &ldquo;{ev.content_snippet}&rdquo;
                         </p>
 
                         <div className="flex items-center justify-between pt-1">
-                          <div className="text-[10px] text-slate-400">
+                          <div className="text-[10px] text-[#64748B]">
                             {ev.source_id && (
                               <span className="mr-2 font-mono">ID: {ev.source_id}</span>
                             )}
@@ -296,7 +293,7 @@ export default function ProveClaimDrawer({
                             size="sm"
                             onClick={() => handleInsertCitation(ev, idx)}
                             disabled={insertingIndex !== null}
-                            className="h-7 gap-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-[11px] font-semibold text-white hover:from-indigo-500 hover:to-purple-500"
+                            className="h-7 gap-1 bg-[#7A1C2C] text-[11px] font-semibold text-white hover:bg-[#631724]"
                           >
                             {insertingIndex === idx ? (
                               <Loader2 className="h-3 w-3 animate-spin" />
@@ -317,12 +314,12 @@ export default function ProveClaimDrawer({
       </div>
 
       {/* Drawer Footer */}
-      <div className="flex items-center justify-between border-t border-slate-800 bg-slate-950/80 px-6 py-4">
+      <div className="flex items-center justify-between border-t border-[#E2E8F0] bg-[#F8FAFC] px-6 py-4">
         <Button
           variant="outline"
           size="sm"
           onClick={onClose}
-          className="border-slate-700 text-slate-300 hover:bg-slate-800"
+          className="border-[#CBD5E1] text-[#475569] hover:bg-[#F1F5F9]"
         >
           Close Dossier
         </Button>
@@ -334,7 +331,7 @@ export default function ProveClaimDrawer({
               alert("Claim marked as Unsupported in section audit log.");
               onClose();
             }}
-            className="gap-1.5 bg-rose-600 text-xs text-white hover:bg-rose-500"
+            className="gap-1.5 bg-red-600 text-xs text-white hover:bg-red-700"
           >
             <Flag className="h-3.5 w-3.5" /> Flag Claim as Unsupported
           </Button>

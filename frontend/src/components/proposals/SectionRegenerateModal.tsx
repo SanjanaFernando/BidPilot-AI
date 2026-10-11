@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Sparkles, RefreshCw, ShieldCheck, CheckCircle2, Loader2, X } from "lucide-react";
+import { RefreshCw, ShieldCheck, CheckCircle2, Loader2, X, Cpu } from "lucide-react";
 import { pipelineService } from "@/lib/pipeline-service";
 import { DEFAULT_ORG_ID } from "@/lib/rag-service";
 
@@ -34,18 +34,18 @@ export function SectionRegenerateModal({
 
   const handleRegenerate = async () => {
     setLoading(true);
+    setGeneratedPreview(null);
     try {
-      const result = await pipelineService.regenerateSection(
+      const res = await pipelineService.regenerateSection(
         sectionId,
         tenderId,
         DEFAULT_ORG_ID,
-        instructions || undefined,
+        instructions.trim() || undefined,
         tone
       );
-      setGeneratedPreview(result.content_markdown);
+      setGeneratedPreview(res.content_markdown);
     } catch (err: any) {
-      console.error("Regeneration failed:", err);
-      alert(err.message || "Failed to regenerate section.");
+      alert(`Error regenerating section: ${err?.message || "Unknown error"}`);
     } finally {
       setLoading(false);
     }
@@ -59,18 +59,18 @@ export function SectionRegenerateModal({
   };
 
   return (
-    <div className="animate-in fade-in fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs duration-150">
-      <div className="flex max-h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xl">
-        <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-6 py-4">
+    <div className="animate-in fade-in fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs duration-150">
+      <div className="flex max-h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-xl border border-[#E2E8F0] bg-white shadow-2xl">
+        <div className="flex items-center justify-between border-b border-[#E2E8F0] bg-[#F8FAFC] px-6 py-4">
           <div>
-            <div className="flex items-center gap-2 text-xs font-bold tracking-wider text-indigo-700 uppercase">
-              <Sparkles size={14} /> AI Section Regeneration
+            <div className="flex items-center gap-2 text-xs font-bold tracking-wider text-[#7A1C2C] uppercase">
+              <RefreshCw size={14} /> Section Synthesis &amp; Regeneration
             </div>
-            <div className="mt-0.5 text-base font-bold text-slate-900">{sectionTitle}</div>
+            <div className="mt-0.5 text-base font-bold text-[#1E252D]">{sectionTitle}</div>
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-200 hover:text-slate-700"
+            className="rounded-lg p-1.5 text-[#64748B] transition-colors hover:bg-[#F1F5F9] hover:text-[#1E252D]"
           >
             <X size={18} />
           </button>
@@ -79,7 +79,7 @@ export function SectionRegenerateModal({
         <div className="flex-1 space-y-5 overflow-y-auto p-6">
           {/* Tone Selector */}
           <div>
-            <label className="mb-2 block text-xs font-bold tracking-wider text-slate-700 uppercase">
+            <label className="mb-2 block text-xs font-bold tracking-wider text-[#64748B] uppercase">
               Select Tone &amp; Emphasis
             </label>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -95,12 +95,12 @@ export function SectionRegenerateModal({
                   onClick={() => setTone(t.id as any)}
                   className={`rounded-lg border p-3 text-left transition-all ${
                     tone === t.id
-                      ? "border-indigo-600 bg-indigo-50/70 text-indigo-950 ring-1 ring-indigo-600"
-                      : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
+                      ? "border-[#7A1C2C] bg-[#FDF2F4] text-[#7A1C2C] ring-1 ring-[#7A1C2C]"
+                      : "border-[#E2E8F0] bg-white text-[#475569] hover:border-[#CBD5E1]"
                   }`}
                 >
                   <div className="text-xs font-bold">{t.label}</div>
-                  <div className="mt-0.5 text-[10px] text-slate-500">{t.desc}</div>
+                  <div className="mt-0.5 text-[10px] text-[#64748B]">{t.desc}</div>
                 </button>
               ))}
             </div>
@@ -108,7 +108,7 @@ export function SectionRegenerateModal({
 
           {/* Prompt Instructions */}
           <div>
-            <label className="mb-2 block text-xs font-bold tracking-wider text-slate-700 uppercase">
+            <label className="mb-2 block text-xs font-bold tracking-wider text-[#64748B] uppercase">
               Custom Prompt Instructions (Optional)
             </label>
             <textarea
@@ -116,30 +116,30 @@ export function SectionRegenerateModal({
               value={instructions}
               onChange={(e) => setInstructions(e.target.value)}
               placeholder="e.g. Focus on high-availability cloud deployment, zero-trust RBAC authentication, and ISO 27001 data residency..."
-              className="w-full resize-none rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs text-slate-900 focus:bg-white focus:ring-1 focus:ring-indigo-600 focus:outline-none"
+              className="w-full resize-none rounded-lg border border-[#CBD5E1] bg-[#F8FAFC] p-3 text-xs text-[#1E252D] focus:bg-white focus:border-[#7A1C2C] focus:ring-1 focus:ring-[#7A1C2C] focus:outline-none"
             />
-            <div className="mt-1 flex items-center gap-1.5 text-[11px] text-slate-500">
-              <ShieldCheck size={13} className="text-emerald-600" />
-              AI will ground claims using verified company projects, certifications, and RFP facts.
+            <div className="mt-1 flex items-center gap-1.5 text-[11px] text-[#64748B]">
+              <ShieldCheck size={13} className="text-[#15803D]" />
+              Claims are grounded using verified company projects, certifications, and RFP specifications.
             </div>
           </div>
 
           {/* Preview if generated */}
           {generatedPreview && (
             <div className="space-y-2">
-              <div className="flex items-center gap-1.5 text-xs font-bold tracking-wider text-emerald-800 uppercase">
-                <CheckCircle2 size={14} className="text-emerald-600" />
+              <div className="flex items-center gap-1.5 text-xs font-bold tracking-wider text-[#15803D] uppercase">
+                <CheckCircle2 size={14} className="text-[#15803D]" />
                 Newly Synthesized Content Preview
               </div>
-              <div className="max-h-56 overflow-y-auto rounded-lg border border-emerald-200 bg-emerald-50/40 p-4 font-mono text-xs whitespace-pre-line text-slate-900">
+              <div className="max-h-56 overflow-y-auto rounded-lg border border-[#BBF7D0] bg-[#F0FDF4] p-4 font-mono text-xs whitespace-pre-line text-[#1E252D]">
                 {generatedPreview}
               </div>
             </div>
           )}
         </div>
 
-        <div className="flex items-center justify-between border-t border-slate-200 bg-slate-50 px-6 py-3">
-          <Button variant="outline" size="sm" onClick={onClose} disabled={loading}>
+        <div className="flex items-center justify-between border-t border-[#E2E8F0] bg-[#F8FAFC] px-6 py-3">
+          <Button variant="outline" size="sm" onClick={onClose} disabled={loading} className="border-[#CBD5E1] text-[#475569]">
             Cancel
           </Button>
 
@@ -149,15 +149,15 @@ export function SectionRegenerateModal({
                 size="sm"
                 onClick={handleRegenerate}
                 disabled={loading}
-                className="gap-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 font-bold text-white hover:from-indigo-500 hover:to-purple-500"
+                className="gap-1.5 bg-[#7A1C2C] font-bold text-white shadow-xs hover:bg-[#631724]"
               >
                 {loading ? (
                   <>
-                    <Loader2 size={13} className="animate-spin" /> Synthesizing with AI...
+                    <Loader2 size={13} className="animate-spin" /> Synthesizing Content...
                   </>
                 ) : (
                   <>
-                    <Sparkles size={13} /> Synthesize Section
+                    <Cpu size={13} /> Synthesize Section
                   </>
                 )}
               </Button>
@@ -168,14 +168,14 @@ export function SectionRegenerateModal({
                   size="sm"
                   onClick={handleRegenerate}
                   disabled={loading}
-                  className="gap-1 text-xs"
+                  className="gap-1 border-[#CBD5E1] text-xs text-[#475569]"
                 >
                   <RefreshCw size={12} /> Try Again
                 </Button>
                 <Button
                   size="sm"
                   onClick={handleApply}
-                  className="gap-1.5 bg-[#15803D] font-bold text-white hover:bg-[#166534]"
+                  className="gap-1.5 bg-[#15803D] font-bold text-white shadow-xs hover:bg-[#166534]"
                 >
                   <CheckCircle2 size={13} /> Apply to Proposal
                 </Button>

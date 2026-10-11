@@ -111,7 +111,7 @@ export default function DashboardPage() {
                 isSupabaseConfigured ? "bg-[#DCFCE7] text-[#15803D]" : "bg-[#FEF3C7] text-[#B45309]"
               }`}
             >
-              {isSupabaseConfigured ? "● Supabase Live" : "● Knowledge Storage (Phase 3 Active)"}
+              {isSupabaseConfigured ? "● Supabase Live" : "● Knowledge Storage Active"}
             </span>
           </div>
           <p style={{ fontSize: "12.5px", color: "var(--gov-text-muted)", marginTop: "2px" }}>

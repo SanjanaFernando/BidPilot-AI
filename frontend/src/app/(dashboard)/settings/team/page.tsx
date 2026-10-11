@@ -30,8 +30,8 @@ import {
   Search,
   Filter,
   RefreshCw,
-  Sparkles,
   Info,
+  CheckCircle2,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -251,7 +251,7 @@ export default function TeamRbacPage() {
       {/* Notification Toast */}
       {notification && (
         <div className="animate-in fade-in slide-in-from-top-2 fixed top-5 right-5 z-50 flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-[#1E252D] px-4 py-3 text-xs font-semibold text-white shadow-xl">
-          <Sparkles size={14} className="text-emerald-400" />
+          <CheckCircle2 size={14} className="text-emerald-400" />
           <span>{notification}</span>
         </div>
       )}
@@ -268,7 +268,7 @@ export default function TeamRbacPage() {
                 <h1 className="flex items-center gap-2 text-lg font-bold text-[#1E252D]">
                   Enterprise Role-Based Access Control (RBAC)
                   <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800">
-                    Phase 12 Active
+                    RBAC Active
                   </span>
                 </h1>
                 <p className="text-xs text-[#64748B]">

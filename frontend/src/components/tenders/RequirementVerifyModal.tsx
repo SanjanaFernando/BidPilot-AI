@@ -5,7 +5,6 @@ import { evaluateTenderRequirements, BatchEvaluateResponse } from "@/lib/require
 import {
   X,
   Bot,
-  Sparkles,
   ShieldCheck,
   CheckCircle2,
   AlertTriangle,
@@ -175,7 +174,7 @@ export default function RequirementVerifyModal({
 
               {/* Information Banner */}
               <div className="flex items-start gap-2.5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs text-amber-900">
-                <Sparkles size={16} className="mt-0.5 shrink-0 text-[#DDA625]" />
+                <ShieldCheck size={16} className="mt-0.5 shrink-0 text-[#DDA625]" />
                 <div className="leading-relaxed">
                   The agent scans company project portfolios, employee certifications, and verified
                   technologies to automatically classify requirements as <strong>Covered</strong>,{" "}
@@ -327,7 +326,7 @@ export default function RequirementVerifyModal({
                 </>
               ) : (
                 <>
-                  <Sparkles size={14} className="text-[#DDA625]" /> Start Verification Agent
+                  <ShieldCheck size={14} className="text-[#DDA625]" /> Start Verification Agent
                 </>
               )}
             </Button>

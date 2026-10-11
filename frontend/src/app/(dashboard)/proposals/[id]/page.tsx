@@ -17,7 +17,6 @@ import {
   BookOpen,
   CheckCircle,
   ChevronRight,
-  Sparkles,
   Quote,
   ThumbsUp,
   Hash,
@@ -888,7 +887,7 @@ export default function ProposalEditorPage({ params }: { params: Promise<{ id: s
                   }}
                   className="h-8 cursor-pointer gap-1 border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-100"
                 >
-                  <Sparkles size={12} className="text-amber-500" /> Prove Claim
+                  <ShieldCheck size={12} className="text-amber-600" /> Prove Claim
                 </Button>
 
                 {/* Phase 11 Action 5: Approve Section / Reopen */}
