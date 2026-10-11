@@ -295,23 +295,21 @@ export default function MultiAgentWorkflowModal({
                 return (
                   <div
                     key={stg.key}
-                    className={`flex items-center justify-between rounded-xl border p-3 transition-all ${
-                      status === "running"
-                        ? "border-indigo-500/50 bg-indigo-950/30 shadow-md shadow-indigo-500/10"
-                        : status === "completed"
-                          ? "border-slate-700/50 bg-slate-800/40"
-                          : "border-slate-800/40 bg-slate-900/30 opacity-60"
-                    }`}
+                    className={`flex items-center justify-between rounded-xl border p-3 transition-all ${status === "running"
+                      ? "border-indigo-500/50 bg-indigo-950/30 shadow-md shadow-indigo-500/10"
+                      : status === "completed"
+                        ? "border-slate-700/50 bg-slate-800/40"
+                        : "border-slate-800/40 bg-slate-900/30 opacity-60"
+                      }`}
                   >
                     <div className="flex items-center gap-3">
                       <div
-                        className={`rounded-lg border p-2 ${
-                          status === "completed"
-                            ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
-                            : status === "running"
-                              ? "animate-pulse border-indigo-500/40 bg-indigo-500/20 text-indigo-300"
-                              : stg.color
-                        }`}
+                        className={`rounded-lg border p-2 ${status === "completed"
+                          ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
+                          : status === "running"
+                            ? "animate-pulse border-indigo-500/40 bg-indigo-500/20 text-indigo-300"
+                            : stg.color
+                          }`}
                       >
                         <IconComponent className="h-4 w-4" />
                       </div>
@@ -391,7 +389,7 @@ export default function MultiAgentWorkflowModal({
               size="sm"
               onClick={onClose}
               disabled={running}
-              className="border-slate-700 text-slate-300 hover:bg-slate-800"
+              className="border-slate-700 text-slate-900 hover:bg-slate-300"
             >
               {result ? "Close" : "Cancel"}
             </Button>
