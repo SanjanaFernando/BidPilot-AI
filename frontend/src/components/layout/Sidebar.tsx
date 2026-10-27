@@ -40,7 +40,6 @@ const NAV = [
     label: "Proposals",
     items: [
       { href: "/proposals/TND-001", label: "Proposal Editor", icon: FileEdit },
-      { href: "/tenders", label: "Compliance Check", icon: ShieldCheck },
     ],
   },
   {
